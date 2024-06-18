@@ -8,7 +8,7 @@ function Navbar() {
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-10">
-            <Link href="/">
+            <Link href="/dashboard/home">
               <Image src="/landing/logo.png" alt="Logo" width={170} height={170} />
             </Link>
             <Link
