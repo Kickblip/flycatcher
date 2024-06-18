@@ -28,6 +28,7 @@ export async function POST(request: Request) {
 
   const newBoard = {
     name,
+    urlName: name.toLowerCase().replace(/\s/g, "-"),
     primaryColor: "#3498db", // placeholder colors
     secondaryColor: "#2ecc71",
     accentColor: "#e74c3c",

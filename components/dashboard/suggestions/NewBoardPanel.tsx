@@ -31,6 +31,7 @@ function NewBoardPanel() {
       }
 
       const data = await response.json()
+
       setBoardName("")
     } catch (error) {
       setError((error as Error).message || "Failed to create board")
