@@ -1,15 +1,10 @@
 import Link from "next/link"
 
-export default function Page() {
+export default function Home() {
   return (
-    <div className="flex h-screen bg-black">
-      <div className="w-screen h-screen flex flex-col justify-center items-center">
-        <div className="flex space-x-3">
-          <Link href="/protected" className="text-stone-400 underline hover:text-stone-200 transition-all">
-            Protected Page
-          </Link>
-        </div>
-      </div>
-    </div>
+    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">Home</div>
+      <Link href="/dashboard/home">Enter protected page</Link>
+    </main>
   )
 }
