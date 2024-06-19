@@ -82,10 +82,10 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
     >
       <div className="w-full max-w-7xl mx-auto p-4 flex">
         <div className="w-1/3 p-4">
-          <div className="p-6 rounded-lg" style={{ backgroundColor: board?.secondaryColor || "#f9fafb" }}>
             <div>
-              <p className="text-xl font-bold mb-4">{board?.name} Suggestions</p>
+              <p className="text-xl font-bold mb-4">{board?.name}</p>
             </div>
+          <div className="p-6 rounded-lg" style={{ backgroundColor: board?.secondaryColor || "#f9fafb" }}>
             <div className="mb-4">
               <label className="block text-sm font-bold mb-2" htmlFor="suggestionTitle">
                 Title
