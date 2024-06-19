@@ -23,67 +23,64 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/suggestionsform/form"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/suggestionsform/card"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/suggestionsform/card"
 import { Input } from "@/components/suggestionsform/input"
 import { ChevronDown, ChevronUp, SendIcon } from "lucide-react"
 
 const formSchema = z.object({
-  title: z.string().min(2, {
-    message: "Title must be more than 2 characters."
-  }).max(30, {
-    message: "Title can't be more than 30 characters."
-  }), //change depending
+  title: z
+    .string()
+    .min(2, {
+      message: "Title must be more than 2 characters.",
+    })
+    .max(50, {
+      message: "Title can't be more than 50 characters.",
+    }), //change depending
   description: z.string().min(2).max(100),
 })
 
 const formSchemaComment = z.object({
-  comment: z.string().min(2, {
-    message: "Comment must be more than 2 characters."
-  }).max(300, {
-    message: "Comment can't be more than 300 characters."
-  }), //change depending
+  comment: z
+    .string()
+    .min(2, {
+      message: "Comment must be more than 2 characters.",
+    })
+    .max(300, {
+      message: "Comment can't be more than 300 characters.",
+    }), //change depending
 })
 
 interface Board {
-  _id: string;
-  name: string;
-  urlName: string;
-  primaryColor: string;
-  secondaryColor: string;
-  accentColor: string;
-  textColor: string;
+  _id: string
+  name: string
+  urlName: string
+  primaryColor: string
+  secondaryColor: string
+  accentColor: string
+  textColor: string
   suggestions: {
-    title: string;
-    description: string;
-    votes: number;
-    comments: string[];
-  }[];
+    title: string
+    description: string
+    votes: number
+    comments: string[]
+  }[]
 }
 
 interface BoardProps {
-  board: Board | null; 
+  board: Board | null
 }
 
+export default function Suggestion({ board }: BoardProps) {
+  const [suggestions, setSuggestions] = useState<Board["suggestions"]>([]) // cahnge names
 
-export default function Suggestion({board}: BoardProps)  {
-  const [suggestions, setSuggestions] = useState<Board["suggestions"]>([]); // cahnge names
-
-  
   useEffect(() => {
     if (board) {
       //sets the suggestions
       setSuggestions(board.suggestions)
 
       //sets the buttons
-      document.documentElement.style.setProperty('--primary', board.accentColor);
-      document.documentElement.style.setProperty('--primary-foreground', board.primaryColor);
+      document.documentElement.style.setProperty("--primary", board.accentColor)
+      document.documentElement.style.setProperty("--primary-foreground", board.primaryColor)
 
       //sets the background and text
       document.documentElement.style.setProperty('--background', '204.07 69.87% 53.14%');
@@ -97,13 +94,12 @@ export default function Suggestion({board}: BoardProps)  {
   }, [board])
 
   const suggestionForm = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema)
+    resolver: zodResolver(formSchema),
   })
 
   const commentForm = useForm<z.infer<typeof formSchemaComment>>({
-    resolver: zodResolver(formSchemaComment)
-  });
-
+    resolver: zodResolver(formSchemaComment),
+  })
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     const newSuggestion = { ...values, votes: 0, comments: [] }
@@ -111,29 +107,27 @@ export default function Suggestion({board}: BoardProps)  {
     suggestionForm.reset()
   }
 
-
   //thank you chatGPT for solving this. this has to be the most crazy solution
   function onClickVoteUp(index: number, increment: number = 1) {
     setSuggestions((prevSuggestions) =>
       prevSuggestions.map((suggestion, idx) =>
-        idx === index ? { ...suggestion, votes: suggestion.votes + increment } : suggestion
-      )
-    );
+        idx === index ? { ...suggestion, votes: suggestion.votes + increment } : suggestion,
+      ),
+    )
   }
 
   function onSubmitComment(index: number, comment: string) {
     setSuggestions((prevSuggestions) =>
       prevSuggestions.map((suggestion, idx) =>
-        idx === index ? { ...suggestion, comments: [...suggestion.comments, comment] } : suggestion
-      )
-    );
-    commentForm.reset();
+        idx === index ? { ...suggestion, comments: [...suggestion.comments, comment] } : suggestion,
+      ),
+    )
+    commentForm.reset()
   }
 
   if (!board) {
-    return <p>Loading...</p>; // or handle the loading state appropriately
+    return <p>Loading...</p> // or handle the loading state appropriately
   }
-
 
   return (
     // CREATE A SUGGESTION CARD
@@ -198,7 +192,7 @@ export default function Suggestion({board}: BoardProps)  {
           <CardTitle>Suggestions</CardTitle>
         </CardHeader>
         <CardContent>
-        {suggestions.length > 0 ? (
+          {suggestions.length > 0 ? (
             suggestions.map((suggestion, index) => (
               <Dialog>
               <Card 
@@ -305,10 +299,8 @@ export default function Suggestion({board}: BoardProps)  {
           ) : (
             <p>No suggestions yet.</p>
           )}
-          </CardContent>
+        </CardContent>
       </Card>
     </div>
-    
-
   )
 }
