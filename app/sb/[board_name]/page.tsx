@@ -74,7 +74,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
     setsuggestionTitle('')
     setsuggestionDescription('')
   } // TODO: function that will submit the new suggestion to the database
-
+  
   return (
     <main
       className="flex flex-col items-center min-h-screen w-full"
@@ -83,6 +83,9 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
       <div className="w-full max-w-7xl mx-auto p-4 flex">
         <div className="w-1/3 p-4">
           <div className="p-6 rounded-lg" style={{ backgroundColor: board?.secondaryColor || "#f9fafb" }}>
+            <div>
+              <p className="text-xl font-bold mb-4">{board?.name} Suggestions</p>
+            </div>
             <div className="mb-4">
               <label className="block text-sm font-bold mb-2" htmlFor="suggestionTitle">
                 Title

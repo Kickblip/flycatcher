@@ -109,7 +109,7 @@ const Card = ({ title, description, votes: initialVotes, comments: initialCommen
             >
                 <p className="text-m font-bold" style={{color: boardData?.textColor}}>{title}</p>
                 <div className="flex items-center gap-2 absolute top-3 right-2">
-                    <p className="text-slate-900">{votes}</p>
+                    <p className="text-slate-900" style={{color: boardData?.textColor}}>{votes}</p>
                     <div className="flex flex-col gap-2">
                         <button 
                         className="flex items-center gap-2 px-3 py-2 rounded-md"
@@ -119,7 +119,7 @@ const Card = ({ title, description, votes: initialVotes, comments: initialCommen
                         }}
                         >
                             <svg width="10px" height="15px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M19.9201 15.0499L13.4001 8.52989C12.6301 7.75989 11.3701 7.75989 10.6001 8.52989L4.08008 15.0499" stroke="#292D32" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M19.9201 15.0499L13.4001 8.52989C12.6301 7.75989 11.3701 7.75989 10.6001 8.52989L4.08008 15.0499" stroke={boardData?.textColor} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                             </svg>
                         </button>
                     </div>
@@ -145,7 +145,6 @@ const Card = ({ title, description, votes: initialVotes, comments: initialCommen
 }
 
 const CardComment = ({ comment, boardData }: { comment: string; boardData: any }) => {
-    
     return (
         <div className="relative rounded p-3 mb-2"
         style={{backgroundColor: boardData?.secondaryColor}}>
@@ -182,7 +181,7 @@ const Dialog = ({
         textColor: string;
         secondaryColor: string;
         accentColor: string;
-    }; 
+    } 
   }) => {
     const handleDialogClick = (e: React.MouseEvent<HTMLDivElement>) => {
         e.stopPropagation();
@@ -254,7 +253,7 @@ const Dialog = ({
                         placeholder="Enter your comment here..."
                         value={newComment}
                         onChange={handleChange}
-                        style={{backgroundColor: lighterPrimaryColor}}
+                        style={{backgroundColor: lighterPrimaryColor, color: boardData?.textColor}}
                     ></textarea>
 
                     <div className="mt-5">
@@ -272,6 +271,3 @@ const Dialog = ({
         </div>
     )
 }
-
-
-
