@@ -86,13 +86,14 @@ export default function Suggestion({board}: BoardProps)  {
       document.documentElement.style.setProperty('--primary-foreground', board.primaryColor);
 
       //sets the background and text
-      document.documentElement.style.setProperty('--card', board.primaryColor);
+      document.documentElement.style.setProperty('--background', '204.07 69.87% 53.14%');
+      document.documentElement.style.setProperty('--card', '145.44 63.2% 49.02%');
       document.documentElement.style.setProperty('--card-foreground', board.textColor);
 
       //sets the popover 
       document.documentElement.style.setProperty('--popover', board.secondaryColor);
       document.documentElement.style.setProperty('--popover-foreground', board.textColor);
-    }
+     }
   }, [board])
 
   const suggestionForm = useForm<z.infer<typeof formSchema>>({
@@ -135,166 +136,171 @@ export default function Suggestion({board}: BoardProps)  {
 
 
   return (
+    // CREATE A SUGGESTION CARD
     <div className="flex space-x-4">
-      <Card className="w-[380px] h-[424px] bg-card">
-        <CardHeader>
-          <CardTitle>Create a suggestion</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Form {...suggestionForm}>
-          <form onSubmit={suggestionForm.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={suggestionForm.control}
-              name="title"
-              defaultValue=""
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Suggestion Title</FormLabel>
-                  <FormControl>
-                    <Input 
-                    placeholder="Add a Darkmode" {...field} 
-                    style={{ backgroundColor: board.secondaryColor}}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={suggestionForm.control}
-              name="description"
-              defaultValue=""
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Suggestion</FormLabel>
-                  <FormControl>
-                  <Textarea
-                      placeholder="Please add a dark mode as my eyes burn looking at your website!"
-                      {...field}
-                      rows={5} 
-                      style={{ backgroundColor: board.secondaryColor}}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex justify-center">
-              <Button type="submit">Submit</Button>
-            </div>
-          </form>
-          </Form>
-        </CardContent>
-      </Card>
-      <Card className="w-[700px] h-[700px] overflow-y-auto">
+      <div>
+        <Card className="w-[380px] h-[424px] bg-card">
+          <CardHeader>
+            <CardTitle>Create a suggestion</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Form {...suggestionForm}>
+            <form onSubmit={suggestionForm.handleSubmit(onSubmit)} className="space-y-8">
+              <FormField
+                control={suggestionForm.control}
+                name="title"
+                defaultValue=""
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Suggestion Title</FormLabel>
+                    <FormControl>
+                      <Input 
+                      placeholder="Add a Darkmode" {...field} 
+                      style={{ backgroundColor: board.primaryColor}}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={suggestionForm.control}
+                name="description"
+                defaultValue=""
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Suggestion</FormLabel>
+                    <FormControl>
+                    <Textarea
+                        placeholder="Please add a dark mode as my eyes burn looking at your website!"
+                        {...field}
+                        rows={5} 
+                        style={{ backgroundColor: board.primaryColor}}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex justify-center">
+                <Button type="submit">Submit</Button>
+              </div>
+            </form>
+            </Form>
+          </CardContent>
+        </Card>
+        <p className='m-1' style={{ textAlign: 'center' }}>Powered By <a href="/" style={{ textDecoration: 'underline' }}>Flycatcher</a></p>
+      </div>
+
+      {/* SUGGESTION CARD */}
+      <Card className="w-[700px] h-[700px] overflow-y-auto" style={{ backgroundColor: board.primaryColor}}>
         <CardHeader>
           <CardTitle>Suggestions</CardTitle>
         </CardHeader>
         <CardContent>
         {suggestions.length > 0 ? (
             suggestions.map((suggestion, index) => (
+              <Dialog>
               <Card 
               key={index} 
               className="mt-4 relative"
               style={{ backgroundColor: board.secondaryColor }}
               >
-                <CardHeader>
-                  <CardTitle>{suggestion.title}</CardTitle>
-                </CardHeader>
-                <div className="absolute top-0 right-0 flex items-center">
-                  <p className="mr-2">{suggestion.votes}</p>
-                  <div className="flex flex-col">
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-7 w-7"
-                    onClick={() => onClickVoteUp(index, 1)}
-                    >
-                    <ChevronUp className="h-4 w-4" />
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-7 w-7" 
-                    onClick={() => onClickVoteUp(index, -1)}
-                    >
-                      <ChevronDown className="h-4 w-4" />
-                  </Button>
-                  </div>
-                </div>
-                <CardContent>
-                  <p>{suggestion.description}</p>
-                  <Dialog>
-                    <div className="flex justify-end">
-                      <DialogTrigger>Open</DialogTrigger>
+                  <DialogTrigger>
+                    <CardHeader>
+                      <CardTitle>{suggestion.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p>{suggestion.description}</p>
+                    </CardContent>
+                  </DialogTrigger>
+                  <div className="absolute top-0 right-0 flex items-center">
+                    <p className="mr-2">{suggestion.votes}</p>
+                    <div className="flex flex-col">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-7 w-7"
+                      onClick={() => onClickVoteUp(index, 1)}
+                      >
+                      <ChevronUp className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-7 w-7" 
+                      onClick={() => onClickVoteUp(index, -1)}
+                      >
+                        <ChevronDown className="h-4 w-4" />
+                    </Button>
                     </div>
-                    <DialogContent className="sm:max-w-[1000px]" style={{ backgroundColor: board.primaryColor}}>
-                      <DialogHeader>
-                        <DialogTitle>{suggestion.title}</DialogTitle>
-                        <DialogDescription>
-                          {suggestion.description}
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="absolute top-1 right-10 flex items-center">
-                        <p className="mr-2">{suggestion.votes}</p>
-                        <div className="flex flex-col">
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="h-7 w-7"
-                          onClick={() => onClickVoteUp(index, 1)}
-                          >
-                          <ChevronUp className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="h-7 w-7" 
-                          onClick={() => onClickVoteUp(index, -1)}
-                          >
-                            <ChevronDown className="h-4 w-4" />
-                        </Button>
-                        </div>
-                      </div>
-                      <br/>
-                      <p>Comments</p>
-                      {suggestion.comments && suggestion.comments.length > 0 ? (
-                        suggestion.comments.map((comment, commentIndex) => (
-                          <Card key={commentIndex} className="mt-2">
-                            <CardContent className="comment">
-                              <p>{comment}</p>
-                            </CardContent>
-                          </Card>
-                        ))
-                      ) : (
-                        <p>No comments yet.</p>
-                      )}
-                      <Form {...commentForm}>
-                            <form onSubmit={commentForm.handleSubmit((values) => onSubmitComment(index, values.comment))} className="space-y-8">
-                              <FormField
-                                control={commentForm.control}
-                                name="comment"
-                                defaultValue=""
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Your comment</FormLabel>
-                                    <FormControl>
-                                      <Input 
-                                      placeholder="Type your comment here" {...field} 
-                                      style={{ backgroundColor: board.secondaryColor}}
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <Button type="submit">Submit</Button>
-                            </form>
-                          </Form>
-                    </DialogContent>
-                  </Dialog>
-                </CardContent>
-              </Card>
+                  </div>
+                <DialogContent className="sm:max-w-[1000px]" style={{ backgroundColor: board.primaryColor}}>
+                  <DialogHeader>
+                    <DialogTitle>{suggestion.title}</DialogTitle>
+                    <DialogDescription>
+                      {suggestion.description}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="absolute top-1 right-10 flex items-center">
+                    <p className="mr-2">{suggestion.votes}</p>
+                    <div className="flex flex-col">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-7 w-7"
+                      onClick={() => onClickVoteUp(index, 1)}
+                      >
+                      <ChevronUp className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-7 w-7" 
+                      onClick={() => onClickVoteUp(index, -1)}
+                      >
+                        <ChevronDown className="h-4 w-4" />
+                    </Button>
+                    </div>
+                  </div>
+                  <br/>
+                  <p>Comments</p>
+                  {suggestion.comments && suggestion.comments.length > 0 ? (
+                    suggestion.comments.map((comment, commentIndex) => (
+                      <Card key={commentIndex} className="mt-2">
+                        <CardContent className="comment">
+                          <p>{comment}</p>
+                        </CardContent>
+                      </Card>
+                    ))
+                  ) : (
+                    <p>No comments yet.</p>
+                  )}
+                  <Form {...commentForm}>
+                        <form onSubmit={commentForm.handleSubmit((values) => onSubmitComment(index, values.comment))} className="space-y-8">
+                          <FormField
+                            control={commentForm.control}
+                            name="comment"
+                            defaultValue=""
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Your comment</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                  placeholder="Type your comment here" {...field} 
+                                  style={{ backgroundColor: board.secondaryColor}}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <Button type="submit">Submit</Button>
+                        </form>
+                      </Form>
+                </DialogContent>
+                </Card>
+              </Dialog>
             ))
           ) : (
             <p>No suggestions yet.</p>
@@ -302,7 +308,7 @@ export default function Suggestion({board}: BoardProps)  {
           </CardContent>
       </Card>
     </div>
-
+    
 
   )
 }
