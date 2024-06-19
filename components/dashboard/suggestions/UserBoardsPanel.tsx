@@ -57,7 +57,10 @@ function UserBoardsPanel() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {boards.map((board) => (
           <Link key={board._id} href={`/dashboard/suggestions/edit/${board.urlName}`}>
-            <div className="p-4 border bg-gray-50 rounded-lg hover:bg-gray-100 transition duration-200">
+            <div
+              className="p-4 border rounded-lg transition duration-200"
+              style={{ backgroundColor: board.primaryColor, color: board.textColor }}
+            >
               <h3 className="text-lg font-bold">{board.name}</h3>
             </div>
           </Link>

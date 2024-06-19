@@ -26,13 +26,22 @@ export async function POST(request: Request) {
     )
   }
 
+  if (!/^[a-zA-Z0-9 ]+$/.test(name)) {
+    return NextResponse.json(
+      {
+        message: "Special characters not allowed",
+      },
+      { status: 400 },
+    )
+  }
+
   const newBoard = {
     name,
     urlName: name.toLowerCase().replace(/\s/g, "-"),
-    primaryColor: "#3498db", // placeholder colors
-    secondaryColor: "#2ecc71",
-    accentColor: "#e74c3c",
-    textColor: "#2c3e50",
+    primaryColor: "#ffffff",
+    secondaryColor: "#f3f4f6", // gray-100
+    accentColor: "#6366f1", // indigo-500
+    textColor: "#000000",
     author: userId,
     suggestions: [],
   }
