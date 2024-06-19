@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 
 export default function BoardInfo({ params }: { params: { board_name: string } }) {
   const [error, setError] = useState<string | null>(null)
-  const [board, setBoard] = useState(null)
+  const [board, setBoard] = useState<any>(null) // TODO: Define types
 
   const fetchBoard = async () => {
     setError(null)
@@ -35,16 +35,17 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
     return <div className="text-red-500">{JSON.stringify(board)}</div>
   }
 
+  if (!board && !error) {
+    return <div>Loading...</div>
+  }
 
-  return(
+  return (
     <main>
-        <section className="w-full">
-            <div className="h-screen flex items-center justify-center">
-                <Suggestion board={board} />
-            </div>
-        </section>
+      <section className="w-full">
+        <div className="h-screen flex items-center justify-center">
+          <Suggestion board={board} />
+        </div>
+      </section>
     </main>
-  ) 
-  
-
+  )
 }
