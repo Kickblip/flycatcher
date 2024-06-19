@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { ArrowPathIcon } from "@heroicons/react/24/outline"
+import LoadingWheel from "../LoadingWheel"
 
 function UserBoardsPanel() {
   const [boards, setBoards] = useState<any[]>([])
@@ -37,7 +38,7 @@ function UserBoardsPanel() {
   }, [])
 
   if (loading) {
-    return <div className="text-black opacity-70 text-xs">Loading boards...</div>
+    return <LoadingWheel />
   }
 
   if (error) {

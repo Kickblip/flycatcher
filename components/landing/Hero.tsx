@@ -19,7 +19,7 @@ function Hero() {
           </div>
 
           <p className="max-w-screen-sm mx-auto text-xl text-muted-foreground">
-            {`We make measuring interest, collecting feedback, building a community around your idea easy so you can focus on what matters most: building.`}
+            {`We make measuring interest, collecting feedback, and building a community easy so you can focus on building a product people want.`}
           </p>
 
           <div className="flex flex-col md:flex-row md:space-x-4 text-white justify-center">

@@ -6,6 +6,7 @@ import { HexColorPicker } from "react-colorful"
 import Modal from "react-modal"
 import Link from "next/link"
 import { ArrowTopRightOnSquareIcon, DocumentDuplicateIcon, DocumentCheckIcon } from "@heroicons/react/24/outline"
+import LoadingWheel from "@/components/dashboard/LoadingWheel"
 
 // for the modal
 const customStyles = {
@@ -66,7 +67,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
   }
 
   if (!board && !error) {
-    return <div>Loading...</div>
+    return <LoadingWheel />
   }
 
   const openModal = (colorKey: string, currentColor: string) => {
