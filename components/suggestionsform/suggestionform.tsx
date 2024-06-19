@@ -68,12 +68,12 @@ interface Board {
 }
 
 interface BoardProps {
-  board: Board
+  board: Board | null; 
 }
 
 
 export default function Suggestion({board}: BoardProps)  {
-  const [suggestions, setSuggestions] = useState<{ title: string, description: string, votes: number, comments:string[]}[]>([]) // cahnge names
+  const [suggestions, setSuggestions] = useState<Board["suggestions"]>([]); // cahnge names
 
   
   useEffect(() => {
@@ -105,7 +105,7 @@ export default function Suggestion({board}: BoardProps)  {
 
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    const newSuggestion = { ...values, votes: 0 }
+    const newSuggestion = { ...values, votes: 0, comments: [] }
     setSuggestions((prevSuggestions) => [...prevSuggestions, newSuggestion])
     suggestionForm.reset()
   }
@@ -113,39 +113,24 @@ export default function Suggestion({board}: BoardProps)  {
 
   //thank you chatGPT for solving this. this has to be the most crazy solution
   function onClickVoteUp(index: number, increment: number = 1) {
-    setSuggestions((prevSuggestions) => {
-      // Create a new array with updated suggestion
-      const newSuggestions = prevSuggestions.map((suggestion, idx) => {
-        if (idx === index) {
-          // Return a new object with updated votes
-          return {
-            ...suggestion,
-            votes: suggestion.votes + increment,
-          };
-        }
-        return suggestion;
-      })
-      return newSuggestions;
-    });
+    setSuggestions((prevSuggestions) =>
+      prevSuggestions.map((suggestion, idx) =>
+        idx === index ? { ...suggestion, votes: suggestion.votes + increment } : suggestion
+      )
+    );
   }
 
   function onSubmitComment(index: number, comment: string) {
-    setSuggestions((prevSuggestions) => {
-      const newSuggestions = prevSuggestions.map((suggestion, idx) => {
-        if (idx === index) {
-          if (!suggestion.comments) {
-            suggestion.comments = [] 
-          }
-          if (!suggestion.comments.includes(comment)) {
-            suggestion.comments.push(comment) 
-          }
-        }
-        return suggestion
-      })
-      return newSuggestions
-    })
-    commentForm.reset()
-    console.log(suggestions)
+    setSuggestions((prevSuggestions) =>
+      prevSuggestions.map((suggestion, idx) =>
+        idx === index ? { ...suggestion, comments: [...suggestion.comments, comment] } : suggestion
+      )
+    );
+    commentForm.reset();
+  }
+
+  if (!board) {
+    return <p>Loading...</p>; // or handle the loading state appropriately
   }
 
 
