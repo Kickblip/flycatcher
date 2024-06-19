@@ -4,6 +4,12 @@ import LoadingWheel from "@/components/dashboard/LoadingWheel"
 import { useEffect, useState } from "react"
 import tinycolor from "tinycolor2"
 import Link from "next/link"
+import { SuggestionCard } from "@/components/suggestions/suggestionscard"
+
+interface Suggestion {
+  title: string;
+  description: string;
+}
 
 export default function BoardInfo({ params }: { params: { board_name: string } }) {
   const [error, setError] = useState<string | null>(null)
@@ -11,6 +17,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
   const [board, setBoard] = useState<any>(null) // TODO: Define types
   const [suggestionTitle, setsuggestionTitle] = useState("")
   const [suggestionDescription, setsuggestionDescription] = useState("")
+  const [suggestion, setSuggestion] = useState<Suggestion[]>([])
 
   const fetchBoard = async () => {
     setError(null)
@@ -50,7 +57,23 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
 
   const lighterSecondaryColor = board?.secondaryColor ? tinycolor(board.secondaryColor).lighten(20).toString() : "#f9fafb" // #f9fafb is tailwind gray-50
 
-  const handleNewSuggestionSubmission = () => {} // TODO: function that will submit the new suggestion to the database
+  const handleNewSuggestionSubmission = () => {
+    if (!suggestionTitle.trim() || !suggestionDescription.trim()) {
+      return;
+    }
+
+    const newSuggestion = {
+      title: suggestionTitle,
+      description: suggestionDescription,
+      column: "todo",
+      votes: 0,
+      comments: []
+    }
+
+    setSuggestion([...suggestion, newSuggestion])
+    setsuggestionTitle('')
+    setsuggestionDescription('')
+  } // TODO: function that will submit the new suggestion to the database
 
   return (
     <main
@@ -100,7 +123,9 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
             </Link>
           </span>
         </div>
-        <div className="w-2/3 p-4">Make a card component for diplaying suggestions and put it here</div>
+        <div className="w-2/3 p-4">
+          <SuggestionCard suggestions={suggestion} boardData={board}/>
+        </div>
       </div>
     </main>
   )
