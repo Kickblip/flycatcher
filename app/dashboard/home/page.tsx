@@ -1,7 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server"
 import Navbar from "@/components/dashboard/Navbar"
 
-export default async function DashboardHome() {
+export default function DashboardHome() {
   // const { userId } = auth()
   // if (userId) {
   //   // Query DB for user specific information or display assets only to signed in users

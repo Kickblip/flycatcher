@@ -13,6 +13,11 @@ function NewBoardPanel() {
       return
     }
 
+    if (!/^[a-zA-Z0-9 ]+$/.test(boardName)) {
+      setError("Board name can only contain letters, numbers, and spaces")
+      return
+    }
+
     setLoading(true)
     setError(null)
 
