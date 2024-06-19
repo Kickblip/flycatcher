@@ -1,4 +1,5 @@
 "use client"
+import Suggestion from "@/components/suggestionsform/suggestionform"
 
 import { useEffect, useState } from "react"
 
@@ -34,5 +35,16 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
     return <div className="text-red-500">{JSON.stringify(board)}</div>
   }
 
-  return <div>{JSON.stringify(board)}</div>
+
+  return(
+    <main>
+        <section className="w-full">
+            <div className="h-screen flex items-center justify-center">
+                <Suggestion board={board} />
+            </div>
+        </section>
+    </main>
+  ) 
+  
+
 }
