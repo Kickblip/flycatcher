@@ -26,6 +26,8 @@ import {
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/suggestionsform/card"
 import { Input } from "@/components/suggestionsform/input"
 import { ChevronDown, ChevronUp, SendIcon } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
+
 
 const formSchema = z.object({
   title: z
@@ -126,7 +128,15 @@ export default function Suggestion({ board }: BoardProps) {
   }
 
   if (!board) {
-    return <p>Loading...</p> // or handle the loading state appropriately
+    return(
+      <div className="flex flex-col space-y-3 h-screen justify-center items-center">
+      <Skeleton className="h-[125px] w-[250px] rounded-xl" />
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-[250px]" />
+        <Skeleton className="h-4 w-[200px]" />
+      </div>
+    </div>
+    ) 
   }
 
   return (
