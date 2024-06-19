@@ -1,11 +1,10 @@
-import Image from "next/image"
 import Link from "next/link"
 import { ArrowRightIcon } from "@heroicons/react/24/outline"
 
 function Hero() {
   return (
-    <section className="container w-full">
-      <div className="grid place-items-center gap-8 mx-auto py-20 md:py-32">
+    <section className="w-full">
+      <div className="mx-auto py-20 md:py-32">
         <div className="text-center space-y-8">
           <div className="mx-auto text-center text-4xl md:text-7xl font-bold">
             <h1>
@@ -18,7 +17,7 @@ function Hero() {
             </h1>
           </div>
 
-          <p className="max-w-screen-sm mx-auto text-xl text-muted-foreground">
+          <p className="max-w-screen-sm mx-auto text-xl">
             {`We make measuring interest, collecting feedback, and building a community easy so you can focus on building a product people want.`}
           </p>
 
@@ -36,19 +35,6 @@ function Hero() {
               </Link>
             </button> */}
           </div>
-        </div>
-
-        <div className="relative group mt-14">
-          <div className="absolute top-2 lg:-top-8 left-1/2 transform -translate-x-1/2 w-[90%] mx-auto h-24 lg:h-80 rounded-full"></div>
-          <Image
-            width={1200}
-            height={1200}
-            className="w-full md:w-[1200px] mx-auto rounded-lg relative rouded-lg leading-none flex items-center"
-            src={"/landing/suggestion-demo.jpg"}
-            alt="dashboard"
-          />
-
-          <div className="absolute bottom-0 left-0 w-full h-20 md:h-28 rounded-lg"></div>
         </div>
       </div>
     </section>
