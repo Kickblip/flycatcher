@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Suggestion, Board } from "@/types/SuggestionBoard"
-import { HandThumbUpIcon } from "@heroicons/react/24/outline"
+import { HandThumbUpIcon, ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline"
 import tinycolor from "tinycolor2"
 import Modal from "react-modal"
 
@@ -24,12 +24,16 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
       bottom: "auto",
       marginRight: "-50%",
       transform: "translate(-50%, -50%)",
-      backgroundColor: lighterSecondaryColor,
+      backgroundColor: secondaryColor,
       color: textColor,
       padding: "20px",
-      borderRadius: "8px",
+      borderRadius: "15px",
+      border: "0px",
       width: "45%",
       maxHeight: "90vh",
+    },
+    overlay: {
+      backgroundColor: "rgba(0, 0, 0, 0.75)",
     },
   }
 
@@ -80,31 +84,39 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
         style={{ backgroundColor: secondaryColor }}
         onClick={openModal}
       >
-        <div className="flex justify-between">
-          <div className="flex flex-col" style={{ color: textColor }}>
+        <div className="flex justify-between w-full">
+          <div className="flex flex-col break-words max-w-[80%]" style={{ color: textColor }}>
             <h2 className="text-lg font-bold mb-2">{suggestion.title}</h2>
             <p className="text-sm">{suggestion.description}</p>
           </div>
-          <button
-            className="flex flex-col items-center justify-center w-10 h-20 rounded-lg"
-            style={{ backgroundColor: accentColor, color: secondaryColor }}
-            onClick={handleVoteClick}
-            disabled={submitting}
-          >
-            <div className="flex items-center justify-center w-5 h-5 mb-1">
-              <HandThumbUpIcon className="w-5 h-5" />
+          <div className="flex">
+            <div className="flex flex-col items-center justify-center w-12 h-20" style={{ color: textColor }}>
+              <div className="flex items-center justify-center w-5 h-5 mb-1">
+                <ChatBubbleBottomCenterTextIcon className="w-5 h-5" strokeWidth={2} />
+              </div>
+              <span className="text-sm">{suggestion.comments.length}</span>
             </div>
-            <span className="text-sm">{suggestion.votes}</span>
-          </button>
+            <button
+              className="flex flex-col items-center justify-center w-12 h-20 rounded-lg"
+              style={{ backgroundColor: accentColor, color: secondaryColor }}
+              onClick={handleVoteClick}
+              disabled={submitting}
+            >
+              <div className="flex items-center justify-center w-5 h-5 mb-1">
+                <HandThumbUpIcon className="w-5 h-5" strokeWidth={2} />
+              </div>
+              <span className="text-sm">{suggestion.votes}</span>
+            </button>
+          </div>
         </div>
       </section>
       <Modal isOpen={modalIsOpen} onRequestClose={closeModal} style={customModalStyles} contentLabel="Suggestion Comments Modal">
-        <div className="p-4">
-          <div className="mb-4">
-            <h2 className="text-2xl font-bold">{suggestion.title}</h2>
+        <div className="p-4 w-full">
+          <div className="mb-4 w-full break-words">
+            <h2 className="text-2xl font-bold mb-4">{suggestion.title}</h2>
             <p className="text-lg">{suggestion.description}</p>
           </div>
-          <div className="mb-4">
+          <div className="mb-12 mt-6">
             <h3 className="text-xl font-bold">Comments</h3>
             {suggestion.comments.length > 0 ? (
               suggestion.comments.map((comment, index) => (
@@ -123,11 +135,11 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
           <div className="mt-4">
             <input
               type="text"
-              className="w-full p-2 border rounded-lg focus:outline-none"
+              className="w-full p-2 rounded-lg outline-none"
               placeholder="Add a comment..."
               value={newComment}
               onChange={handleCommentChange}
-              style={{ backgroundColor: "#fff", color: textColor }}
+              style={{ backgroundColor: lighterSecondaryColor, color: textColor }}
             />
             <button
               onClick={handleAddComment}

@@ -2,10 +2,12 @@
 
 import LoadingWheel from "@/components/dashboard/LoadingWheel"
 import { useEffect, useState } from "react"
+import Image from "next/image"
 import tinycolor from "tinycolor2"
 import Link from "next/link"
 import SuggestionCard from "@/components/board/SuggestionCard"
 import { Suggestion, Board } from "@/types/SuggestionBoard"
+import PoweredByBadge from "@/components/board/PoweredByBadge"
 
 export default function BoardInfo({ params }: { params: { board_name: string } }) {
   const [error, setError] = useState<string | null>(null)
@@ -16,6 +18,8 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
   const lighterSecondaryColor = board?.secondaryColor ? tinycolor(board.secondaryColor).lighten(20).toString() : "#f9fafb" // #f9fafb is tailwind gray-50
   const [submitting, setSubmitting] = useState(false)
   const [submissionError, setSubmissionError] = useState<string | null>(null)
+  const [page, setPage] = useState(2)
+  const [hideLoadMoreButton, setHideLoadMoreButton] = useState(false)
 
   const fetchBoardData = async () => {
     setError(null)
@@ -93,6 +97,42 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
     }
   }
 
+  const handleLoadMoreSuggestionsSubmission = async () => {
+    setSubmitting(true)
+
+    try {
+      const response = await fetch("/api/pub/boards/load-more-suggestions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ urlName: board?.urlName, page }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Failed to add comment")
+      } else {
+        const data = await response.json()
+        setPage(page + 1)
+        if (data.length < 10) {
+          setHideLoadMoreButton(true)
+        }
+        setBoard((prevBoard) => {
+          if (!prevBoard) return prevBoard
+          return {
+            ...prevBoard,
+            suggestions: [...prevBoard.suggestions, ...data],
+          }
+        })
+      }
+    } catch (error) {
+      console.error("Error loading more suggestions:", error)
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   return (
     <main
       className="flex flex-col items-center min-h-screen w-full"
@@ -104,13 +144,15 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
             <p className="text-xl font-bold mb-4">{board?.name}</p>
           </div>
           <div className="p-6 rounded-lg" style={{ backgroundColor: board?.secondaryColor || "#f9fafb" }}>
+            <h1 className="text-lg font-semibold mb-6">Add feedback</h1>
             <div className="mb-4">
-              <label className="block text-sm font-bold mb-2" htmlFor="suggestionTitle">
-                Title
+              <label className="block text-xs font-bold mb-1" htmlFor="suggestionTitle">
+                Post Title
               </label>
               <input
                 id="suggestionTitle"
                 type="text"
+                placeholder="Add magic link authentication"
                 className="w-full p-2 rounded-lg focus:outline-none"
                 value={suggestionTitle}
                 onChange={(e) => setsuggestionTitle(e.target.value)}
@@ -118,11 +160,12 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-bold mb-2" htmlFor="suggestionDescription">
-                Description
+              <label className="block text-xs font-bold mb-1" htmlFor="suggestionDescription">
+                Post Text
               </label>
               <textarea
                 id="suggestionDescription"
+                placeholder="I hate having to keep track of all these passwords..."
                 className="w-full p-2 rounded-lg focus:outline-none"
                 value={suggestionDescription}
                 onChange={(e) => setsuggestionDescription(e.target.value)}
@@ -138,17 +181,20 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
               {submitting ? "Submitting..." : "Submit"}
             </button>
           </div>
-          <span className="text-md mt-2">
-            Powered by{" "}
-            <Link href="https://flycatcher.app" className="underline" target="_blank">
-              Flycatcher
-            </Link>
-          </span>
+          <PoweredByBadge primaryColor={board?.primaryColor} />
         </div>
         <div className="w-2/3 p-4">
           {board?.suggestions.map((suggestion: Suggestion, index: number) => (
             <SuggestionCard key={index} suggestion={suggestion} boardData={board} />
           ))}
+          <button
+            onClick={handleLoadMoreSuggestionsSubmission}
+            className={"w-full p-2 rounded-lg" + (hideLoadMoreButton ? " hidden" : "")}
+            style={{ backgroundColor: board?.accentColor || "#6366f1", color: board?.secondaryColor || "#fff" }}
+            disabled={submitting}
+          >
+            {submitting ? "Loading..." : "Load More"}
+          </button>
         </div>
       </div>
     </main>

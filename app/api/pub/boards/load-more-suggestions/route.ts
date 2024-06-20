@@ -1,14 +1,17 @@
 import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
 
-export async function GET(request: Request, { params }: { params: { board_name: string } }) {
-  const urlName = params.board_name
+export async function POST(request: Request) {
+  const body = await request.json()
+  const { urlName, page = 2 } = body
+  const limit = 10
+  const skip = (page - 1) * limit
 
   try {
     const client = await clientPromise
     const collection = client.db("Main").collection("boards")
 
-    const board = await collection.findOne({ urlName }, { projection: { author: 0, suggestions: { $slice: 10 } } })
+    const board = await collection.findOne({ urlName }, { projection: { author: 0, suggestions: { $slice: [skip, limit] } } })
 
     if (!board) {
       return NextResponse.json(
@@ -19,7 +22,7 @@ export async function GET(request: Request, { params }: { params: { board_name: 
       )
     }
 
-    return NextResponse.json(board, { status: 200 })
+    return NextResponse.json(board.suggestions, { status: 200 })
   } catch (error) {
     let errorMessage = "An unknown error occurred"
     if (error instanceof Error) {

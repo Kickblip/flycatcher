@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
 import { Suggestion } from "@/types/SuggestionBoard"
+import { v4 as uuidv4 } from "uuid"
 
 export async function POST(request: Request) {
   const body = await request.json()
@@ -27,7 +28,7 @@ export async function POST(request: Request) {
 
     // add the new suggestion to the board
     const newSuggestion: Suggestion = {
-      id: Math.random().toString(36).substring(7),
+      id: uuidv4(),
       title,
       description,
       votes: 0,
@@ -36,6 +37,9 @@ export async function POST(request: Request) {
     }
 
     const updatedSuggestions = [...matchingBoard.suggestions, newSuggestion]
+
+    // sort suggestions by votes
+    updatedSuggestions.sort((a, b) => b.votes - a.votes)
 
     await collection.updateOne({ urlName: board.urlName }, { $set: { suggestions: updatedSuggestions } })
 
