@@ -15,7 +15,7 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json()
-  const { name } = body
+  let { name } = body
 
   if (!name) {
     return NextResponse.json(
@@ -25,6 +25,8 @@ export async function POST(request: Request) {
       { status: 400 },
     )
   }
+
+  name = name.trim()
 
   if (!/^[a-zA-Z0-9 ]+$/.test(name)) {
     return NextResponse.json(
@@ -37,7 +39,7 @@ export async function POST(request: Request) {
 
   const newBoard = {
     name,
-    urlName: name.toLowerCase().replace(/\s/g, "-"),
+    urlName: name.toLowerCase().replace(/\s+/g, "-"),
     primaryColor: "#ffffff",
     secondaryColor: "#f3f4f6", // gray-100
     accentColor: "#6366f1", // indigo-500
@@ -53,7 +55,7 @@ export async function POST(request: Request) {
     const collection = client.db("Main").collection("boards")
 
     // check if a board with the same name already exists (case-insensitive)
-    const existingBoard = await collection.findOne({ name: new RegExp(`^${name}$`, "i") })
+    const existingBoard = await collection.findOne({ urlName: new RegExp(`^${name.toLowerCase().replace(/\s+/g, "-")}$`, "i") })
     if (existingBoard) {
       return NextResponse.json(
         {

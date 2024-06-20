@@ -21,6 +21,10 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
   const [page, setPage] = useState(2)
   const [hideLoadMoreButton, setHideLoadMoreButton] = useState(false)
 
+  useEffect(() => {
+    if (board) document.title = board.name
+  }, [board])
+
   const fetchBoardData = async () => {
     setError(null)
     setLoading(true)
