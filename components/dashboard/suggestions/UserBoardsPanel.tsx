@@ -4,9 +4,9 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { ArrowPathIcon } from "@heroicons/react/24/outline"
 import LoadingWheel from "../LoadingWheel"
+import { Board } from "@/types/SuggestionBoard"
 
-function UserBoardsPanel() {
-  const [boards, setBoards] = useState<any[]>([])
+function UserBoardsPanel({ boards, setBoards }: { boards: Board[]; setBoards: (boards: Board[]) => void }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -54,17 +54,23 @@ function UserBoardsPanel() {
           Refresh
         </button>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {boards.map((board) => (
-          <Link key={board._id} href={`/dashboard/suggestions/edit/${board.urlName}`}>
-            <div
-              className="p-4 border rounded-lg transition duration-200"
-              style={{ backgroundColor: board.primaryColor, color: board.textColor }}
-            >
-              <h3 className="text-lg font-bold">{board.name}</h3>
-            </div>
-          </Link>
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {boards.length > 0 ? (
+          boards.map((board, index) => (
+            <Link key={index} href={`/dashboard/suggestions/edit/${board.urlName}`}>
+              <div
+                className="p-4 border rounded-lg transition duration-200"
+                style={{ backgroundColor: board.primaryColor, color: board.textColor }}
+              >
+                <h3 className="text-lg font-bold">{board.name}</h3>
+              </div>
+            </Link>
+          ))
+        ) : (
+          <div className="p-4 text-left text-gray-500">
+            <p>No boards found. Create a new one to get started.</p>
+          </div>
+        )}
       </div>
     </div>
   )

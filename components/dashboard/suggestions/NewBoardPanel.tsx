@@ -1,11 +1,13 @@
 "use client"
 
 import { useState } from "react"
+import { Board } from "@/types/SuggestionBoard"
 
-function NewBoardPanel() {
+function NewBoardPanel({ boards, setBoards }: { boards: Board[]; setBoards: (boards: Board[]) => void }) {
   const [boardName, setBoardName] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
 
   const handleSubmit = async () => {
     if (!boardName) {
@@ -36,8 +38,12 @@ function NewBoardPanel() {
       }
 
       const data = await response.json()
-
+      setSuccess(true)
+      setTimeout(() => {
+        setSuccess(false)
+      }, 5000)
       setBoardName("")
+      setBoards([...boards, data.board])
     } catch (error) {
       setError((error as Error).message || "Failed to create board")
     } finally {
@@ -47,7 +53,7 @@ function NewBoardPanel() {
 
   return (
     <div className="flex flex-col p-4 space-y-8 bg-gray-50 h-full rounded-lg">
-      <h2 className="text-xl font-bold opacity-80">Add a new suggestion board</h2>
+      <h2 className="text-xl font-bold opacity-80">Create a new feedback board</h2>
       <div className="flex flex-col">
         <input
           type="text"
@@ -59,6 +65,7 @@ function NewBoardPanel() {
         />
       </div>
       {error && <p className="text-red-500">{error}</p>}
+      {success && <p className="text-gray-500">Board created successfully.</p>}
       <button
         className="mt-auto p-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition duration-200"
         onClick={handleSubmit}
