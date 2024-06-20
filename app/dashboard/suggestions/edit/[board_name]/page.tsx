@@ -116,12 +116,12 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
       if (!response.ok) {
         throw new Error("Failed to save board")
       }
-      setHeaderStatusMessage("Board saved successfully")
+      setHeaderStatusMessage("Saved board")
       setHeaderStatusMessageType("success")
       setTimeout(() => setHeaderStatusMessage(""), 2000)
     } catch (error) {
       console.error("Error saving board:", error)
-      setHeaderStatusMessage("Failed to save board")
+      setHeaderStatusMessage("Save failed")
       setHeaderStatusMessageType("error")
       setTimeout(() => setHeaderStatusMessage(""), 2000)
     }
@@ -144,7 +144,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
       router.push("/dashboard/suggestions")
     } catch (error) {
       console.error("Error deleting board:", error)
-      setHeaderStatusMessage("Failed to delete board")
+      setHeaderStatusMessage("Save failed")
       setHeaderStatusMessageType("error")
       setTimeout(() => setHeaderStatusMessage(""), 2000)
     }
@@ -159,7 +159,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
             <h2 className="text-2xl font-bold">{board.name}</h2>
             <div className="flex items-center space-x-2">
               {headerStatusMessage && (
-                <span className={`px-4 py-2 ${headerStatusMessageType === "success" ? "text-gray-500" : "text-red-500"}`}>
+                <span className={`py-2 text-xs ${headerStatusMessageType === "success" ? "text-gray-500" : "text-red-500"}`}>
                   {headerStatusMessage}
                 </span>
               )}
@@ -169,6 +169,12 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
               >
                 <TrashIcon className="w-5 h-5" strokeWidth={1.5} />
               </button>
+              <Link
+                href={`/dashboard/suggestions/edit/${params.board_name}/feedback`}
+                className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition duration-200"
+              >
+                View Feedback
+              </Link>
               <button
                 className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition duration-200"
                 onClick={saveBoardChanges}
