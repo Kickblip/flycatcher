@@ -4,12 +4,15 @@ import tinycolor from "tinycolor2";
 interface Suggestion {
     title: string;
     description: string;
+    votes: number;
+    comments: string[];
   }
   
 interface SuggestionCardProps {
     suggestions: Suggestion[];
     boardData: any
-    }
+}
+
 
 
 export const SuggestionCard: React.FC<SuggestionCardProps> = ({ suggestions, boardData }) =>{
@@ -31,7 +34,6 @@ const Board: React.FC<SuggestionCardProps> = ({ suggestions, boardData }) => {
             <div className="flex gap-3 overflow-x-scroll scrollbar-hide" style={{ scrollbarWidth: "none" }}>
                 <Column
                     title={"Suggestions"}
-                    column={"todo"}
                     headingColor={boardData?.textColor}
                     cards={cards}
                     setCards={setCards}
@@ -42,24 +44,22 @@ const Board: React.FC<SuggestionCardProps> = ({ suggestions, boardData }) => {
     )
 }
 
-const Column = ({ title, headingColor, column, cards, boardData }: {
+const Column = ({ title, headingColor, cards, boardData }: {
     title: string,  
     headingColor: string,
-    column: any,  
     cards: any[],  
     setCards: Function, 
     boardData: any  
   }) => {
-    const filteredCards = cards.filter((c) => c.column === column)
-
+    console.log(cards)
     return(
         <div className="w-full">
             <div className="mb-3 flex items-center justify-between">
                 <h3 className='font-medium' style={{ color: headingColor }}>{title}</h3>
-                <span className="rounded text-sm" style={{ color: headingColor }}>{filteredCards.length}</span>
+                <span className="rounded text-sm" style={{ color: headingColor }}>{cards.length}</span>
             </div>
             <div className="h-full overflow-y-auto">
-                {filteredCards.map((c) => (
+                {cards.map((c) => (
                     <Card key={c.id} {...c} boardData={boardData} />
                 ))}
             </div>

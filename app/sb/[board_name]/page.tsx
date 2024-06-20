@@ -9,6 +9,8 @@ import { SuggestionCard } from "@/components/suggestions/suggestionscard"
 interface Suggestion {
   title: string;
   description: string;
+  votes: number;
+  comments: string[];
 }
 
 export default function BoardInfo({ params }: { params: { board_name: string } }) {
@@ -65,7 +67,6 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
     const newSuggestion = {
       title: suggestionTitle,
       description: suggestionDescription,
-      column: "todo",
       votes: 0,
       comments: []
     }
@@ -74,7 +75,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
     setsuggestionTitle('')
     setsuggestionDescription('')
   } // TODO: function that will submit the new suggestion to the database
-  
+  console.log(suggestion)
   return (
     <main
       className="flex flex-col items-center min-h-screen w-full"
