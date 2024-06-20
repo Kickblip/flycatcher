@@ -87,7 +87,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
   }
 
   const handleCopyToClipboard = () => {
-    navigator.clipboard.writeText(`https://www.flycatcher.io/sb/${board.urlName}`)
+    navigator.clipboard.writeText(`https://flycatcher.app/sb/${board.urlName}`)
     setCopyIcon("check")
     setTimeout(() => setCopyIcon("copy"), 2000)
   }
@@ -178,7 +178,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
             </div>
           </div>
           <div className="flex items-center justify-between bg-gray-50 p-2 rounded-lg mb-8 w-full">
-            <span>{`https://www.flycatcher.io/sb/${board.urlName}`}</span>
+            <span>{`https://flycatcher.app/sb/${board.urlName}`}</span>
             <div className="flex space-x-2">
               <Link href={`/sb/${board.urlName}`} target="_blank">
                 <button className="p-2 rounded-lg hover:bg-gray-200 transition duration-200">

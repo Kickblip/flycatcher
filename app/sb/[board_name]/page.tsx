@@ -140,7 +140,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
           </div>
           <span className="text-md mt-2">
             Powered by{" "}
-            <Link href="https://flycatcher.io/" className="underline">
+            <Link href="https://flycatcher.app" className="underline" target="_blank">
               Flycatcher
             </Link>
           </span>
