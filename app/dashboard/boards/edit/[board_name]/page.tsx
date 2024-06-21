@@ -2,26 +2,30 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { HexColorPicker } from "react-colorful"
-import Modal from "react-modal"
 import Link from "next/link"
-import { ArrowTopRightOnSquareIcon, DocumentDuplicateIcon, DocumentCheckIcon, TrashIcon } from "@heroicons/react/24/outline"
+import { ArrowTopRightOnSquareIcon, DocumentDuplicateIcon, DocumentCheckIcon, Cog6ToothIcon } from "@heroicons/react/24/outline"
 import LoadingWheel from "@/components/dashboard/LoadingWheel"
 import BoardPreviewPanel from "@/components/dashboard/boards/BoardPreviewPanel"
 import PremadeThemeSquare from "@/components/dashboard/boards/PremadeThemeSquare"
+import DeletionConfirmationModal from "@/components/dashboard/boards/DeletionConfirmationModal"
+import SettingsModal from "@/components/dashboard/boards/SettingsModal"
+import ColorSelectorModal from "@/components/dashboard/boards/ColorSelectorModal"
 import Navbar from "@/components/dashboard/Navbar"
-import { themes, customStyles, getTextColor } from "./utils"
+import { themes, getTextColor } from "./utils"
+import { Board } from "@/types/SuggestionBoard"
 
 export default function BoardInfo({ params }: { params: { board_name: string } }) {
   const [error, setError] = useState<string | null>(null)
   const [board, setBoard] = useState<any>(null) // TODO: Define types
-  const [modalIsOpen, setModalIsOpen] = useState(false)
-  const [deletionConfirmationModalIsOpen, setDeletionConfirmationModalIsOpen] = useState(false)
   const [currentColor, setCurrentColor] = useState("")
   const [currentColorKey, setCurrentColorKey] = useState("")
   const [copyIcon, setCopyIcon] = useState("copy")
   const [headerStatusMessage, setHeaderStatusMessage] = useState<string | null>(null)
   const [headerStatusMessageType, setHeaderStatusMessageType] = useState<"success" | "error" | null>(null)
+
+  const [colorSelectorModalIsOpen, setColorSelectorModalIsOpen] = useState(false)
+  const [deletionConfirmationModalIsOpen, setDeletionConfirmationModalIsOpen] = useState(false)
+  const [settingsModalIsOpen, setSettingsModalIsOpen] = useState(false)
 
   const router = useRouter()
 
@@ -64,14 +68,10 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
     return <LoadingWheel />
   }
 
-  const openModal = (colorKey: string, currentColor: string) => {
+  const openColorSelectorModal = (colorKey: string, currentColor: string) => {
     setCurrentColor(currentColor)
     setCurrentColorKey(colorKey)
-    setModalIsOpen(true)
-  }
-
-  const closeModal = () => {
-    setModalIsOpen(false)
+    setColorSelectorModalIsOpen(true)
   }
 
   const handleColorChange = (color: string) => {
@@ -83,7 +83,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
       ...prevBoard,
       [currentColorKey]: currentColor,
     }))
-    closeModal()
+    setColorSelectorModalIsOpen(false)
   }
 
   const handleCopyToClipboard = () => {
@@ -127,6 +127,8 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
     }
   }
 
+  const handleSettingsSave = (updatedBoard: Board) => {}
+
   const deleteBoard = async () => {
     try {
       const response = await fetch("/api/boards/delete", {
@@ -164,10 +166,10 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
                 </span>
               )}
               <button
-                className="px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition duration-200"
-                onClick={() => setDeletionConfirmationModalIsOpen(true)}
+                className="px-4 py-2 border border-gray-400 text-gray-800 hover:text-gray-900 hover:border-gray-500 rounded-lg transition duration-200"
+                onClick={() => setSettingsModalIsOpen(true)}
               >
-                <TrashIcon className="w-5 h-5" strokeWidth={1.5} />
+                <Cog6ToothIcon className="w-5 h-5" strokeWidth={1.5} />
               </button>
               <Link
                 href={`/dashboard/boards/edit/${params.board_name}/feedback`}
@@ -216,7 +218,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
               <div
                 className="w-full h-36 rounded-lg cursor-pointer transition-opacity duration-300 flex items-center justify-center"
                 style={{ backgroundColor: board.primaryColor }}
-                onClick={() => openModal("primaryColor", board.primaryColor)}
+                onClick={() => openColorSelectorModal("primaryColor", board.primaryColor)}
               >
                 <h3
                   className={`absolute text-lg font-semibold text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${getTextColor(
@@ -231,7 +233,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
               <div
                 className="w-full h-36 rounded-lg cursor-pointer transition-opacity duration-300 flex items-center justify-center"
                 style={{ backgroundColor: board.secondaryColor }}
-                onClick={() => openModal("secondaryColor", board.secondaryColor)}
+                onClick={() => openColorSelectorModal("secondaryColor", board.secondaryColor)}
               >
                 <h3
                   className={`absolute text-lg font-semibold text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${getTextColor(
@@ -246,7 +248,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
               <div
                 className="w-full h-36 rounded-lg cursor-pointer transition-opacity duration-300 flex items-center justify-center"
                 style={{ backgroundColor: board.accentColor }}
-                onClick={() => openModal("accentColor", board.accentColor)}
+                onClick={() => openColorSelectorModal("accentColor", board.accentColor)}
               >
                 <h3
                   className={`absolute text-lg font-semibold text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${getTextColor(
@@ -261,7 +263,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
               <div
                 className="w-full h-36 rounded-lg cursor-pointer transition-opacity duration-300 flex items-center justify-center"
                 style={{ backgroundColor: board.textColor }}
-                onClick={() => openModal("textColor", board.textColor)}
+                onClick={() => openColorSelectorModal("textColor", board.textColor)}
               >
                 <h3
                   className={`absolute text-lg font-semibold text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${getTextColor(
@@ -278,62 +280,25 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
           <BoardPreviewPanel {...board} />
         </div>
       </div>
-      <Modal isOpen={modalIsOpen} onRequestClose={closeModal} style={customStyles} contentLabel="Color Picker Modal">
-        <div className="p-4">
-          <HexColorPicker color={currentColor} onChange={handleColorChange} />
-          <div className="mt-4 flex items-center">
-            <label className="mr-2 text-sm font-bold text-gray-700" htmlFor="hexInput">
-              Hex Code:
-            </label>
-            <input
-              id="hexInput"
-              type="text"
-              value={currentColor}
-              onChange={(e) => handleColorChange(e.target.value)}
-              className="w-24 p-2 border border-gray-300 rounded-lg"
-            />
-          </div>
-          <div className="flex justify-center mt-4">
-            <button
-              onClick={saveColor}
-              className="bg-indigo-500 hover:bg-indigo-600 transition duration-200 text-white px-4 py-2 rounded-lg mx-2"
-            >
-              Save
-            </button>
-            <button
-              onClick={closeModal}
-              className="text-black bg-gray-300 hover:bg-gray-400 transition duration-200 px-4 py-2 rounded-lg mx-2"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </Modal>
-      <Modal
+      <ColorSelectorModal
+        isOpen={colorSelectorModalIsOpen}
+        currentColor={currentColor}
+        onRequestClose={() => setColorSelectorModalIsOpen(false)}
+        onColorChange={handleColorChange}
+        onSave={saveColor}
+      />
+      <SettingsModal
+        isOpen={settingsModalIsOpen}
+        currentBoard={board}
+        onRequestClose={() => setSettingsModalIsOpen(false)}
+        onSettingsSave={handleSettingsSave}
+        setDeletionConfirmationModalIsOpen={setDeletionConfirmationModalIsOpen}
+      />
+      <DeletionConfirmationModal
         isOpen={deletionConfirmationModalIsOpen}
         onRequestClose={() => setDeletionConfirmationModalIsOpen(false)}
-        style={customStyles}
-        contentLabel="Confirmation Modal"
-      >
-        <div className="p-4">
-          <h2 className="text-lg font-bold mb-4">Confirm Deletion</h2>
-          <p className="mb-4">Are you sure you want to delete this board? This action cannot be undone.</p>
-          <div className="flex justify-center mt-4">
-            <button
-              onClick={deleteBoard}
-              className="bg-red-500 hover:bg-red-600 transition duration-200 text-white px-4 py-2 rounded-lg mx-2"
-            >
-              Delete
-            </button>
-            <button
-              onClick={() => setDeletionConfirmationModalIsOpen(false)}
-              className="text-black bg-gray-300 hover:bg-gray-400 transition duration-200 px-4 py-2 rounded-lg mx-2"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </Modal>
+        onConfirmDelete={deleteBoard}
+      />
     </main>
   )
 }

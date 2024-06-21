@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Flycatcher",
-  description: "Feedback suite for early stage founder to easily validate and iterate their ideas.",
+  description: "Feedback suite for early stage founders to easily validate and iterate their ideas.",
 }
 
 export default function RootLayout({
