@@ -18,6 +18,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
   const [submissionError, setSubmissionError] = useState<string | null>(null)
   const [page, setPage] = useState(2)
   const [hideLoadMoreButton, setHideLoadMoreButton] = useState(false)
+  const [hideEmptyMessage, setHideEmptyMessage] = useState(true)
 
   useEffect(() => {
     if (board) document.title = board.name
@@ -39,6 +40,10 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
       }
 
       const data = await response.json()
+
+      if (data.suggestions.length === 0) setHideEmptyMessage(false)
+      if (data.suggestions.length < 10) setHideLoadMoreButton(true)
+
       setBoard(data)
       setLoading(false)
     } catch (error) {
@@ -88,6 +93,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
             suggestions: [...prevBoard.suggestions, data.suggestion],
           }
         })
+        setHideEmptyMessage(true)
       }
 
       setsuggestionTitle("")
@@ -186,6 +192,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
           <PoweredByBadge primaryColor={board?.primaryColor} />
         </div>
         <div className="w-2/3 p-4">
+          {hideEmptyMessage ? null : <p className="text-md font-semibold">No feedback yet</p>}
           {board?.suggestions.map((suggestion: Suggestion, index: number) => (
             <SuggestionCard key={index} suggestion={suggestion} boardData={board} />
           ))}

@@ -40,12 +40,17 @@ export async function POST(request: Request) {
   const newBoard = {
     name,
     urlName: name.toLowerCase().replace(/\s+/g, "-"),
+    logo: "",
+    favicon: "",
     primaryColor: "#ffffff",
     secondaryColor: "#f3f4f6", // gray-100
     accentColor: "#6366f1", // indigo-500
     textColor: "#000000",
     author: userId,
     suggestions: [],
+    settings: {
+      forceSignIn: false,
+    },
   }
 
   console.log("Creating board:", newBoard)

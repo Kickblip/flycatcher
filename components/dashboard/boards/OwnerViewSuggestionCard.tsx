@@ -5,7 +5,7 @@ import { Suggestion, Board } from "@/types/SuggestionBoard"
 import { HandThumbUpIcon, ChatBubbleBottomCenterTextIcon, TrashIcon } from "@heroicons/react/24/outline"
 import Modal from "react-modal"
 
-function OwnerViewSuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boardData: Board }) {
+function OwnerViewSuggestionCard({ suggestion }: { suggestion: Suggestion }) {
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [deletionConfirmationModalIsOpen, setDeletionConfirmationModalIsOpen] = useState(false)
 
@@ -60,36 +60,26 @@ function OwnerViewSuggestionCard({ suggestion, boardData }: { suggestion: Sugges
 
   return (
     <>
-      <section className="w-full mb-4 p-4 rounded-lg cursor-pointer bg-gray-50" onClick={openModal}>
+      <section className="w-full mb-4 p-4 rounded-lg cursor-pointer bg-white shadow" onClick={openModal}>
         <div className="flex justify-between w-full">
-          <div className="flex flex-col break-words max-w-[80%] text-black">
-            <h2 className="text-lg font-bold mb-2">{suggestion.title}</h2>
-            <p className="text-sm">{suggestion.description}</p>
+          <div className="flex flex-col max-w-[80%] text-black break-words">
+            <h2 className="text-lg font-bold">{suggestion.title}</h2>
           </div>
           <div className="flex">
-            <div className="flex flex-col items-center justify-center w-12 h-20 text-black">
-              <div className="flex items-center justify-center w-5 h-5 mb-1">
-                <ChatBubbleBottomCenterTextIcon className="w-5 h-5" strokeWidth={2} />
-              </div>
-              <span className="text-sm">{suggestion.comments.length}</span>
+            <div className="flex items-center justify-center text-black mr-2">
+              <span className="text-sm mr-1">{suggestion.comments.length}</span>
+              <ChatBubbleBottomCenterTextIcon className="w-4 h-4" strokeWidth={1.5} />
             </div>
-
-            <div className="flex flex-col items-center justify-center w-12 h-20 rounded-lg text-black">
-              <div className="flex items-center justify-center w-5 h-5 mb-1">
-                <HandThumbUpIcon className="w-5 h-5" strokeWidth={2} />
-              </div>
-              <span className="text-sm">{suggestion.votes}</span>
+            <div className="flex items-center justify-center rounded-lg text-black">
+              <span className="text-sm mr-1">{suggestion.votes}</span>
+              <HandThumbUpIcon className="w-4 h-4" strokeWidth={1.5} />
             </div>
-            <button
-              className="flex flex-col items-center justify-center w-12 h-20 border-2 border-red-500 rounded-lg text-red-500 ml-2 hover:bg-red-500 hover:text-white transition duration-200"
-              onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
-                event.stopPropagation()
-                setDeletionConfirmationModalIsOpen(true)
-              }}
-            >
-              <TrashIcon className="w-5 h-5" strokeWidth={2} />
-            </button>
           </div>
+        </div>
+        <div className="mt-2">
+          <p className="text-sm text-black break-words">
+            {suggestion.description.length > 150 ? `${suggestion.description.substring(0, 150)}...` : suggestion.description}
+          </p>
         </div>
       </section>
       <Modal
@@ -125,7 +115,7 @@ function OwnerViewSuggestionCard({ suggestion, boardData }: { suggestion: Sugges
       >
         <div className="p-4">
           <h2 className="text-lg font-bold mb-4">Confirm Deletion</h2>
-          <p className="mb-4">Are you sure you want to delete this board? This action cannot be undone.</p>
+          <p className="mb-4">Are you sure you want to delete this suggestion? This action cannot be undone.</p>
           <div className="flex justify-center mt-4">
             <button
               onClick={deleteSuggestion}
@@ -147,3 +137,15 @@ function OwnerViewSuggestionCard({ suggestion, boardData }: { suggestion: Sugges
 }
 
 export default OwnerViewSuggestionCard
+
+{
+  /* <button
+              className="flex flex-col items-center justify-center w-12 h-20 border-2 border-red-500 rounded-lg text-red-500 ml-2 hover:bg-red-500 hover:text-white transition duration-200"
+              onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+                event.stopPropagation()
+                setDeletionConfirmationModalIsOpen(true)
+              }}
+            >
+              <TrashIcon className="w-5 h-5" strokeWidth={2} />
+            </button> */
+}
