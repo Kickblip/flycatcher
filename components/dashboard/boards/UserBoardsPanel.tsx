@@ -57,7 +57,7 @@ function UserBoardsPanel({ boards, setBoards }: { boards: Board[]; setBoards: (b
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {boards.length > 0 ? (
           boards.map((board, index) => (
-            <Link key={index} href={`/dashboard/suggestions/edit/${board.urlName}`}>
+            <Link key={index} href={`/dashboard/boards/edit/${board.urlName}`}>
               <div
                 className="p-4 border rounded-lg transition duration-200"
                 style={{ backgroundColor: board.primaryColor, color: board.textColor }}

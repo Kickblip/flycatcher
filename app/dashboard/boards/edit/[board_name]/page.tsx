@@ -7,8 +7,8 @@ import Modal from "react-modal"
 import Link from "next/link"
 import { ArrowTopRightOnSquareIcon, DocumentDuplicateIcon, DocumentCheckIcon, TrashIcon } from "@heroicons/react/24/outline"
 import LoadingWheel from "@/components/dashboard/LoadingWheel"
-import BoardPreviewPanel from "@/components/dashboard/suggestions/BoardPreviewPanel"
-import PremadeThemeSquare from "@/components/dashboard/suggestions/PremadeThemeSquare"
+import BoardPreviewPanel from "@/components/dashboard/boards/BoardPreviewPanel"
+import PremadeThemeSquare from "@/components/dashboard/boards/PremadeThemeSquare"
 import Navbar from "@/components/dashboard/Navbar"
 import { themes, customStyles, getTextColor } from "./utils"
 
@@ -53,7 +53,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
         <div className="text-red-500">{error}</div>
-        <Link href="/dashboard/suggestions" className="underline">
+        <Link href="/dashboard/boards" className="underline">
           Go back
         </Link>
       </div>
@@ -87,7 +87,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
   }
 
   const handleCopyToClipboard = () => {
-    navigator.clipboard.writeText(`https://flycatcher.app/sb/${board.urlName}`)
+    navigator.clipboard.writeText(`https://flycatcher.app/b/${board.urlName}`)
     setCopyIcon("check")
     setTimeout(() => setCopyIcon("copy"), 2000)
   }
@@ -141,7 +141,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
         throw new Error("Failed to delete board")
       }
 
-      router.push("/dashboard/suggestions")
+      router.push("/dashboard/boards")
     } catch (error) {
       console.error("Error deleting board:", error)
       setHeaderStatusMessage("Save failed")
@@ -170,7 +170,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
                 <TrashIcon className="w-5 h-5" strokeWidth={1.5} />
               </button>
               <Link
-                href={`/dashboard/suggestions/edit/${params.board_name}/feedback`}
+                href={`/dashboard/boards/edit/${params.board_name}/feedback`}
                 className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition duration-200"
               >
                 View Feedback
@@ -184,9 +184,9 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
             </div>
           </div>
           <div className="flex items-center justify-between bg-gray-50 p-2 rounded-lg mb-8 w-full">
-            <span>{`https://flycatcher.app/sb/${board.urlName}`}</span>
+            <span>{`https://flycatcher.app/b/${board.urlName}`}</span>
             <div className="flex space-x-2">
-              <Link href={`/sb/${board.urlName}`} target="_blank">
+              <Link href={`/b/${board.urlName}`} target="_blank">
                 <button className="p-2 rounded-lg hover:bg-gray-200 transition duration-200">
                   <ArrowTopRightOnSquareIcon className="w-5 h-5" />
                 </button>

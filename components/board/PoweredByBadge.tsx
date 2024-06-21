@@ -1,6 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
-import { getTextColor } from "../../app/dashboard/suggestions/edit/[board_name]/utils"
+import { getTextColor } from "../../app/dashboard/boards/edit/[board_name]/utils"
 
 const PoweredByBadge = ({ primaryColor }: { primaryColor: string | undefined }) => {
   let textColor = "text-black"

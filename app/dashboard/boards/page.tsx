@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Navbar from "@/components/dashboard/Navbar"
-import SuggestionsPageLayout from "@/components/dashboard/suggestions/SuggestionsPageLayout"
+import SuggestionsPageLayout from "@/components/dashboard/boards/SuggestionsPageLayout"
 
 export const metadata: Metadata = {
   title: "Suggestion Boards | Flycatcher",

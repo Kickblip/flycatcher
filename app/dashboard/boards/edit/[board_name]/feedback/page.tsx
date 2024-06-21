@@ -4,10 +4,10 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import LoadingWheel from "@/components/dashboard/LoadingWheel"
 import Navbar from "@/components/dashboard/Navbar"
-import OwnerViewSuggestionCard from "@/components/dashboard/suggestions/OwnerViewSuggestionCard"
+import OwnerViewSuggestionCard from "@/components/dashboard/boards/OwnerViewSuggestionCard"
 import { Suggestion } from "@/types/SuggestionBoard"
 
-export default function BoardInfo({ params }: { params: { board_name: string } }) {
+export default function BoardFeedback({ params }: { params: { board_name: string } }) {
   const [error, setError] = useState<string | null>(null)
   const [board, setBoard] = useState<any>(null) // TODO: Define types
 

@@ -2,9 +2,7 @@
 
 import LoadingWheel from "@/components/dashboard/LoadingWheel"
 import { useEffect, useState } from "react"
-import Image from "next/image"
 import tinycolor from "tinycolor2"
-import Link from "next/link"
 import SuggestionCard from "@/components/board/SuggestionCard"
 import { Suggestion, Board } from "@/types/SuggestionBoard"
 import PoweredByBadge from "@/components/board/PoweredByBadge"

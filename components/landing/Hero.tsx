@@ -23,7 +23,7 @@ function Hero() {
 
           <div className="flex flex-col md:flex-row md:space-x-4 text-white justify-center">
             <button className="px-4 py-2 bg-gradient-to-r from-fuchsia-600 to-pink-600 hover:from-fuchsia-700 hover:to-pink-700 font-bold flex items-center justify-center rounded-md">
-              <Link href="/dashboard/home" className="flex items-center justify-center w-full">
+              <Link href="/dashboard/boards" className="flex items-center justify-center w-full">
                 Get Started
                 <ArrowRightIcon className="w-5 h-5 ml-2" strokeWidth={2.5} />
               </Link>

@@ -10,7 +10,7 @@ export default function NotFound404() {
         <h1 className="text-7xl font-bold text-black mb-4">404</h1>
         <p className="text-2xl text-black opacity-70 mb-8">Page Not Found</p>
         <SignedIn>
-          <Link href="/dashboard/home" className="text-blue-500 hover:underline text-lg">
+          <Link href="/dashboard/boards" className="text-blue-500 hover:underline text-lg">
             Back to safety
           </Link>
         </SignedIn>

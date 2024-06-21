@@ -1,31 +1,31 @@
 export const themes = [
   {
-    name: "Theme 1",
+    name: "Default Light",
     primaryColor: "#ffffff",
     secondaryColor: "#f3f4f6",
     accentColor: "#6366f1",
     textColor: "#000000",
   },
   {
-    name: "Theme 2",
+    name: "Default Dark",
     primaryColor: "#0f172a",
     secondaryColor: "#334155",
     accentColor: "#f43f5e",
-    textColor: "#EEEEEE",
+    textColor: "#f9fafb",
   },
   {
     name: "Theme 3",
-    primaryColor: "#753422",
-    secondaryColor: "#B05B3B",
-    accentColor: "#D79771",
-    textColor: "#FFEBC9",
+    primaryColor: "#172554",
+    secondaryColor: "#1e3a8a",
+    accentColor: "#93c5fd",
+    textColor: "#eff6ff",
   },
   {
-    name: "Theme 4",
+    name: "Earth",
     primaryColor: "#F6E6CB",
     secondaryColor: "#E7D4B5",
     accentColor: "#55634b",
-    textColor: "#564d3c",
+    textColor: "#2b2418",
   },
 ]
 
