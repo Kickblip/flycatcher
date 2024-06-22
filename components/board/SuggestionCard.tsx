@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from "react"
-import { Suggestion, Board } from "@/types/SuggestionBoard"
+import { useState, useEffect } from "react"
+import { Suggestion, Board, LocalStorageUser } from "@/types/SuggestionBoard"
 import { HandThumbUpIcon, ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline"
 import tinycolor from "tinycolor2"
 import Modal from "react-modal"
+import { useUser } from "@clerk/nextjs"
 
 function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boardData: Board }) {
   const { primaryColor, secondaryColor, accentColor, textColor } = boardData
@@ -13,6 +14,18 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [newComment, setNewComment] = useState("")
+  const { isLoaded, isSignedIn, user } = useUser()
+  const [isLiked, setIsLiked] = useState(false)
+
+  useEffect(() => {
+    // check if user has already liked the suggestion
+    if (!isSignedIn) {
+      const anonUserData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
+      if (anonUserData.likedSuggestions.includes(suggestion.id)) {
+        setIsLiked(true)
+      }
+    }
+  }, [suggestion])
 
   const openModal = () => setModalIsOpen(true)
   const closeModal = () => setModalIsOpen(false)
@@ -49,20 +62,25 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
     setSubmitting(true)
     setError(null)
 
+    // set author id depending on if user is signed in or not
+    const anonUserData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
+    let author = isSignedIn ? user?.id : anonUserData?.id
+
     try {
       const response = await fetch("/api/pub/boards/add-comment", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ comment: newComment, suggestionId: suggestion.id, board: boardData }),
+        body: JSON.stringify({ comment: newComment, suggestionId: suggestion.id, board: boardData, author: author }),
       })
 
       if (!response.ok) {
         const errorData = await response.json()
         throw new Error(errorData.message || "Failed to add comment")
       } else {
-        suggestion.comments.push(newComment)
+        const data = await response.json()
+        suggestion.comments.push(data.newComment)
       }
 
       setNewComment("")
@@ -75,6 +93,78 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
 
   const handleVoteClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
+
+    setSubmitting(true)
+
+    // set author id depending on if user is signed in or not
+    const anonUserData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
+    let author = isSignedIn ? user?.id : anonUserData?.id
+
+    if (isLiked) {
+      try {
+        const response = await fetch("/api/pub/boards/remove-vote", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ suggestionId: suggestion.id, board: boardData, author: author }),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.message || "Failed to remove vote")
+        } else {
+          const data = await response.json()
+          // remove the first vote from the suggestion (local state doesnt matter)
+          suggestion.votes.pop()
+          setIsLiked(false)
+
+          if (!isSignedIn) {
+            const anonUserData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
+            const index = anonUserData.likedSuggestions.indexOf(suggestion.id)
+            if (index > -1) {
+              anonUserData.likedSuggestions.splice(index, 1)
+            }
+            localStorage.setItem("user", JSON.stringify(anonUserData))
+          }
+        }
+      } catch (error) {
+        setError((error as Error).message || "Failed to remove vote")
+        console.error("Error removing vote:", error)
+      } finally {
+        setSubmitting(false)
+      }
+    } else {
+      try {
+        const response = await fetch("/api/pub/boards/add-vote", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ suggestionId: suggestion.id, board: boardData, author: author }),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.message || "Failed to add vote")
+        } else {
+          const data = await response.json()
+          suggestion.votes.push(data.newVote)
+          setIsLiked(true)
+          // update local storage
+          if (!isSignedIn) {
+            const anonUserData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
+            anonUserData.likedSuggestions.push(suggestion.id)
+            localStorage.setItem("user", JSON.stringify(anonUserData))
+          }
+        }
+      } catch (error) {
+        setError((error as Error).message || "Failed to add vote")
+        console.error("Error adding vote:", error)
+      } finally {
+        setSubmitting(false)
+      }
+    }
   }
 
   return (
@@ -97,15 +187,23 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
               <span className="text-sm">{suggestion.comments.length}</span>
             </div>
             <button
-              className="flex flex-col items-center justify-center w-12 h-20 rounded-lg"
-              style={{ backgroundColor: accentColor, color: secondaryColor }}
+              className={`flex flex-col items-center justify-center w-12 h-20 rounded-lg ${
+                isLiked ? "bg-accent text-secondary" : "border"
+              }`}
+              style={{
+                backgroundColor: isLiked ? accentColor : "transparent",
+                color: isLiked ? secondaryColor : accentColor,
+                borderColor: !isLiked ? accentColor : "transparent",
+                borderWidth: !isLiked ? "1px" : "0px",
+                borderStyle: !isLiked ? "solid" : "none",
+              }}
               onClick={handleVoteClick}
               disabled={submitting}
             >
               <div className="flex items-center justify-center w-5 h-5 mb-1">
                 <HandThumbUpIcon className="w-5 h-5" strokeWidth={2} />
               </div>
-              <span className="text-sm">{suggestion.votes}</span>
+              <span className="text-sm">{suggestion.votes.length}</span>
             </button>
           </div>
         </div>
@@ -122,7 +220,7 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
               suggestion.comments.map((comment, index) => (
                 <div key={index} className="mb-2 p-2 rounded-lg" style={{ backgroundColor: lighterSecondaryColor }}>
                   <p className="text-sm" style={{ color: textColor }}>
-                    {comment}
+                    {comment.content}
                   </p>
                 </div>
               ))

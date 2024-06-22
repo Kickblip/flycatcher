@@ -5,12 +5,12 @@ import { v4 as uuidv4 } from "uuid"
 
 export async function POST(request: Request) {
   const body = await request.json()
-  const { title, description, board } = body
+  const { title, description, board, author } = body
 
-  if (!title || !description || !board) {
+  if (!title || !description || !board || !author) {
     return NextResponse.json(
       {
-        message: "Missing title, description, or board",
+        message: "Missing title, description, board, or author",
       },
       { status: 400 },
     )
@@ -29,11 +29,14 @@ export async function POST(request: Request) {
     // add the new suggestion to the board
     const newSuggestion: Suggestion = {
       id: uuidv4(),
+      author: author,
       title,
       description,
-      votes: 0,
+      votes: [],
       status: "new",
       comments: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
     }
 
     const updatedSuggestions = [...matchingBoard.suggestions, newSuggestion]

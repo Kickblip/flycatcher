@@ -3,10 +3,13 @@ import { ObjectId } from "mongodb"
 export interface Suggestion {
   id: string
   title: string
+  author: string
   description: string
-  votes: number
+  votes: Vote[]
   status: string
-  comments: string[]
+  comments: Comment[]
+  createdAt: Date
+  updatedAt: Date
 }
 
 export interface Board {
@@ -22,8 +25,28 @@ export interface Board {
   author: string
   suggestions: Suggestion[]
   settings: BoardSettings
+  createdAt: Date
 }
 
 export interface BoardSettings {
   forceSignIn: boolean
+}
+
+export interface Comment {
+  author: string
+  isOwnerMessage: boolean
+  content: string
+  createdAt: Date
+}
+
+export interface LocalStorageUser {
+  id: string
+  likedSuggestions: string[]
+  suggestions: Suggestion[]
+  comments: Comment[]
+}
+
+export interface Vote {
+  author: string
+  createdAt: Date
 }

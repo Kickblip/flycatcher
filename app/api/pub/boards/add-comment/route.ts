@@ -4,7 +4,7 @@ import { Suggestion } from "@/types/SuggestionBoard"
 
 export async function POST(request: Request) {
   const body = await request.json()
-  const { comment, suggestionId } = body
+  const { comment, suggestionId, author } = body
   const boardUrlName = body.board.urlName
 
   if (!comment || !suggestionId) {
@@ -14,6 +14,13 @@ export async function POST(request: Request) {
       },
       { status: 400 },
     )
+  }
+
+  const newComment = {
+    author,
+    isOwnerMessage: false,
+    content: comment,
+    createdAt: new Date(),
   }
 
   try {
@@ -31,7 +38,7 @@ export async function POST(request: Request) {
       if (suggestion.id === suggestionId) {
         return {
           ...suggestion,
-          comments: [...suggestion.comments, comment],
+          comments: [...suggestion.comments, newComment],
         }
       }
       return suggestion
@@ -39,7 +46,7 @@ export async function POST(request: Request) {
 
     await collection.updateOne({ urlName: boardUrlName }, { $set: { suggestions: updatedSuggestions } })
 
-    return NextResponse.json({ message: "Comment added successfully" }, { status: 200 })
+    return NextResponse.json({ message: "Comment added successfully", newComment }, { status: 200 })
   } catch (error) {
     let errorMessage = "An unknown error occurred"
     if (error instanceof Error) {
