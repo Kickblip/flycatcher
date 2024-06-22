@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
 import { Suggestion, Comment, Vote } from "@/types/SuggestionBoard"
+import { auth } from "@clerk/nextjs/server"
 
 export async function GET(request: Request, { params }: { params: { board_name: string } }) {
   const urlName = params.board_name
+  const { userId } = auth()
 
   try {
     const client = await clientPromise
@@ -20,18 +22,19 @@ export async function GET(request: Request, { params }: { params: { board_name: 
       )
     }
 
+    // sanitize the board data but keep instances where the userId is the author
     const sanitizedBoard = {
       ...board,
       suggestions: board.suggestions.map((suggestion: Suggestion) => ({
         ...suggestion,
-        author: undefined,
+        author: userId ? (suggestion.author === userId ? suggestion.author : undefined) : undefined,
         votes: suggestion.votes.map((vote: Vote) => ({
           ...vote,
-          author: undefined,
+          author: userId ? (vote.author === userId ? vote.author : undefined) : undefined,
         })),
         comments: suggestion.comments.map((comment: Comment) => ({
           ...comment,
-          author: undefined,
+          author: userId ? (comment.author === userId ? comment.author : undefined) : undefined,
         })),
       })),
     }

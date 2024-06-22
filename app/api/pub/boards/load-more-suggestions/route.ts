@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
+import { Suggestion, Comment, Vote } from "@/types/SuggestionBoard"
+import { auth } from "@clerk/nextjs/server"
 
 export async function POST(request: Request) {
   const body = await request.json()
   const { urlName, page = 2 } = body
   const limit = 10
   const skip = (page - 1) * limit
+  const { userId } = auth()
 
   try {
     const client = await clientPromise
@@ -22,7 +25,20 @@ export async function POST(request: Request) {
       )
     }
 
-    return NextResponse.json(board.suggestions, { status: 200 })
+    const sanitizedSuggestions = board.suggestions.map((suggestion: Suggestion) => ({
+      ...suggestion,
+      author: userId ? (suggestion.author === userId ? suggestion.author : undefined) : undefined,
+      votes: suggestion.votes.map((vote: Vote) => ({
+        ...vote,
+        author: userId ? (vote.author === userId ? vote.author : undefined) : undefined,
+      })),
+      comments: suggestion.comments.map((comment: Comment) => ({
+        ...comment,
+        author: userId ? (comment.author === userId ? comment.author : undefined) : undefined,
+      })),
+    }))
+
+    return NextResponse.json(sanitizedSuggestions, { status: 200 })
   } catch (error) {
     let errorMessage = "An unknown error occurred"
     if (error instanceof Error) {

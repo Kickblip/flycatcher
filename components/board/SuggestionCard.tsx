@@ -24,6 +24,10 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
       if (anonUserData.likedSuggestions.includes(suggestion.id)) {
         setIsLiked(true)
       }
+    } else if (isSignedIn) {
+      if (suggestion.votes.some((vote) => vote.author === user?.id)) {
+        setIsLiked(true)
+      }
     }
   }, [suggestion])
 
@@ -101,6 +105,18 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
     let author = isSignedIn ? user?.id : anonUserData?.id
 
     if (isLiked) {
+      let temp = suggestion.votes.pop()
+      setIsLiked(false)
+      // prechange local state
+      if (!isSignedIn) {
+        const anonUserData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
+        const index = anonUserData.likedSuggestions.indexOf(suggestion.id)
+        if (index > -1) {
+          anonUserData.likedSuggestions.splice(index, 1)
+        }
+        localStorage.setItem("user", JSON.stringify(anonUserData))
+      }
+
       try {
         const response = await fetch("/api/pub/boards/remove-vote", {
           method: "POST",
@@ -115,26 +131,32 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
           throw new Error(errorData.message || "Failed to remove vote")
         } else {
           const data = await response.json()
-          // remove the first vote from the suggestion (local state doesnt matter)
-          suggestion.votes.pop()
-          setIsLiked(false)
-
-          if (!isSignedIn) {
-            const anonUserData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
-            const index = anonUserData.likedSuggestions.indexOf(suggestion.id)
-            if (index > -1) {
-              anonUserData.likedSuggestions.splice(index, 1)
-            }
-            localStorage.setItem("user", JSON.stringify(anonUserData))
-          }
         }
       } catch (error) {
         setError((error as Error).message || "Failed to remove vote")
         console.error("Error removing vote:", error)
+
+        // revert changes
+        if (temp) suggestion.votes.push(temp)
+        setIsLiked(true)
+        if (!isSignedIn) {
+          const anonUserData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
+          anonUserData.likedSuggestions.push(suggestion.id)
+          localStorage.setItem("user", JSON.stringify(anonUserData))
+        }
       } finally {
         setSubmitting(false)
       }
     } else {
+      // prechange local state
+      suggestion.votes.push({ author: "", createdAt: new Date() }) // local state doesnt need a real vote object - just something to keep count accurate
+      setIsLiked(true)
+      if (!isSignedIn) {
+        const anonUserData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
+        anonUserData.likedSuggestions.push(suggestion.id)
+        localStorage.setItem("user", JSON.stringify(anonUserData))
+      }
+
       try {
         const response = await fetch("/api/pub/boards/add-vote", {
           method: "POST",
@@ -147,20 +169,22 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
         if (!response.ok) {
           const errorData = await response.json()
           throw new Error(errorData.message || "Failed to add vote")
-        } else {
-          const data = await response.json()
-          suggestion.votes.push(data.newVote)
-          setIsLiked(true)
-          // update local storage
-          if (!isSignedIn) {
-            const anonUserData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
-            anonUserData.likedSuggestions.push(suggestion.id)
-            localStorage.setItem("user", JSON.stringify(anonUserData))
-          }
         }
       } catch (error) {
         setError((error as Error).message || "Failed to add vote")
         console.error("Error adding vote:", error)
+
+        // revert changes
+        suggestion.votes.pop()
+        setIsLiked(false)
+        if (!isSignedIn) {
+          const anonUserData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
+          const index = anonUserData.likedSuggestions.indexOf(suggestion.id)
+          if (index > -1) {
+            anonUserData.likedSuggestions.splice(index, 1)
+          }
+          localStorage.setItem("user", JSON.stringify(anonUserData))
+        }
       } finally {
         setSubmitting(false)
       }
