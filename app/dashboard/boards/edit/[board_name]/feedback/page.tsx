@@ -4,9 +4,9 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import LoadingWheel from "@/components/dashboard/LoadingWheel"
 import Navbar from "@/components/dashboard/Navbar"
-import OwnerViewSuggestionCard from "@/components/dashboard/boards/OwnerViewSuggestionCard"
 import { Suggestion, Board } from "@/types/SuggestionBoard"
-import { motion } from "framer-motion"
+import KanbanColumn from "@/components/dashboard/boards/KanbanColumn"
+import KanbanNewSuggestionsSection from "@/components/dashboard/boards/KanbanNewSuggestionsSection"
 
 export default function BoardFeedback({ params }: { params: { board_name: string } }) {
   const [error, setError] = useState<string | null>(null)
@@ -77,10 +77,13 @@ export default function BoardFeedback({ params }: { params: { board_name: string
   return (
     <main className="flex flex-col items-center min-h-screen w-full">
       <Navbar />
+      <div className="flex max-w-7xl w-full mx-auto mt-10 mb-6">
+        <KanbanNewSuggestionsSection board={board!} />
+      </div>
       <div className="flex flex-grow gap-4 max-w-7xl w-full mx-auto">
         <KanbanColumn
-          title="New"
-          status="new"
+          title="Planned"
+          status="planned"
           suggestions={board!.suggestions}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
@@ -104,35 +107,5 @@ export default function BoardFeedback({ params }: { params: { board_name: string
         />
       </div>
     </main>
-  )
-}
-
-interface KanbanColumnProps {
-  title: string
-  status: string
-  suggestions: Suggestion[]
-  onDrop: (e: React.DragEvent<HTMLDivElement>, status: string) => void
-  onDragOver: (e: React.DragEvent<HTMLDivElement>) => void
-  onDragStart: (e: React.DragEvent<HTMLDivElement>, suggestion: Suggestion) => void
-}
-
-const KanbanColumn = ({ title, status, suggestions, onDrop, onDragOver, onDragStart }: KanbanColumnProps) => {
-  return (
-    <div className="flex flex-col w-1/3 min-w-[200px]">
-      <h2 className="text-lg font-semibold mb-4">{title}</h2>
-      <div className="flex-grow bg-gray-100 p-4 rounded-lg" onDrop={(e) => onDrop(e, status)} onDragOver={onDragOver}>
-        {suggestions
-          .filter((suggestion: Suggestion) => suggestion.status === status)
-          .map((suggestion: Suggestion, index: number) => (
-            <motion.div
-              key={index}
-              draggable
-              onDragStart={(e) => onDragStart(e as unknown as React.DragEvent<HTMLDivElement>, suggestion)}
-            >
-              <OwnerViewSuggestionCard suggestion={suggestion} />
-            </motion.div>
-          ))}
-      </div>
-    </div>
   )
 }

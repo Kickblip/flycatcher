@@ -1,9 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { Suggestion, Board } from "@/types/SuggestionBoard"
-import { HandThumbUpIcon, ChatBubbleBottomCenterTextIcon, TrashIcon } from "@heroicons/react/24/outline"
+import { Suggestion } from "@/types/SuggestionBoard"
+import { HandThumbUpIcon, ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline"
 import Modal from "react-modal"
+import SuggestionAdditionalInfoModal from "./SuggestionAdditionalInfoModal"
 
 function OwnerViewSuggestionCard({ suggestion }: { suggestion: Suggestion }) {
   const [modalIsOpen, setModalIsOpen] = useState(false)
@@ -11,26 +12,6 @@ function OwnerViewSuggestionCard({ suggestion }: { suggestion: Suggestion }) {
 
   const openModal = () => setModalIsOpen(true)
   const closeModal = () => setModalIsOpen(false)
-  const suggestionModalStyles = {
-    content: {
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      marginRight: "-50%",
-      transform: "translate(-50%, -50%)",
-      backgroundColor: "gray-50",
-      color: "black",
-      padding: "20px",
-      borderRadius: "15px",
-      border: "0px",
-      width: "45%",
-      maxHeight: "90vh",
-    },
-    overlay: {
-      backgroundColor: "rgba(0, 0, 0, 0.75)",
-    },
-  }
 
   const deletionConfirmationModalStyles = {
     content: {
@@ -71,7 +52,7 @@ function OwnerViewSuggestionCard({ suggestion }: { suggestion: Suggestion }) {
               <ChatBubbleBottomCenterTextIcon className="w-4 h-4" strokeWidth={1.5} />
             </div>
             <div className="flex items-center justify-center rounded-lg text-black">
-              <span className="text-sm mr-1">{suggestion.votes}</span>
+              <span className="text-sm mr-1">{suggestion.votes.length}</span>
               <HandThumbUpIcon className="w-4 h-4" strokeWidth={1.5} />
             </div>
           </div>
@@ -82,31 +63,7 @@ function OwnerViewSuggestionCard({ suggestion }: { suggestion: Suggestion }) {
           </p>
         </div>
       </section>
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        style={suggestionModalStyles}
-        contentLabel="Suggestion Comments Modal"
-      >
-        <div className="p-4 w-full">
-          <div className="mb-4 w-full break-words">
-            <h2 className="text-2xl font-bold mb-4">{suggestion.title}</h2>
-            <p className="text-lg">{suggestion.description}</p>
-          </div>
-          <div className="mb-12 mt-6">
-            <h3 className="text-xl font-bold">Comments</h3>
-            {suggestion.comments.length > 0 ? (
-              suggestion.comments.map((comment, index) => (
-                <div key={index} className="mb-2 p-2 rounded-lg bg-gray-50">
-                  <p className="text-sm text-black">{comment}</p>
-                </div>
-              ))
-            ) : (
-              <p className="text-sm text-black">No comments yet.</p>
-            )}
-          </div>
-        </div>
-      </Modal>
+      <SuggestionAdditionalInfoModal isOpen={modalIsOpen} onRequestClose={closeModal} suggestion={suggestion} />
       <Modal
         isOpen={deletionConfirmationModalIsOpen}
         onRequestClose={() => setDeletionConfirmationModalIsOpen(false)}
