@@ -13,7 +13,7 @@ import {
 import Modal from "react-modal"
 import SuggestionAdditionalInfoModal from "./SuggestionAdditionalInfoModal"
 import DeletionConfirmationModal from "./DeletionConfirmationModal"
-import { ToastContainer, toast } from "react-toastify"
+import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 
 const windowModalStyles = {
@@ -141,7 +141,6 @@ const KanbanNewSuggestionsSection = ({ board, setBoard }: { board: Board; setBoa
   }
   return (
     <>
-      <ToastContainer />
       <div className="flex justify-between px-4 rounded-lg text-indigo-500 cursor-pointer w-full">
         <div
           className={`${newSuggestions.length === 0 ? "hidden" : ""} flex items-center`}

@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Board } from "@/types/SuggestionBoard"
-import { ToastContainer, toast } from "react-toastify"
+import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 
 function NewBoardPanel({ boards, setBoards }: { boards: Board[]; setBoards: (boards: Board[]) => void }) {
@@ -49,7 +49,6 @@ function NewBoardPanel({ boards, setBoards }: { boards: Board[]; setBoards: (boa
 
   return (
     <div className="flex flex-col p-4 space-y-8 bg-gray-50 h-full rounded-lg">
-      <ToastContainer />
       <h2 className="text-xl font-bold opacity-80">Create a new feedback board</h2>
       <div className="flex flex-col">
         <input

@@ -3,7 +3,7 @@ import { Board, Suggestion } from "@/types/SuggestionBoard"
 import { ArchiveBoxIcon, TrashIcon } from "@heroicons/react/24/outline"
 import { useState } from "react"
 import DeletionConfirmationModal from "./DeletionConfirmationModal"
-import { ToastContainer, toast } from "react-toastify"
+import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 
 const suggestionAdditionalInfoModalStyles = {
@@ -104,7 +104,6 @@ const SuggestionAdditionalInfoModal = ({
 
   return (
     <>
-      <ToastContainer />
       <Modal
         isOpen={isOpen}
         onRequestClose={onRequestClose}

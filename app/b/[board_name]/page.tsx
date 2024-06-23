@@ -8,7 +8,7 @@ import { Suggestion, Board, LocalStorageUser } from "@/types/SuggestionBoard"
 import PoweredByBadge from "@/components/board/PoweredByBadge"
 import { v4 as uuidv4 } from "uuid"
 import { useUser } from "@clerk/nextjs"
-import { ToastContainer, toast } from "react-toastify"
+import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 
 export default function BoardInfo({ params }: { params: { board_name: string } }) {
@@ -142,7 +142,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
       setsuggestionDescription("")
       toast.success("Feedback posted.")
     } catch (error) {
-      toast.error("Failed to post feedback." + (error as Error).message)
+      toast.error("Failed to post feedback.")
     } finally {
       setSubmitting(false)
     }
@@ -190,7 +190,6 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
       className="flex flex-col items-center min-h-screen w-full"
       style={{ backgroundColor: board?.primaryColor || "#fff", color: board?.textColor || "#000" }}
     >
-      <ToastContainer />
       <div className="w-full max-w-7xl mx-auto p-4 flex">
         <div className="w-1/3 p-4">
           <div>

@@ -6,7 +6,7 @@ import { HandThumbUpIcon, ChatBubbleBottomCenterTextIcon } from "@heroicons/reac
 import tinycolor from "tinycolor2"
 import Modal from "react-modal"
 import { useUser } from "@clerk/nextjs"
-import { ToastContainer, toast } from "react-toastify"
+import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 
 function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boardData: Board }) {
@@ -198,7 +198,6 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
 
   return (
     <>
-      <ToastContainer />
       <section
         className="w-full mb-4 p-4 rounded-lg cursor-pointer"
         style={{ backgroundColor: secondaryColor }}

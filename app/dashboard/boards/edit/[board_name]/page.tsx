@@ -13,7 +13,7 @@ import ColorSelectorModal from "@/components/dashboard/boards/ColorSelectorModal
 import Navbar from "@/components/dashboard/Navbar"
 import { themes, getTextColor } from "./utils"
 import { Board } from "@/types/SuggestionBoard"
-import { ToastContainer, toast } from "react-toastify"
+import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 
 export default function BoardInfo({ params }: { params: { board_name: string } }) {
@@ -147,7 +147,6 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
   return (
     <main className="flex flex-col items-center min-h-screen w-full">
       <Navbar />
-      <ToastContainer />
       <div className="w-full max-w-7xl mx-auto p-4 flex">
         <div className="flex flex-col w-1/2 p-4">
           <div className="flex justify-between w-full mb-8">
