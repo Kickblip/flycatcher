@@ -78,7 +78,7 @@ export default function BoardFeedback({ params }: { params: { board_name: string
     <main className="flex flex-col items-center min-h-screen w-full">
       <Navbar />
       <div className="flex max-w-7xl w-full mx-auto mt-10 mb-6">
-        <KanbanNewSuggestionsSection board={board!} />
+        <KanbanNewSuggestionsSection board={board!} setBoard={setBoard} />
       </div>
       <div className="flex flex-grow gap-4 max-w-7xl w-full mx-auto">
         <KanbanColumn
@@ -88,6 +88,8 @@ export default function BoardFeedback({ params }: { params: { board_name: string
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragStart={handleDragStart}
+          board={board!}
+          setBoard={setBoard}
         />
         <KanbanColumn
           title="Working"
@@ -96,6 +98,8 @@ export default function BoardFeedback({ params }: { params: { board_name: string
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragStart={handleDragStart}
+          board={board!}
+          setBoard={setBoard}
         />
         <KanbanColumn
           title="Shipped"
@@ -104,6 +108,8 @@ export default function BoardFeedback({ params }: { params: { board_name: string
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragStart={handleDragStart}
+          board={board!}
+          setBoard={setBoard}
         />
       </div>
     </main>

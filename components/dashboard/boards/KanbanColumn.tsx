@@ -1,6 +1,6 @@
 import OwnerViewSuggestionCard from "@/components/dashboard/boards/OwnerViewSuggestionCard"
 import { motion } from "framer-motion"
-import { Suggestion } from "@/types/SuggestionBoard"
+import { Board, Suggestion } from "@/types/SuggestionBoard"
 
 interface KanbanColumnProps {
   title: string
@@ -9,9 +9,11 @@ interface KanbanColumnProps {
   onDrop: (e: React.DragEvent<HTMLDivElement>, status: string) => void
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void
   onDragStart: (e: React.DragEvent<HTMLDivElement>, suggestion: Suggestion) => void
+  board: Board
+  setBoard: (board: any) => void
 }
 
-const KanbanColumn = ({ title, status, suggestions, onDrop, onDragOver, onDragStart }: KanbanColumnProps) => {
+const KanbanColumn = ({ title, status, suggestions, onDrop, onDragOver, onDragStart, board, setBoard }: KanbanColumnProps) => {
   return (
     <div className="flex flex-col w-1/3 min-w-[200px]">
       <h2 className="text-lg font-semibold mb-4">{title}</h2>
@@ -24,7 +26,7 @@ const KanbanColumn = ({ title, status, suggestions, onDrop, onDragOver, onDragSt
               draggable
               onDragStart={(e) => onDragStart(e as unknown as React.DragEvent<HTMLDivElement>, suggestion)}
             >
-              <OwnerViewSuggestionCard suggestion={suggestion} />
+              <OwnerViewSuggestionCard suggestion={suggestion} board={board} setBoard={setBoard} />
             </motion.div>
           ))}
       </div>

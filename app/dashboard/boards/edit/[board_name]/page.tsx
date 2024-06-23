@@ -298,6 +298,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
         isOpen={deletionConfirmationModalIsOpen}
         onRequestClose={() => setDeletionConfirmationModalIsOpen(false)}
         onConfirmDelete={deleteBoard}
+        contentMessage="Are you sure you want to delete this board? This action cannot be undone."
       />
     </main>
   )

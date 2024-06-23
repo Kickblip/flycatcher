@@ -4,9 +4,15 @@ type DeletionConfirmationModalProps = {
   isOpen: boolean
   onRequestClose: () => void
   onConfirmDelete: () => void
+  contentMessage: string
 }
 
-const DeletionConfirmationModal = ({ isOpen, onRequestClose, onConfirmDelete }: DeletionConfirmationModalProps) => {
+const DeletionConfirmationModal = ({
+  isOpen,
+  onRequestClose,
+  onConfirmDelete,
+  contentMessage,
+}: DeletionConfirmationModalProps) => {
   const customStyles = {
     content: {
       top: "50%",
@@ -15,6 +21,7 @@ const DeletionConfirmationModal = ({ isOpen, onRequestClose, onConfirmDelete }: 
       bottom: "auto",
       marginRight: "-50%",
       transform: "translate(-50%, -50%)",
+      borderRadius: "15px",
     },
   }
 
@@ -22,7 +29,7 @@ const DeletionConfirmationModal = ({ isOpen, onRequestClose, onConfirmDelete }: 
     <Modal isOpen={isOpen} onRequestClose={onRequestClose} style={customStyles} contentLabel="Confirmation Modal">
       <div className="p-4">
         <h2 className="text-lg font-bold mb-4">Confirm Deletion</h2>
-        <p className="mb-4">Are you sure you want to delete this board? This action cannot be undone.</p>
+        <p className="mb-4">{contentMessage}</p>
         <div className="flex justify-center mt-4">
           <button
             onClick={onConfirmDelete}

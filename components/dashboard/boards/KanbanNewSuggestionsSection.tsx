@@ -12,6 +12,7 @@ import {
 } from "@heroicons/react/24/outline"
 import Modal from "react-modal"
 import SuggestionAdditionalInfoModal from "./SuggestionAdditionalInfoModal"
+import DeletionConfirmationModal from "./DeletionConfirmationModal"
 
 const newSuggestionWindowModalStyles = {
   content: {
@@ -34,9 +35,10 @@ const newSuggestionWindowModalStyles = {
   },
 }
 
-const KanbanNewSuggestionsSection = ({ board }: { board: Board }) => {
+const KanbanNewSuggestionsSection = ({ board, setBoard }: { board: Board; setBoard: (board: any) => void }) => {
   const [newSuggestionWindowModalIsOpen, setNewSuggestionWindowModalIsOpen] = useState(false)
   const [suggestionAdditionalInfoModalIsOpen, setSuggestionAdditionalInfoModalIsOpen] = useState(false)
+  const [deletionConfirmationModalIsOpen, setDeletionConfirmationModalIsOpen] = useState(false)
   const [newSuggestions, setNewSuggestions] = useState<Suggestion[]>([])
   const [selectedSuggestion, setSelectedSuggestion] = useState<Suggestion | null>(null)
   const [loading, setLoading] = useState(false)
@@ -44,7 +46,17 @@ const KanbanNewSuggestionsSection = ({ board }: { board: Board }) => {
   useEffect(() => {
     const filteredSuggestions = board.suggestions.filter((suggestion) => suggestion.status === "new")
     setNewSuggestions(filteredSuggestions)
+
+    if (filteredSuggestions.length === 0) {
+      setNewSuggestionWindowModalIsOpen(false)
+    }
   }, [board.suggestions])
+
+  useEffect(() => {
+    if (newSuggestions.length === 0) {
+      setNewSuggestionWindowModalIsOpen(false)
+    }
+  }, [newSuggestions])
 
   const openSuggestionAdditionalInfoModal = (suggestion: Suggestion) => {
     return () => {
@@ -73,9 +85,40 @@ const KanbanNewSuggestionsSection = ({ board }: { board: Board }) => {
         }
 
         setNewSuggestions((prevSuggestions) => prevSuggestions.filter((suggestion) => suggestion.id !== suggestionId))
-        if (newSuggestions.length === 0) setNewSuggestionWindowModalIsOpen(false)
+        setBoard((prevBoard: Board) => ({
+          ...prevBoard,
+          suggestions: prevBoard.suggestions.map((s) => (s.id === suggestionId ? { ...s, status } : s)),
+        }))
       } catch (error) {
         console.error("Error updating suggestion status:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+  }
+
+  const handleDeleteSuggestion = (suggestionId: string) => {
+    return async () => {
+      setLoading(true)
+      try {
+        const response = await fetch(`/api/boards/delete-suggestion`, {
+          method: "POST",
+          body: JSON.stringify({ suggestionId, boardName: board.urlName }),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.message || "Board does not exist")
+        }
+
+        setNewSuggestions((prevSuggestions) => prevSuggestions.filter((suggestion) => suggestion.id !== suggestionId))
+        setBoard((prevBoard: Board) => ({
+          ...prevBoard,
+          suggestions: prevBoard.suggestions.filter((s) => s.id !== suggestionId),
+        }))
+        setDeletionConfirmationModalIsOpen(false)
+      } catch (error) {
+        console.error("Error deleting suggestion:", error)
       } finally {
         setLoading(false)
       }
@@ -97,6 +140,8 @@ const KanbanNewSuggestionsSection = ({ board }: { board: Board }) => {
         isOpen={suggestionAdditionalInfoModalIsOpen}
         onRequestClose={closeSuggestionAdditionalInfoModal}
         suggestion={selectedSuggestion as Suggestion}
+        board={board}
+        setBoard={setBoard}
       />
       <Modal
         isOpen={newSuggestionWindowModalIsOpen}
@@ -131,6 +176,10 @@ const KanbanNewSuggestionsSection = ({ board }: { board: Board }) => {
                   <button
                     className="border border-indigo-500 text-indigo-500 hover:bg-indigo-500 hover:text-white transition duration-200 w-12 h-12 rounded-lg flex items-center justify-center"
                     title="Delete the suggestion"
+                    onClick={() => {
+                      setSelectedSuggestion(suggestion)
+                      setDeletionConfirmationModalIsOpen(true)
+                    }}
                     disabled={loading}
                   >
                     <TrashIcon className="w-5 h-5" />
@@ -157,6 +206,12 @@ const KanbanNewSuggestionsSection = ({ board }: { board: Board }) => {
           ))}
         </div>
       </Modal>
+      <DeletionConfirmationModal
+        isOpen={deletionConfirmationModalIsOpen}
+        onRequestClose={() => setDeletionConfirmationModalIsOpen(false)}
+        onConfirmDelete={selectedSuggestion ? handleDeleteSuggestion(selectedSuggestion!.id) : () => {}}
+        contentMessage="Are you sure you want to delete this suggestion? This action cannot be undone."
+      />
     </>
   )
 }

@@ -1,43 +1,23 @@
 "use client"
 
 import { useState } from "react"
-import { Suggestion } from "@/types/SuggestionBoard"
+import { Suggestion, Board } from "@/types/SuggestionBoard"
 import { HandThumbUpIcon, ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline"
-import Modal from "react-modal"
 import SuggestionAdditionalInfoModal from "./SuggestionAdditionalInfoModal"
 
-function OwnerViewSuggestionCard({ suggestion }: { suggestion: Suggestion }) {
+function OwnerViewSuggestionCard({
+  suggestion,
+  board,
+  setBoard,
+}: {
+  suggestion: Suggestion
+  board: Board
+  setBoard: (board: any) => void
+}) {
   const [modalIsOpen, setModalIsOpen] = useState(false)
-  const [deletionConfirmationModalIsOpen, setDeletionConfirmationModalIsOpen] = useState(false)
 
   const openModal = () => setModalIsOpen(true)
   const closeModal = () => setModalIsOpen(false)
-
-  const deletionConfirmationModalStyles = {
-    content: {
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      marginRight: "-50%",
-      transform: "translate(-50%, -50%)",
-      backgroundColor: "gray-50",
-      color: "black",
-      padding: "20px",
-      borderRadius: "15px",
-      border: "0px",
-      width: "45%",
-      maxHeight: "90vh",
-    },
-    overlay: {
-      backgroundColor: "rgba(0, 0, 0, 0.75)",
-    },
-  }
-
-  const deleteSuggestion = async () => {
-    console.log("Deleting suggestion")
-    setDeletionConfirmationModalIsOpen(false)
-  }
 
   return (
     <>
@@ -63,46 +43,15 @@ function OwnerViewSuggestionCard({ suggestion }: { suggestion: Suggestion }) {
           </p>
         </div>
       </section>
-      <SuggestionAdditionalInfoModal isOpen={modalIsOpen} onRequestClose={closeModal} suggestion={suggestion} />
-      <Modal
-        isOpen={deletionConfirmationModalIsOpen}
-        onRequestClose={() => setDeletionConfirmationModalIsOpen(false)}
-        style={deletionConfirmationModalStyles}
-        contentLabel="Confirmation Modal"
-      >
-        <div className="p-4">
-          <h2 className="text-lg font-bold mb-4">Confirm Deletion</h2>
-          <p className="mb-4">Are you sure you want to delete this suggestion? This action cannot be undone.</p>
-          <div className="flex justify-center mt-4">
-            <button
-              onClick={deleteSuggestion}
-              className="bg-red-500 hover:bg-red-600 transition duration-200 text-white px-4 py-2 rounded-lg mx-2"
-            >
-              Delete
-            </button>
-            <button
-              onClick={() => setDeletionConfirmationModalIsOpen(false)}
-              className="text-black bg-gray-300 hover:bg-gray-400 transition duration-200 px-4 py-2 rounded-lg mx-2"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </Modal>
+      <SuggestionAdditionalInfoModal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        suggestion={suggestion}
+        board={board}
+        setBoard={setBoard}
+      />
     </>
   )
 }
 
 export default OwnerViewSuggestionCard
-
-{
-  /* <button
-              className="flex flex-col items-center justify-center w-12 h-20 border-2 border-red-500 rounded-lg text-red-500 ml-2 hover:bg-red-500 hover:text-white transition duration-200"
-              onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
-                event.stopPropagation()
-                setDeletionConfirmationModalIsOpen(true)
-              }}
-            >
-              <TrashIcon className="w-5 h-5" strokeWidth={2} />
-            </button> */
-}
