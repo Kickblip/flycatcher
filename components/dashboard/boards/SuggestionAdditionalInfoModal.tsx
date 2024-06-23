@@ -3,6 +3,8 @@ import { Board, Suggestion } from "@/types/SuggestionBoard"
 import { ArchiveBoxIcon, TrashIcon } from "@heroicons/react/24/outline"
 import { useState } from "react"
 import DeletionConfirmationModal from "./DeletionConfirmationModal"
+import { ToastContainer, toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 
 const suggestionAdditionalInfoModalStyles = {
   content: {
@@ -65,6 +67,7 @@ const SuggestionAdditionalInfoModal = ({
         }))
       } catch (error) {
         console.error("Error updating suggestion status:", error)
+        toast.error("Failed to update suggestion status.")
       } finally {
         setLoading(false)
       }
@@ -92,6 +95,7 @@ const SuggestionAdditionalInfoModal = ({
         setDeletionConfirmationModalIsOpen(false)
       } catch (error) {
         console.error("Error deleting suggestion:", error)
+        toast.error("Failed to delete suggestion.")
       } finally {
         setLoading(false)
       }
@@ -100,6 +104,7 @@ const SuggestionAdditionalInfoModal = ({
 
   return (
     <>
+      <ToastContainer />
       <Modal
         isOpen={isOpen}
         onRequestClose={onRequestClose}

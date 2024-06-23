@@ -8,6 +8,8 @@ import { Suggestion, Board, LocalStorageUser } from "@/types/SuggestionBoard"
 import PoweredByBadge from "@/components/board/PoweredByBadge"
 import { v4 as uuidv4 } from "uuid"
 import { useUser } from "@clerk/nextjs"
+import { ToastContainer, toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 
 export default function BoardInfo({ params }: { params: { board_name: string } }) {
   const [error, setError] = useState<string | null>(null)
@@ -17,7 +19,6 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
   const [suggestionDescription, setsuggestionDescription] = useState("")
   const lighterSecondaryColor = board?.secondaryColor ? tinycolor(board.secondaryColor).lighten(20).toString() : "#f9fafb" // #f9fafb is tailwind gray-50
   const [submitting, setSubmitting] = useState(false)
-  const [submissionError, setSubmissionError] = useState<string | null>(null)
   const [page, setPage] = useState(2)
   const [hideLoadMoreButton, setHideLoadMoreButton] = useState(false)
   const [hideEmptyMessage, setHideEmptyMessage] = useState(true)
@@ -107,7 +108,6 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
     let author = isSignedIn ? user?.id : anonUserData?.id
 
     setSubmitting(true)
-    setSubmissionError(null)
 
     try {
       const response = await fetch("/api/pub/boards/add-suggestion", {
@@ -140,8 +140,9 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
 
       setsuggestionTitle("")
       setsuggestionDescription("")
+      toast.success("Feedback posted.")
     } catch (error) {
-      setSubmissionError((error as Error).message || "Failed to create board")
+      toast.error("Failed to post feedback." + (error as Error).message)
     } finally {
       setSubmitting(false)
     }
@@ -178,6 +179,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
       }
     } catch (error) {
       console.error("Error loading more suggestions:", error)
+      toast.error("Failed to load more suggestions")
     } finally {
       setSubmitting(false)
     }
@@ -188,6 +190,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
       className="flex flex-col items-center min-h-screen w-full"
       style={{ backgroundColor: board?.primaryColor || "#fff", color: board?.textColor || "#000" }}
     >
+      <ToastContainer />
       <div className="w-full max-w-7xl mx-auto p-4 flex">
         <div className="w-1/3 p-4">
           <div>

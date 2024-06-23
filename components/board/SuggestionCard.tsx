@@ -6,6 +6,8 @@ import { HandThumbUpIcon, ChatBubbleBottomCenterTextIcon } from "@heroicons/reac
 import tinycolor from "tinycolor2"
 import Modal from "react-modal"
 import { useUser } from "@clerk/nextjs"
+import { ToastContainer, toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 
 function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boardData: Board }) {
   const { primaryColor, secondaryColor, accentColor, textColor } = boardData
@@ -64,7 +66,6 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
     }
 
     setSubmitting(true)
-    setError(null)
 
     // set author id depending on if user is signed in or not
     const anonUserData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
@@ -85,11 +86,13 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
       } else {
         const data = await response.json()
         suggestion.comments.push(data.newComment)
+        toast.success("Comment added.")
       }
 
       setNewComment("")
     } catch (error) {
       setError((error as Error).message || "Failed to create board")
+      toast.error("Failed to add comment.")
     } finally {
       setSubmitting(false)
     }
@@ -135,6 +138,7 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
       } catch (error) {
         setError((error as Error).message || "Failed to remove vote")
         console.error("Error removing vote:", error)
+        toast.error("Failed to remove vote.")
 
         // revert changes
         if (temp) suggestion.votes.push(temp)
@@ -175,6 +179,7 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
         console.error("Error adding vote:", error)
 
         // revert changes
+        toast.error("Failed to add vote.")
         suggestion.votes.pop()
         setIsLiked(false)
         if (!isSignedIn) {
@@ -193,6 +198,7 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
 
   return (
     <>
+      <ToastContainer />
       <section
         className="w-full mb-4 p-4 rounded-lg cursor-pointer"
         style={{ backgroundColor: secondaryColor }}

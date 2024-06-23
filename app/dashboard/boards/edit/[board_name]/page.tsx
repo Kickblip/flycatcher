@@ -13,6 +13,8 @@ import ColorSelectorModal from "@/components/dashboard/boards/ColorSelectorModal
 import Navbar from "@/components/dashboard/Navbar"
 import { themes, getTextColor } from "./utils"
 import { Board } from "@/types/SuggestionBoard"
+import { ToastContainer, toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 
 export default function BoardInfo({ params }: { params: { board_name: string } }) {
   const [error, setError] = useState<string | null>(null)
@@ -20,8 +22,6 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
   const [currentColor, setCurrentColor] = useState("")
   const [currentColorKey, setCurrentColorKey] = useState("")
   const [copyIcon, setCopyIcon] = useState("copy")
-  const [headerStatusMessage, setHeaderStatusMessage] = useState<string | null>(null)
-  const [headerStatusMessageType, setHeaderStatusMessageType] = useState<"success" | "error" | null>(null)
 
   const [colorSelectorModalIsOpen, setColorSelectorModalIsOpen] = useState(false)
   const [deletionConfirmationModalIsOpen, setDeletionConfirmationModalIsOpen] = useState(false)
@@ -116,14 +116,9 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
       if (!response.ok) {
         throw new Error("Failed to save board")
       }
-      setHeaderStatusMessage("Saved board")
-      setHeaderStatusMessageType("success")
-      setTimeout(() => setHeaderStatusMessage(""), 2000)
+      toast.success("Board saved.")
     } catch (error) {
-      console.error("Error saving board:", error)
-      setHeaderStatusMessage("Save failed")
-      setHeaderStatusMessageType("error")
-      setTimeout(() => setHeaderStatusMessage(""), 2000)
+      toast.error("Failed to save board.")
     }
   }
 
@@ -145,26 +140,19 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
 
       router.push("/dashboard/boards")
     } catch (error) {
-      console.error("Error deleting board:", error)
-      setHeaderStatusMessage("Save failed")
-      setHeaderStatusMessageType("error")
-      setTimeout(() => setHeaderStatusMessage(""), 2000)
+      toast.error("Failed to delete board")
     }
   }
 
   return (
     <main className="flex flex-col items-center min-h-screen w-full">
       <Navbar />
+      <ToastContainer />
       <div className="w-full max-w-7xl mx-auto p-4 flex">
         <div className="flex flex-col w-1/2 p-4">
           <div className="flex justify-between w-full mb-8">
             <h2 className="text-2xl font-bold">{board.name}</h2>
             <div className="flex items-center space-x-2">
-              {headerStatusMessage && (
-                <span className={`py-2 text-xs ${headerStatusMessageType === "success" ? "text-gray-500" : "text-red-500"}`}>
-                  {headerStatusMessage}
-                </span>
-              )}
               <button
                 className="px-4 py-2 border border-gray-400 text-gray-800 hover:text-gray-900 hover:border-gray-500 rounded-lg transition duration-200"
                 onClick={() => setSettingsModalIsOpen(true)}
