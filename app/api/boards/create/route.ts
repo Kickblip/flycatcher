@@ -37,6 +37,15 @@ export async function POST(request: Request) {
     )
   }
 
+  if (name.length > 60) {
+    return NextResponse.json(
+      {
+        message: "Board name must be less than 60 characters",
+      },
+      { status: 400 },
+    )
+  }
+
   const newBoard = {
     name,
     urlName: name.toLowerCase().replace(/\s+/g, "-"),

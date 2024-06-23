@@ -150,7 +150,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
       <div className="w-full max-w-7xl mx-auto p-4 flex">
         <div className="flex flex-col w-1/2 p-4">
           <div className="flex justify-between w-full mb-8">
-            <h2 className="text-2xl font-bold">{board.name}</h2>
+            <h2 className="text-2xl font-bold max-w-[55%] break-words">{board.name}</h2>
             <div className="flex items-center space-x-2">
               <button
                 className="px-4 py-2 border border-gray-400 text-gray-800 hover:text-gray-900 hover:border-gray-500 rounded-lg transition duration-200"
@@ -162,19 +162,19 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
                 href={`/dashboard/boards/edit/${params.board_name}/feedback`}
                 className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition duration-200"
               >
-                View Feedback
+                Feedback
               </Link>
               <button
                 className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition duration-200"
                 onClick={saveBoardChanges}
               >
-                Save Board
+                Save
               </button>
             </div>
           </div>
           <div className="flex items-center justify-between bg-gray-50 p-2 rounded-lg mb-8 w-full">
-            <span>{`https://flycatcher.app/b/${board.urlName}`}</span>
-            <div className="flex space-x-2">
+            <span className="truncate">{`https://flycatcher.app/b/${board.urlName}`}</span>
+            <div className="flex space-x-2 flex-shrink-0">
               <Link href={`/b/${board.urlName}`} target="_blank">
                 <button className="p-2 rounded-lg hover:bg-gray-200 transition duration-200">
                   <ArrowTopRightOnSquareIcon className="w-5 h-5" />

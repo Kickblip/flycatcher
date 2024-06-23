@@ -16,6 +16,15 @@ export async function POST(request: Request) {
     )
   }
 
+  if (title.length > 250 || description.length > 500) {
+    return NextResponse.json(
+      {
+        message: "Title must be less than 250 characters and description must be less than 500 characters",
+      },
+      { status: 400 },
+    )
+  }
+
   try {
     const client = await clientPromise
     const collection = client.db("Main").collection("boards")

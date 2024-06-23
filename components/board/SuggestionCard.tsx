@@ -65,6 +65,11 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
       return
     }
 
+    if (newComment.length > 350) {
+      toast.error("Comment must be less than 350 characters")
+      return
+    }
+
     setSubmitting(true)
 
     // set author id depending on if user is signed in or not

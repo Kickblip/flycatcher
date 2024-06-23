@@ -16,6 +16,15 @@ export async function POST(request: Request) {
     )
   }
 
+  if (comment.length > 350) {
+    return NextResponse.json(
+      {
+        message: "Comment must be less than 350 characters",
+      },
+      { status: 400 },
+    )
+  }
+
   const newComment = {
     author,
     isOwnerMessage: false,

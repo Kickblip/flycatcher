@@ -103,6 +103,16 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
       return
     }
 
+    if (suggestionTitle.length > 250) {
+      toast.error("Suggestion title must be less than 250 characters")
+      return
+    }
+
+    if (suggestionDescription.length > 500) {
+      toast.error("Suggestion description must be less than 500 characters")
+      return
+    }
+
     // set author id depending on if user is signed in or not
     const anonUserData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
     let author = isSignedIn ? user?.id : anonUserData?.id
@@ -127,7 +137,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
           if (!prevBoard) return prevBoard
           return {
             ...prevBoard,
-            suggestions: [...prevBoard.suggestions, data.suggestion],
+            suggestions: [data.suggestion, ...prevBoard.suggestions],
           }
         })
         setHideEmptyMessage(true)

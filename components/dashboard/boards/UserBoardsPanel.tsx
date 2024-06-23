@@ -59,7 +59,7 @@ function UserBoardsPanel({ boards, setBoards }: { boards: Board[]; setBoards: (b
           boards.map((board, index) => (
             <Link key={index} href={`/dashboard/boards/edit/${board.urlName}`}>
               <div
-                className="p-4 border rounded-lg transition duration-200"
+                className="p-4 border rounded-lg transition duration-200 hover:shadow-md break-words"
                 style={{ backgroundColor: board.primaryColor, color: board.textColor }}
               >
                 <h3 className="text-lg font-bold">{board.name}</h3>

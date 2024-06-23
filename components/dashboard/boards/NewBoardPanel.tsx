@@ -20,6 +20,11 @@ function NewBoardPanel({ boards, setBoards }: { boards: Board[]; setBoards: (boa
       return
     }
 
+    if (boardName.length > 60) {
+      toast.error("Board name must be less than 60 characters")
+      return
+    }
+
     setLoading(true)
 
     try {
