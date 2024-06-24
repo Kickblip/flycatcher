@@ -17,9 +17,7 @@ function Hero() {
             </h1>
           </div>
 
-          <p className="max-w-screen-sm mx-auto text-xl">
-            {`We make measuring interest, collecting feedback, and building a community easy so you can focus on building a product people want.`}
-          </p>
+          <p className="max-w-screen-sm mx-auto text-xl">{`Start collecting feedback from your users in minutes, not hours.`}</p>
 
           <div className="flex flex-col md:flex-row md:space-x-4 text-white justify-center">
             <button className="px-4 py-2 bg-gradient-to-r from-fuchsia-600 to-pink-600 hover:from-fuchsia-700 hover:to-pink-700 font-bold flex items-center justify-center rounded-md">

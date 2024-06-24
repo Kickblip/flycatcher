@@ -141,16 +141,16 @@ const KanbanNewSuggestionsSection = ({ board, setBoard }: { board: Board; setBoa
   }
   return (
     <>
-      <div className="flex justify-between px-4 rounded-lg text-indigo-500 cursor-pointer w-full">
+      <div className="flex justify-between px-4 rounded-lg text-indigo-500 w-full">
         <div
-          className={`${newSuggestions.length === 0 ? "hidden" : ""} flex items-center`}
+          className={`${newSuggestions.length === 0 ? "hidden" : ""} flex items-center cursor-pointer`}
           onClick={() => setNewSuggestionWindowModalIsOpen(true)}
         >
           {`${newSuggestions.length} New ${newSuggestions.length < 2 ? "Suggestion" : "Suggestions"} to Review`}
           <BellIcon className="w-5 h-5 ml-2" strokeWidth={2} />
         </div>
         <div
-          className={`${archivedSuggestions.length === 0 ? "hidden" : ""} flex items-center`}
+          className={`${archivedSuggestions.length === 0 ? "hidden" : ""} flex items-center cursor-pointer`}
           onClick={() => setArchivedSuggestionsWindowModalIsOpen(true)}
         >
           {`${archivedSuggestions.length} Archived ${archivedSuggestions.length < 2 ? "Suggestion" : "Suggestions"}`}

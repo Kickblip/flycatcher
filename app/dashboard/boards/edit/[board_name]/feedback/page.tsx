@@ -7,6 +7,8 @@ import Navbar from "@/components/dashboard/Navbar"
 import { Suggestion, Board } from "@/types/SuggestionBoard"
 import KanbanColumn from "@/components/dashboard/boards/KanbanColumn"
 import KanbanNewSuggestionsSection from "@/components/dashboard/boards/KanbanNewSuggestionsSection"
+import { toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 
 export default function BoardFeedback({ params }: { params: { board_name: string } }) {
   const [error, setError] = useState<string | null>(null)
@@ -40,7 +42,7 @@ export default function BoardFeedback({ params }: { params: { board_name: string
     e.dataTransfer.setData("suggestionId", suggestion.id)
   }
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>, status: string) => {
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>, status: string) => {
     const suggestionId = e.dataTransfer.getData("suggestionId")
     if (!board) return
 
@@ -48,10 +50,43 @@ export default function BoardFeedback({ params }: { params: { board_name: string
     const suggestion = updatedBoard.suggestions.find((s: Suggestion) => s.id === suggestionId)
 
     if (suggestion) {
+      // do nothing if the user just moved this card to the column it was already in
+      if (suggestion.status === status) {
+        return
+      }
+
+      // store original status for rollback
+      const originalStatus = suggestion.status
+
+      // pre-update local state
       suggestion.status = status
       const otherSuggestions = updatedBoard.suggestions.filter((s: Suggestion) => s.id !== suggestionId)
-      updatedBoard.suggestions = [...otherSuggestions, suggestion] // Push to the end of the array
+      updatedBoard.suggestions = [...otherSuggestions, suggestion]
       setBoard(updatedBoard)
+
+      try {
+        const response = await fetch(`/api/boards/update-suggestion-status`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status, suggestionId, boardName: board.urlName }),
+        })
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.message || "Failed to save suggestion")
+        }
+        toast.success("Suggestion status updated.")
+      } catch (error) {
+        console.error(error)
+        toast.error("Failed to update suggestion status.")
+
+        // rollback if the api call fails
+        suggestion.status = originalStatus
+        const otherSuggestions = updatedBoard.suggestions.filter((s: Suggestion) => s.id !== suggestionId)
+        updatedBoard.suggestions = [...otherSuggestions, suggestion]
+        setBoard(updatedBoard)
+      }
     }
   }
 
