@@ -9,13 +9,13 @@ const Terms = () => {
       <div className="w-full max-w-7xl mx-auto p-4 mb-24">
         <strong>Last Updated: 06-23-2024</strong>
         <p>
-          This Terms of Service agreement ("Terms") governs your use of Flycatcher ("we," "us," or "our") including our services
-          and our website,{" "}
+          This Terms of Service agreement covers how Flycatcher's ("we," "us," or "our") services should be used, including our
+          our website,{" "}
           <Link href="https://flycatcher.app/" className="text-blue-500 underline">
             https://flycatcher.app/
           </Link>{" "}
-          ("Website"). By using our services or Website, you agree to the terms of this agreement. These Terms are governed in the
-          United States under Texas law.
+          ("Website"). By using our services or Website, you agree to the terms of this agreement. These Terms of Service are
+          governed in the United States under Texas law.
         </p>
 
         <h2 className="text-2xl font-semibold mt-6 mb-4 text-gray-800">1. Our Services</h2>
@@ -48,8 +48,8 @@ const Terms = () => {
 
         <h2 className="text-2xl font-semibold mt-6 mb-4 text-gray-800">5. Updates and Contact</h2>
         <p>
-          Updates to these Terms will be reflected on this page, major changes may be communicated to the email associated with
-          your account. For any questions or concerns, please contact us at flycatcherapp@gmail.com
+          Updates to this Terms of Service will be reflected on this page, major changes may be communicated to the email
+          associated with your account. For any questions or concerns, please contact us at flycatcherapp@gmail.com
         </p>
       </div>
     </main>

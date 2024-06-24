@@ -10,8 +10,8 @@ export default function Privacy() {
       <div className="w-full max-w-7xl mx-auto p-4 mb-24">
         <strong>Last Updated: 06-23-2024</strong>
         <p>
-          This Privacy Policy outlines how Flycatcher ("we," "us," or "our") collects, uses, and protects your personal and
-          non-personal information when you use our website,{" "}
+          This Privacy Policy covers how Flycatcher ("we," "us," or "our") manages your personal and non-personal information.
+          This primarily includes data gathered from your usage of our website,{" "}
           <Link href="https://flycatcher.app/" className="text-blue-500 underline">
             https://flycatcher.app/
           </Link>{" "}
