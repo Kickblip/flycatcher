@@ -14,8 +14,8 @@ export default function Privacy() {
           This primarily includes data gathered from your usage of our website,{" "}
           <Link href="https://flycatcher.app/" className="text-blue-500 underline">
             https://flycatcher.app/
-          </Link>{" "}
-          ("Website"). By using Flycatcher you agree to the terms of this Privacy Policy.
+          </Link>
+          . By using Flycatcher, you agree to the terms of this Privacy Policy.
         </p>
         <h2 className="text-2xl font-semibold mt-6 mb-4 text-gray-800">1. Personal Data</h2>
         <p>
@@ -34,7 +34,7 @@ export default function Privacy() {
         </p>
         <h2 className="text-2xl font-semibold mt-6 mb-4 text-gray-800">3. Purpose of Data Collection</h2>
         <p>
-          We collect and use your personal data to provide our services and allow you to access and use the Website. We collect
+          We collect and use your personal data to provide our services and allow you to access and use the website. We collect
           and use payment information to process your subscription (if you decide to sign up for a paid subscription).
         </p>
         <h2 className="text-2xl font-semibold mt-6 mb-4 text-gray-800">4. Personal Data Sharing</h2>

@@ -10,12 +10,12 @@ const Terms = () => {
         <strong>Last Updated: 06-23-2024</strong>
         <p>
           This Terms of Service agreement covers how Flycatcher's ("we," "us," or "our") services should be used, including our
-          our website,{" "}
+          website,{" "}
           <Link href="https://flycatcher.app/" className="text-blue-500 underline">
             https://flycatcher.app/
           </Link>{" "}
-          ("Website"). By using our services or Website, you agree to the terms of this agreement. These Terms of Service are
-          governed in the United States under Texas law.
+          . By using our services or website, you agree to the terms of this agreement. These Terms of Service are governed in the
+          United States under Texas law.
         </p>
 
         <h2 className="text-2xl font-semibold mt-6 mb-4 text-gray-800">1. Our Services</h2>
