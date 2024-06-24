@@ -1,5 +1,11 @@
+import type { Metadata } from "next"
 import Navbar from "@/components/landing/Navbar"
 import Link from "next/link"
+
+export const metadata: Metadata = {
+  title: "Privacy Policy | Flycatcher",
+  description: "Our Privacy Policy document.",
+}
 
 export default function Privacy() {
   return (
@@ -32,22 +38,17 @@ export default function Privacy() {
           We may use basic analytics such as page views, browser type, and other device details. This data helps us analyze trends
           and improve our services. We do not use cookies on Flycatcher.
         </p>
-        <h2 className="text-2xl font-semibold mt-6 mb-4 text-gray-800">3. Purpose of Data Collection</h2>
-        <p>
-          We collect and use your personal data to provide our services and allow you to access and use the website. We collect
-          and use payment information to process your subscription (if you decide to sign up for a paid subscription).
-        </p>
-        <h2 className="text-2xl font-semibold mt-6 mb-4 text-gray-800">4. Personal Data Sharing</h2>
+        <h2 className="text-2xl font-semibold mt-6 mb-4 text-gray-800">3. Personal Data Sharing</h2>
         <p>
           We do not share your personal data with any third parties except as required for payment processing or our own email
           marketing.
         </p>
-        <h2 className="text-2xl font-semibold mt-6 mb-4 text-gray-800">5. Children's Data</h2>
+        <h2 className="text-2xl font-semibold mt-6 mb-4 text-gray-800">4. Children's Data</h2>
         <p>
-          Flycatcher is not intended for users under the age of 18. We do not knowingly collect personal information from
+          Flycatcher is not intended for users under the age of 18. We do not knowingly the collect personal information of
           children. If you have any concerns regarding the data of a child, please contact us at the email address provided below.
         </p>
-        <h2 className="text-2xl font-semibold mt-6 mb-4 text-gray-800">6. Updates and Contact</h2>
+        <h2 className="text-2xl font-semibold mt-6 mb-4 text-gray-800">5. Updates and Contact</h2>
         <p>
           Updates to this Privacy Policy will be reflected on this page, major changes may be communicated to the email associated
           with your account. For any questions or concerns, please contact us at flycatcherapp@gmail.com

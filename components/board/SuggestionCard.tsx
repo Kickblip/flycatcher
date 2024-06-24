@@ -213,7 +213,7 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
           <div className="flex">
             <div className="flex flex-col items-center justify-center w-12 h-20" style={{ color: textColor }}>
               <div className="flex items-center justify-center w-5 h-5 mb-1">
-                <ChatBubbleBottomCenterTextIcon className="w-5 h-5" strokeWidth={2} />
+                <ChatBubbleBottomCenterTextIcon className="w-5 h-5" strokeWidth={1.7} />
               </div>
               <span className="text-sm">{suggestion.comments.length}</span>
             </div>
@@ -250,7 +250,7 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
             {suggestion.comments.length > 0 ? (
               suggestion.comments.map((comment, index) => (
                 <div key={index} className="mb-2 p-2 rounded-lg" style={{ backgroundColor: lighterSecondaryColor }}>
-                  <p className="text-sm" style={{ color: textColor }}>
+                  <p className="text-sm break-words" style={{ color: textColor }}>
                     {comment.content}
                   </p>
                 </div>
