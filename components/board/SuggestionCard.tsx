@@ -14,7 +14,6 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
   const lighterSecondaryColor = secondaryColor ? tinycolor(secondaryColor).lighten(20).toString() : "#f9fafb" // #f9fafb is tailwind gray-50
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [newComment, setNewComment] = useState("")
   const { isLoaded, isSignedIn, user } = useUser()
   const [isLiked, setIsLiked] = useState(false)
@@ -96,7 +95,7 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
 
       setNewComment("")
     } catch (error) {
-      setError((error as Error).message || "Failed to create board")
+      console.error((error as Error).message || "Failed to create board")
       toast.error("Failed to add comment.")
     } finally {
       setSubmitting(false)
@@ -141,7 +140,6 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
           const data = await response.json()
         }
       } catch (error) {
-        setError((error as Error).message || "Failed to remove vote")
         console.error("Error removing vote:", error)
         toast.error("Failed to remove vote.")
 
@@ -180,7 +178,6 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
           throw new Error(errorData.message || "Failed to add vote")
         }
       } catch (error) {
-        setError((error as Error).message || "Failed to add vote")
         console.error("Error adding vote:", error)
 
         // revert changes

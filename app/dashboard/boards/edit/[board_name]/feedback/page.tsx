@@ -38,6 +38,10 @@ export default function BoardFeedback({ params }: { params: { board_name: string
     fetchBoard()
   }, [params.board_name])
 
+  useEffect(() => {
+    if (board) document.title = `${board.name} | Flycatcher`
+  }, [board])
+
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, suggestion: Suggestion) => {
     e.dataTransfer.setData("suggestionId", suggestion.id)
   }

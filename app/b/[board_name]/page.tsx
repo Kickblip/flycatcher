@@ -58,7 +58,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
   }
 
   const setAnonymousUserData = () => {
-    if (isSignedIn) {
+    if (isSignedIn && isLoaded) {
       return
     }
 
@@ -75,14 +75,6 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
       comments: [],
     }
     localStorage.setItem("user", JSON.stringify(user))
-  }
-
-  const setSignedInUserData = () => {
-    if (!isSignedIn) {
-      return
-    }
-
-    // if the user is signed in the data has already been fetched at page load and is stored in the board object
   }
 
   useEffect(() => {

@@ -53,6 +53,10 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
     fetchBoard()
   }, [params.board_name])
 
+  useEffect(() => {
+    if (board) document.title = `Editing ${board.name} | Flycatcher`
+  }, [board])
+
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
