@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
 import { auth } from "@clerk/nextjs/server"
+import { Board } from "@/types/SuggestionBoard"
 
 export async function POST(request: Request) {
   const { userId } = auth()
@@ -46,11 +47,13 @@ export async function POST(request: Request) {
     )
   }
 
-  const newBoard = {
+  const newBoard: Board = {
     name,
     urlName: name.toLowerCase().replace(/\s+/g, "-"),
     logo: "",
+    logoKey: "",
     favicon: "",
+    faviconKey: "",
     primaryColor: "#ffffff",
     secondaryColor: "#f3f4f6", // gray-100
     accentColor: "#6366f1", // indigo-500
@@ -59,7 +62,9 @@ export async function POST(request: Request) {
     suggestions: [],
     settings: {
       forceSignIn: false,
+      disableBranding: false,
     },
+    createdAt: new Date(),
   }
 
   console.log("Creating board:", newBoard)

@@ -98,8 +98,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
 
   const applyPremadeTheme = (theme: (typeof themes)[0]) => {
     setBoard({
-      name: board.name,
-      urlName: board.urlName,
+      ...board,
       primaryColor: theme.primaryColor,
       secondaryColor: theme.secondaryColor,
       accentColor: theme.accentColor,
@@ -281,6 +280,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
       <SettingsModal
         isOpen={settingsModalIsOpen}
         currentBoard={board}
+        setBoard={setBoard}
         onRequestClose={() => setSettingsModalIsOpen(false)}
         onSettingsSave={handleSettingsSave}
         setDeletionConfirmationModalIsOpen={setDeletionConfirmationModalIsOpen}

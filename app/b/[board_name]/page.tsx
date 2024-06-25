@@ -25,7 +25,16 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
   const { isLoaded, isSignedIn, user } = useUser()
 
   useEffect(() => {
-    if (board) document.title = board.name
+    if (board) {
+      // set tab title
+      document.title = board.name
+      // set favicon
+      const favicon = (document.querySelector("link[rel='icon']") as HTMLLinkElement) || document.createElement("link")
+      favicon.type = "image/x-icon"
+      favicon.rel = "icon"
+      favicon.href = board.favicon
+      document.head.appendChild(favicon)
+    }
   }, [board])
 
   const fetchBoardData = async () => {

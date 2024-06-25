@@ -13,11 +13,13 @@ export interface Suggestion {
 }
 
 export interface Board {
-  _id: ObjectId
+  _id?: ObjectId
   name: string
   urlName: string
   logo: string
+  logoKey: string
   favicon: string
+  faviconKey: string
   primaryColor: string
   secondaryColor: string
   accentColor: string
@@ -30,6 +32,7 @@ export interface Board {
 
 export interface BoardSettings {
   forceSignIn: boolean
+  disableBranding: boolean
 }
 
 export interface Comment {
