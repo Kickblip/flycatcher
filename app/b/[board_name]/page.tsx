@@ -10,6 +10,7 @@ import { v4 as uuidv4 } from "uuid"
 import { useUser } from "@clerk/nextjs"
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
+import Image from "next/image"
 
 export default function BoardInfo({ params }: { params: { board_name: string } }) {
   const [error, setError] = useState<string | null>(null)
@@ -204,7 +205,11 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
       <div className="w-full max-w-7xl mx-auto p-4 flex">
         <div className="w-1/3 p-4">
           <div>
-            <p className="text-xl font-bold mb-4 w-full break-words">{board?.name}</p>
+            {board?.logo ? (
+              <Image src={board.logo} alt={`${board.name} logo`} width={175} height={175} className="mb-4" />
+            ) : (
+              <p className="text-xl font-bold mb-4 w-full break-words">{board?.name}</p>
+            )}
           </div>
           <div className="p-6 rounded-lg" style={{ backgroundColor: board?.secondaryColor || "#f9fafb" }}>
             <h1 className="text-lg font-semibold mb-6">Add feedback</h1>

@@ -207,6 +207,15 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
       >
         <div className="flex justify-between w-full">
           <div className="flex flex-col break-words max-w-[80%]" style={{ color: textColor }}>
+            <h2 className="text-xs font-semibold mb-2" style={{ color: accentColor }}>
+              {suggestion.status === "working"
+                ? "Currently in-progress..."
+                : suggestion.status === "shipped"
+                ? "Shipped!"
+                : suggestion.status === "planned"
+                ? "Planned"
+                : ""}
+            </h2>
             <h2 className="text-lg font-bold mb-2">{suggestion.title}</h2>
             <p className="text-sm">{suggestion.description}</p>
           </div>
@@ -242,6 +251,15 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
       <Modal isOpen={modalIsOpen} onRequestClose={closeModal} style={customModalStyles} contentLabel="Suggestion Comments Modal">
         <div className="p-4 w-full">
           <div className="mb-4 w-full break-words">
+            <h2 className="text-sm font-semibold mb-2" style={{ color: accentColor }}>
+              {suggestion.status === "working"
+                ? "Currently in-progress..."
+                : suggestion.status === "shipped"
+                ? "Shipped!"
+                : suggestion.status === "planned"
+                ? "Planned"
+                : ""}
+            </h2>
             <h2 className="text-2xl font-bold mb-4">{suggestion.title}</h2>
             <p className="text-lg">{suggestion.description}</p>
           </div>
