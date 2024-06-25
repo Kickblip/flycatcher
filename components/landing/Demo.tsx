@@ -1,19 +1,21 @@
 import Image from "next/image"
 
-function Hero() {
+function Demo() {
   return (
     <section className="w-full">
-      <div className="mx-auto">
-        <Image
-          width={1200}
-          height={1200}
-          className="w-full md:w-[1200px] mx-auto rounded-lg leading-none flex items-center"
-          src={"/landing/suggestion-demo.jpg"}
-          alt="dashboard"
-        />
+      <div className="relative mx-auto">
+        <div className="absolute inset-0 bg-fuchsia-700 rounded-xl blur-lg -z-10"></div>
+        <video
+          className="w-full h-full object-cover mx-auto rounded-xl relative z-10"
+          poster="/landing/demo-cover.png"
+          loop
+          controls
+        >
+          <source src="/landing/demo.mp4" type="video/mp4" />
+        </video>
       </div>
     </section>
   )
 }
 
-export default Hero
+export default Demo

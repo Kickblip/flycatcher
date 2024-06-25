@@ -10,8 +10,31 @@ import { ourFileRouter } from "@/app/api/uploadthing/core"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Flycatcher",
-  description: "Feedback suite for early stage founders to easily validate and iterate their ideas.",
+  title: "Flycatcher | Community Feedback Boards",
+  description: "Start collecting feedback from your users in minutes, not hours.",
+  openGraph: {
+    url: "https://flycatcher.app/",
+    title: "Flycatcher | Community Feedback Boards",
+    description: "Start collecting feedback from your users in minutes, not hours.",
+    siteName: "Flycatcher",
+    images: [
+      {
+        url: "https://flycatcher.app/ogimage.png",
+        width: 1200,
+        height: 628,
+        alt: "Feedback board",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Flycatcher | Community Feedback Boards",
+    description: "Start collecting feedback from your users in minutes, not hours.",
+    images: { url: "https://flycatcher.app/ogimage.png", alt: "Feedback board" },
+  },
+  category: "software",
 }
 
 export default function RootLayout({
