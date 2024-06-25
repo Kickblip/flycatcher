@@ -1,5 +1,6 @@
 import Link from "next/link"
-import { ArrowRightIcon } from "@heroicons/react/24/outline"
+import { ArrowRightIcon, LinkIcon } from "@heroicons/react/24/outline"
+import { Button } from "./ui/MovingBorder"
 
 function Hero() {
   return (
@@ -19,19 +20,25 @@ function Hero() {
 
           <p className="max-w-screen-sm mx-auto text-xl">{`Start collecting feedback from your users in minutes, not hours.`}</p>
 
-          <div className="flex flex-col md:flex-row md:space-x-4 text-white justify-center">
-            <button className="px-4 py-2 bg-gradient-to-r from-fuchsia-600 to-pink-600 hover:from-fuchsia-700 hover:to-pink-700 font-bold flex items-center justify-center rounded-md">
-              <Link href="/dashboard/boards" className="flex items-center justify-center w-full">
-                Get Started
-                <ArrowRightIcon className="w-5 h-5 ml-2" strokeWidth={2.5} />
+          <div className="flex flex-col md:flex-row md:space-x-4 justify-center">
+            <div className="flex flex-col items-center md:mb-0 mb-4">
+              <Link href="/b/flycatcher" target="_blank">
+                <Button borderRadius="0.75rem" className="bg-white border-fuchsia-500">
+                  <div className="flex items-center justify-center w-full font-bold text-transparent bg-gradient-to-r from-fuchsia-600 to-pink-600 bg-clip-text">
+                    <LinkIcon className="w-4 h-4 text-fuchsia-700 mr-2 text-lg" strokeWidth={2} />
+                    flycatcher.app/b/flycatcher
+                  </div>
+                </Button>
+              </Link>
+              <div className="text-xs text-gray-500 mt-1">See a live feedback board</div>
+            </div>
+
+            <button className="px-4 py-2 bg-gradient-to-r from-fuchsia-600 to-pink-600 hover:from-fuchsia-700 hover:to-pink-700 font-bold flex items-center justify-center rounded-xl h-14 md:w-64 w-full">
+              <Link href="/dashboard/boards" className="flex items-center justify-center w-full text-white text-sm">
+                Create your own
+                <ArrowRightIcon className="w-4 h-4 ml-2" strokeWidth={2} />
               </Link>
             </button>
-
-            {/* <button className="px-4 py-2 font-bold flex items-center justify-center text-transparent bg-gradient-to-r from-fuchsia-600 to-pink-600 hover:from-fuchsia-700 hover:to-pink-700 bg-clip-text">
-              <Link href="/example" className="flex items-center justify-center w-full">
-                Learn More
-              </Link>
-            </button> */}
           </div>
         </div>
       </div>

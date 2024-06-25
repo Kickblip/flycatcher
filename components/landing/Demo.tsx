@@ -1,5 +1,3 @@
-import Image from "next/image"
-
 function Demo() {
   return (
     <section className="w-full">
