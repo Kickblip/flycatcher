@@ -30,7 +30,9 @@ function Hero() {
                   </div>
                 </Button>
               </Link>
-              <div className="text-xs text-gray-500 mt-1">See a live feedback board</div>
+              <Link href="/b/flycatcher" target="_blank" className="text-xs text-gray-500 mt-1 cursor-pointer">
+                See a live feedback board
+              </Link>
             </div>
 
             <button className="px-4 py-2 bg-gradient-to-r from-fuchsia-600 to-pink-600 hover:from-fuchsia-700 hover:to-pink-700 font-bold flex items-center justify-center rounded-xl h-14 md:w-64 w-full">
