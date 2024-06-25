@@ -22,7 +22,7 @@ function Hero() {
 
           <div className="flex flex-col md:flex-row md:space-x-4 justify-center">
             <div className="flex flex-col items-center md:mb-0 mb-4">
-              <Link href="/b/flycatcher" target="_blank">
+              <Link href="/b/flycatcher" target="_blank" className="w-full">
                 <Button borderRadius="0.75rem" className="bg-white border-fuchsia-500">
                   <div className="flex items-center justify-center w-full font-bold text-transparent bg-gradient-to-r from-fuchsia-600 to-pink-600 bg-clip-text">
                     <LinkIcon className="w-4 h-4 text-fuchsia-700 mr-2 text-lg" strokeWidth={2} />
