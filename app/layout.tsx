@@ -11,11 +11,11 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Flycatcher | Community Feedback Boards",
-  description: "Start collecting feedback from your users in minutes, not hours.",
+  description: "Start collecting community feedback in minutes, not hours.",
   openGraph: {
     url: "https://flycatcher.app/",
-    title: "Flycatcher | Community Feedback Boards",
-    description: "Start collecting feedback from your users in minutes, not hours.",
+    title: "Community Feedback Boards",
+    description: "Start collecting community feedback in minutes, not hours.",
     siteName: "Flycatcher",
     images: [
       {
@@ -30,8 +30,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Flycatcher | Community Feedback Boards",
-    description: "Start collecting feedback from your users in minutes, not hours.",
+    title: "Community Feedback Boards",
+    description: "Start collecting community feedback in minutes, not hours.",
     images: { url: "https://flycatcher.app/ogimage.png", alt: "Feedback board" },
   },
   category: "software",

@@ -2,6 +2,9 @@ import type { Metadata } from "next"
 import Navbar from "@/components/landing/Navbar"
 import Hero from "@/components/landing/Hero"
 import Demo from "@/components/landing/Demo"
+import GettingStarted from "@/components/landing/GettingStarted"
+import Customization from "@/components/landing/Customization"
+import Footer from "@/components/landing/Footer"
 
 export const metadata: Metadata = {
   title: "Flycatcher",
@@ -15,7 +18,10 @@ export default function Home() {
       <div className="w-full max-w-7xl mx-auto p-4">
         <Hero />
         <Demo />
+        <GettingStarted />
+        <Customization />
       </div>
+      <Footer />
     </main>
   )
 }
