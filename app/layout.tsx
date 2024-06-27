@@ -43,7 +43,13 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      appearance={{
+        variables: {
+          colorPrimary: "#6366f1",
+        },
+      }}
+    >
       <html lang="en">
         <body className={inter.className}>
           <ToastContainer />

@@ -8,10 +8,16 @@ function Footer() {
           <Image src="/board-pages/dark-logo.png" alt="Logo" width={170} height={170} />
         </div>
         <div className="flex space-x-4">
-          <a href="/terms" className="text-gray-700 font-semibold hover:text-gray-800 hover:underline transition duration-200">
+          <a
+            href="/terms"
+            className="text-gray-700 font-semibold text-sm md:text-md hover:text-gray-800 hover:underline transition duration-200"
+          >
             Terms of Service
           </a>
-          <a href="/privacy" className="text-gray-700 font-semibold hover:text-gray-800 hover:underline transition duration-200">
+          <a
+            href="/privacy"
+            className="text-gray-700 font-semibold text-sm md:text-md hover:text-gray-800 hover:underline transition duration-200"
+          >
             Privacy Policy
           </a>
         </div>

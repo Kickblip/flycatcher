@@ -2,15 +2,21 @@ import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
 import { Suggestion } from "@/types/SuggestionBoard"
 import { v4 as uuidv4 } from "uuid"
+import { auth } from "@clerk/nextjs/server"
 
 export async function POST(request: Request) {
-  const body = await request.json()
-  const { title, description, board, author } = body
+  const { userId } = auth()
+  if (!userId) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
+  }
 
-  if (!title || !description || !board || !author) {
+  const body = await request.json()
+  const { title, description, board } = body
+
+  if (!title || !description || !board) {
     return NextResponse.json(
       {
-        message: "Missing title, description, board, or author",
+        message: "Missing title, description, or board",
       },
       { status: 400 },
     )
@@ -38,7 +44,8 @@ export async function POST(request: Request) {
     // add the new suggestion to the board
     const newSuggestion: Suggestion = {
       id: uuidv4(),
-      author: author,
+      author: userId,
+      authorImg: "",
       title,
       description,
       votes: [],

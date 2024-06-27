@@ -29,7 +29,6 @@ export async function POST(request: Request) {
     // add the new suggestion to the board
     const newVote: Vote = {
       author,
-      createdAt: new Date(),
     }
 
     const updatedSuggestions = matchingBoard.suggestions.map((suggestion: Suggestion) => {

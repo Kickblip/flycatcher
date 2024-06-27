@@ -12,6 +12,7 @@ import "react-toastify/dist/ReactToastify.css"
 function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boardData: Board }) {
   const { primaryColor, secondaryColor, accentColor, textColor } = boardData
   const lighterSecondaryColor = secondaryColor ? tinycolor(secondaryColor).lighten(20).toString() : "#f9fafb" // #f9fafb is tailwind gray-50
+  const lighterTextColor = textColor ? tinycolor(textColor).lighten(20).toString() : "#f9fafb" // #f9fafb is tailwind gray-50
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [newComment, setNewComment] = useState("")
@@ -20,17 +21,11 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
 
   useEffect(() => {
     // check if user has already liked the suggestion
-    if (!isSignedIn) {
-      const anonUserData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
-      if (anonUserData.likedSuggestions.includes(suggestion.id)) {
-        setIsLiked(true)
-      }
-    } else if (isSignedIn) {
-      if (suggestion.votes.some((vote) => vote.author === user?.id)) {
-        setIsLiked(true)
-      }
+    const localStorageData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
+    if (localStorageData.likedSuggestions.includes(suggestion.id)) {
+      setIsLiked(true)
     }
-  }, [suggestion])
+  }, [suggestion, boardData])
 
   const openModal = () => setModalIsOpen(true)
   const closeModal = () => setModalIsOpen(false)
@@ -47,7 +42,8 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
       padding: "20px",
       borderRadius: "15px",
       border: "0px",
-      width: "45%",
+      width: "40%",
+      height: "80vh",
       maxHeight: "90vh",
     },
     overlay: {
@@ -71,17 +67,13 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
 
     setSubmitting(true)
 
-    // set author id depending on if user is signed in or not
-    const anonUserData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
-    let author = isSignedIn ? user?.id : anonUserData?.id
-
     try {
       const response = await fetch("/api/pub/boards/add-comment", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ comment: newComment, suggestionId: suggestion.id, board: boardData, author: author }),
+        body: JSON.stringify({ comment: newComment, suggestionId: suggestion.id, board: boardData }),
       })
 
       if (!response.ok) {
@@ -108,21 +100,18 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
     setSubmitting(true)
 
     // set author id depending on if user is signed in or not
-    const anonUserData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
-    let author = isSignedIn ? user?.id : anonUserData?.id
+    const localStorageData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
+    let author = isSignedIn ? user?.id : localStorageData?.id
 
     if (isLiked) {
       let temp = suggestion.votes.pop()
       setIsLiked(false)
       // prechange local state
-      if (!isSignedIn) {
-        const anonUserData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
-        const index = anonUserData.likedSuggestions.indexOf(suggestion.id)
-        if (index > -1) {
-          anonUserData.likedSuggestions.splice(index, 1)
-        }
-        localStorage.setItem("user", JSON.stringify(anonUserData))
+      const index = localStorageData.likedSuggestions.indexOf(suggestion.id)
+      if (index > -1) {
+        localStorageData.likedSuggestions.splice(index, 1)
       }
+      localStorage.setItem("user", JSON.stringify(localStorageData))
 
       try {
         const response = await fetch("/api/pub/boards/remove-vote", {
@@ -146,23 +135,17 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
         // revert changes
         if (temp) suggestion.votes.push(temp)
         setIsLiked(true)
-        if (!isSignedIn) {
-          const anonUserData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
-          anonUserData.likedSuggestions.push(suggestion.id)
-          localStorage.setItem("user", JSON.stringify(anonUserData))
-        }
+        localStorageData.likedSuggestions.push(suggestion.id)
+        localStorage.setItem("user", JSON.stringify(localStorageData))
       } finally {
         setSubmitting(false)
       }
     } else {
       // prechange local state
-      suggestion.votes.push({ author: "", createdAt: new Date() }) // local state doesnt need a real vote object - just something to keep count accurate
+      suggestion.votes.push({ author: "" }) // local state doesnt need a real vote object - just something to keep count accurate
       setIsLiked(true)
-      if (!isSignedIn) {
-        const anonUserData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
-        anonUserData.likedSuggestions.push(suggestion.id)
-        localStorage.setItem("user", JSON.stringify(anonUserData))
-      }
+      localStorageData.likedSuggestions.push(suggestion.id)
+      localStorage.setItem("user", JSON.stringify(localStorageData))
 
       try {
         const response = await fetch("/api/pub/boards/add-vote", {
@@ -184,14 +167,12 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
         toast.error("Failed to add vote.")
         suggestion.votes.pop()
         setIsLiked(false)
-        if (!isSignedIn) {
-          const anonUserData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
-          const index = anonUserData.likedSuggestions.indexOf(suggestion.id)
-          if (index > -1) {
-            anonUserData.likedSuggestions.splice(index, 1)
-          }
-          localStorage.setItem("user", JSON.stringify(anonUserData))
+
+        const index = localStorageData.likedSuggestions.indexOf(suggestion.id)
+        if (index > -1) {
+          localStorageData.likedSuggestions.splice(index, 1)
         }
+        localStorage.setItem("user", JSON.stringify(localStorageData))
       } finally {
         setSubmitting(false)
       }
@@ -264,12 +245,19 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
             <p className="text-lg">{suggestion.description}</p>
           </div>
           <div className="mb-12 mt-6">
-            <h3 className="text-xl font-bold">Comments</h3>
+            <h3 className="text-md font-bold mb-2">Comments</h3>
             {suggestion.comments.length > 0 ? (
               suggestion.comments.map((comment, index) => (
-                <div key={index} className="mb-2 p-2 rounded-lg" style={{ backgroundColor: lighterSecondaryColor }}>
-                  <p className="text-sm break-words" style={{ color: textColor }}>
+                <div
+                  key={index}
+                  className="w-full flex flex-col mb-1 p-2 rounded-lg"
+                  // style={{ backgroundColor: lighterSecondaryColor }}
+                >
+                  <p className="text-sm font-medium break-words mb-1" style={{ color: textColor }}>
                     {comment.content}
+                  </p>
+                  <p className="text-xs break-words" style={{ color: lighterTextColor }}>
+                    {new Date(comment.createdAt).toLocaleDateString()}
                   </p>
                 </div>
               ))

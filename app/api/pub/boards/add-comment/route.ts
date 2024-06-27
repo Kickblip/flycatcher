@@ -1,10 +1,16 @@
 import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
 import { Suggestion } from "@/types/SuggestionBoard"
+import { auth } from "@clerk/nextjs/server"
 
 export async function POST(request: Request) {
+  const { userId } = auth()
+  if (!userId) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
+  }
+
   const body = await request.json()
-  const { comment, suggestionId, author } = body
+  const { comment, suggestionId } = body
   const boardUrlName = body.board.urlName
 
   if (!comment || !suggestionId) {
@@ -26,7 +32,7 @@ export async function POST(request: Request) {
   }
 
   const newComment = {
-    author,
+    author: userId,
     isOwnerMessage: false,
     content: comment,
     createdAt: new Date(),

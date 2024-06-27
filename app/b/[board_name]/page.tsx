@@ -4,7 +4,7 @@ import LoadingWheel from "@/components/dashboard/LoadingWheel"
 import { useEffect, useState } from "react"
 import tinycolor from "tinycolor2"
 import SuggestionCard from "@/components/board/SuggestionCard"
-import { Suggestion, Board, LocalStorageUser } from "@/types/SuggestionBoard"
+import { Suggestion, Board, LocalStorageUser, Vote } from "@/types/SuggestionBoard"
 import PoweredByBadge from "@/components/board/PoweredByBadge"
 import { v4 as uuidv4 } from "uuid"
 import { useUser } from "@clerk/nextjs"
@@ -38,6 +38,14 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
     }
   }, [board])
 
+  useEffect(() => {
+    fetchBoardData()
+  }, [params.board_name])
+
+  useEffect(() => {
+    setLocalStorage()
+  }, [board, isLoaded, isSignedIn, user])
+
   const fetchBoardData = async () => {
     setError(null)
     setLoading(true)
@@ -59,7 +67,6 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
       if (data.suggestions.length < 10) setHideLoadMoreButton(true)
 
       setBoard(data)
-      console.log(data)
       setLoading(false)
     } catch (error) {
       setError((error as Error).message || "Board does not exist")
@@ -67,30 +74,43 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
     }
   }
 
-  const setAnonymousUserData = () => {
-    if (isSignedIn && isLoaded) {
-      return
-    }
+  const setLocalStorage = () => {
+    const existingUser: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
+    let userLikes: string[] = []
 
-    const anonUserData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
-
-    if (anonUserData.id) {
-      return
+    if (isSignedIn && isLoaded && user && board) {
+      userLikes = board.suggestions
+        .filter((suggestion: Suggestion) => suggestion.votes.some((vote: Vote) => vote.author === user.id))
+        .map((suggestion: Suggestion) => suggestion.id)
+      console.log(userLikes)
+      if (existingUser.id) {
+        // if they already have an entry in local storage
+        const updatedLikes = [...existingUser.likedSuggestions, ...userLikes]
+        const updatedUser: LocalStorageUser = {
+          id: existingUser.id,
+          likedSuggestions: updatedLikes.filter((item, index) => updatedLikes.indexOf(item) === index),
+        }
+        localStorage.setItem("user", JSON.stringify(updatedUser))
+      } else {
+        // if they don't have an entry in local storage
+        const newUser: LocalStorageUser = {
+          id: uuidv4(),
+          likedSuggestions: userLikes,
+        }
+        localStorage.setItem("user", JSON.stringify(newUser))
+      }
+      // } else if (!isSignedIn && existingUser.id) {
+      //   // not logged in but have visited before
+      //   return
+    } else if (!isSignedIn && isLoaded && board) {
+      // not logged in and first visit OR logged in user that logged out
+      const newUser: LocalStorageUser = {
+        id: uuidv4(),
+        likedSuggestions: [],
+      }
+      localStorage.setItem("user", JSON.stringify(newUser))
     }
-
-    const user = {
-      id: uuidv4(),
-      likedSuggestions: [],
-      suggestions: [],
-      comments: [],
-    }
-    localStorage.setItem("user", JSON.stringify(user))
   }
-
-  useEffect(() => {
-    fetchBoardData()
-    setAnonymousUserData()
-  }, [params.board_name])
 
   if (loading) {
     return <LoadingWheel />
@@ -101,9 +121,9 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
   }
 
   const handleNewSuggestionSubmission = async () => {
-    if (!suggestionTitle || !suggestionDescription) {
-      return
-    }
+    if (!suggestionTitle || !suggestionDescription) return
+
+    if (!isSignedIn) return // TODO: Add sign in modal
 
     if (suggestionTitle.length > 250) {
       toast.error("Suggestion title must be less than 250 characters")
@@ -115,10 +135,6 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
       return
     }
 
-    // set author id depending on if user is signed in or not
-    const anonUserData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
-    let author = isSignedIn ? user?.id : anonUserData?.id
-
     setSubmitting(true)
 
     try {
@@ -127,7 +143,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ title: suggestionTitle, description: suggestionDescription, board: board, author: author }),
+        body: JSON.stringify({ title: suggestionTitle, description: suggestionDescription, board: board }),
       })
 
       if (!response.ok) {
@@ -143,11 +159,6 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
           }
         })
         setHideEmptyMessage(true)
-        if (!isSignedIn) {
-          const anonUserData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
-          anonUserData.suggestions.push(data.suggestion)
-          localStorage.setItem("user", JSON.stringify(anonUserData))
-        }
       }
 
       setsuggestionTitle("")
