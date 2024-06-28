@@ -11,7 +11,7 @@ export interface Suggestion {
   status: string
   comments: Comment[]
   createdAt: Date
-  updatedAt: Date
+  updatedAt: Date | undefined
 }
 
 export interface Board {

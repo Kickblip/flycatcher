@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Suggestion, Board, LocalStorageUser } from "@/types/SuggestionBoard"
-import { HandThumbUpIcon, ChatBubbleBottomCenterTextIcon, PencilSquareIcon } from "@heroicons/react/24/outline"
+import { HandThumbUpIcon, ChatBubbleBottomCenterTextIcon, PencilSquareIcon, CheckCircleIcon } from "@heroicons/react/24/outline"
 import { ArrowsRightLeftIcon, PaperAirplaneIcon } from "@heroicons/react/16/solid"
 import tinycolor from "tinycolor2"
 import Modal from "react-modal"
@@ -24,6 +24,11 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
   const [replyInputs, setReplyInputs] = useState<{ [key: number]: boolean }>({})
   const [replyTexts, setReplyTexts] = useState<{ [key: number]: string }>({})
   const [screenWidth, setScreenWidth] = useState(window.innerWidth)
+  const [editing, setEditing] = useState(false)
+  const [suggestionTitle, setSuggestionTitle] = useState("")
+  const [suggestionDescription, setSuggestionDescription] = useState("")
+  const [previousSuggestionTitle, setPreviousSuggestionTitle] = useState("")
+  const [previousSuggestionDescription, setPreviousSuggestionDescription] = useState("")
 
   useEffect(() => {
     const checkIfLiked = () => {
@@ -44,6 +49,13 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
       window.removeEventListener("resize", () => setScreenWidth(window.innerWidth))
     }
   }, [])
+
+  useEffect(() => {
+    if (suggestion && suggestion.title && suggestion.description) {
+      setSuggestionTitle(suggestion.title)
+      setSuggestionDescription(suggestion.description)
+    }
+  }, [suggestion])
 
   const customModalStyles = {
     content: {
@@ -266,6 +278,56 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
     }
   }
 
+  const handleEditSave = async () => {
+    // check if title or description has changed
+    if (
+      suggestionTitle.trim() === previousSuggestionTitle.trim() &&
+      suggestionDescription.trim() === previousSuggestionDescription.trim()
+    ) {
+      setEditing(false)
+      return
+    }
+
+    if (suggestionTitle.length > 250) {
+      toast.error("Title must be less than 250 characters")
+      return
+    }
+    if (suggestionDescription.length > 500) {
+      toast.error("Description must be less than 500 characters")
+      return
+    }
+
+    setSubmitting(true)
+
+    try {
+      const response = await fetch("/api/pub/boards/edit-suggestion", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          suggestionId: suggestion.id,
+          title: suggestionTitle,
+          description: suggestionDescription,
+          boardUrlName: boardData.urlName,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Failed to edit suggestion.")
+      } else {
+        setEditing(false)
+        toast.success("Suggestion edited.")
+      }
+    } catch (error) {
+      console.error("Error editing suggestion:", error)
+      toast.error("Failed to edit suggestion.")
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   return (
     <>
       <section
@@ -284,8 +346,8 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
                 ? "Planned"
                 : ""}
             </h2>
-            <h2 className="text-lg font-bold mb-2">{suggestion.title}</h2>
-            <p className="text-sm">{suggestion.description}</p>
+            <h2 className="text-lg font-bold mb-2">{suggestionTitle}</h2>
+            <p className="text-sm">{suggestionDescription}</p>
           </div>
           <div className="flex">
             <div className="flex flex-col items-center justify-center w-12 h-20" style={{ color: textColor }}>
@@ -321,25 +383,54 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
         onRequestClose={() => setModalIsOpen(false)}
         style={customModalStyles}
         contentLabel="Suggestion Comments Modal"
-        // className="w-[40%]"
       >
         <div className="p-4 w-full">
-          <div className="mb-4 w-full break-words">
+          <div className="mb-4 w-full break-words flex flex-col">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-semibold mb-2" style={{ color: accentColor }}>
-                {suggestion.status === "working"
-                  ? "Currently in-progress..."
-                  : suggestion.status === "shipped"
-                  ? "Shipped!"
-                  : suggestion.status === "planned"
-                  ? "Planned"
-                  : ""}
-              </h2>
+              <div className="flex items-center">
+                <h2 className="text-sm font-semibold" style={{ color: accentColor }}>
+                  {suggestion.status === "working"
+                    ? "Currently in-progress..."
+                    : suggestion.status === "shipped"
+                    ? "Shipped!"
+                    : suggestion.status === "planned"
+                    ? "Planned"
+                    : ""}
+                </h2>
+                <p
+                  className={`text-sm font-semibold ${
+                    suggestion.status === "working" || suggestion.status === "shipped" || suggestion.status === "planned"
+                      ? "ml-2"
+                      : ""
+                  }`}
+                  style={{ color: lighterTextColor }}
+                >
+                  {suggestion.updatedAt
+                    ? `Edited at ${new Date(suggestion.updatedAt).toLocaleDateString()}`
+                    : `${new Date(suggestion.createdAt).toLocaleDateString()}`}
+                </p>
+              </div>
               <div className="flex items-center">
                 {suggestion.author ? (
-                  <button>
-                    <PencilSquareIcon className="w-5 h-5 mr-2" />
-                  </button>
+                  editing ? (
+                    <button // save button
+                      onClick={handleEditSave}
+                      disabled={submitting}
+                    >
+                      <CheckCircleIcon className="w-6 h-6 mr-2" />
+                    </button>
+                  ) : (
+                    <button // edit button
+                      onClick={() => {
+                        setEditing(true)
+                        setPreviousSuggestionTitle(suggestionTitle)
+                        setPreviousSuggestionDescription(suggestionDescription)
+                      }}
+                      disabled={submitting}
+                    >
+                      <PencilSquareIcon className="w-5 h-5 mr-2" />
+                    </button>
+                  )
                 ) : (
                   <></>
                 )}
@@ -356,8 +447,31 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
                 </p>
               </div>
             </div>
-            <h2 className="text-2xl font-bold mb-4">{suggestion.title}</h2>
-            <p className="text-lg">{suggestion.description}</p>
+            {editing ? (
+              <>
+                <textarea
+                  className="text-2xl font-bold mb-4 mt-1 cursor-text outline-none rounded-lg w-full break-words"
+                  style={{ backgroundColor: editing ? lighterSecondaryColor : "transparent" }}
+                  value={suggestionTitle}
+                  onChange={(e) => setSuggestionTitle(e.target.value)}
+                  disabled={!editing}
+                  rows={1}
+                />
+                <textarea
+                  className="text-lg cursor-text outline-none rounded-lg break-words w-full"
+                  style={{ backgroundColor: editing ? lighterSecondaryColor : "transparent" }}
+                  value={suggestionDescription}
+                  onChange={(e) => setSuggestionDescription(e.target.value)}
+                  disabled={!editing}
+                  rows={3}
+                />
+              </>
+            ) : (
+              <>
+                <h2 className="text-2xl font-bold mb-4 mt-1">{suggestionTitle}</h2>{" "}
+                <p className="text-lg mb-4">{suggestionDescription}</p>
+              </>
+            )}
           </div>
           <div className="mb-12 mt-6">
             <h3 className="text-md font-bold mb-2">Comments</h3>
@@ -381,11 +495,7 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
             </div>
             {suggestion.comments.length > 0 ? (
               suggestion.comments.map((comment, index) => (
-                <div
-                  key={index}
-                  className="w-full flex flex-col mb-1 p-2 rounded-lg"
-                  // style={{ backgroundColor: lighterSecondaryColor }}
-                >
+                <div key={index} className="w-full flex flex-col mb-1 p-2 rounded-lg">
                   <div className="flex items-center">
                     <Image
                       src={comment.authorImg || "/board-pages/default-pfp.png"}
@@ -400,13 +510,13 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
                     <p className="text-xs break-words" style={{ color: lighterTextColor }}>
                       {new Date(comment.createdAt).toLocaleDateString()}
                     </p>
-                    {comment.author ? (
+                    {/* {comment.author ? (
                       <button>
                         <PencilSquareIcon className="w-4 h-4 ml-2" />
                       </button>
                     ) : (
                       <></>
-                    )}
+                    )} */}
                   </div>
                   <p className="text-sm font-medium break-words mt-2 mb-1" style={{ color: textColor }}>
                     {comment.content}
@@ -454,13 +564,13 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
                               <p className="text-xs break-words" style={{ color: lighterTextColor }}>
                                 {new Date(reply.createdAt).toLocaleDateString()}
                               </p>
-                              {reply.author ? (
+                              {/* {reply.author ? (
                                 <button>
                                   <PencilSquareIcon className="w-4 h-4 ml-2" />
                                 </button>
                               ) : (
                                 <></>
-                              )}
+                              )} */}
                             </div>
                             <p className="text-sm w-full break-words" style={{ color: textColor }}>
                               {reply.content}

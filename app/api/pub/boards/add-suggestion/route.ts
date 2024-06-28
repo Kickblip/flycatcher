@@ -55,7 +55,7 @@ export async function POST(request: Request) {
       status: "new",
       comments: [],
       createdAt: new Date(),
-      updatedAt: new Date(),
+      updatedAt: undefined,
     }
 
     const updatedSuggestions: Suggestion[] = [...matchingBoard.suggestions, newSuggestion]
