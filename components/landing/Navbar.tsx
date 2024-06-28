@@ -21,7 +21,7 @@ function Navbar() {
             </SignedIn>
             <SignedOut>
               <Link href="/dashboard/boards">
-                <div className="bg-black text-white px-4 py-2 rounded text-md">Log In</div>
+                <div className="bg-black text-white px-4 py-2 rounded-lg text-md">Log In</div>
               </Link>
             </SignedOut>
           </div>

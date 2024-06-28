@@ -2,11 +2,11 @@ import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
 import { Suggestion } from "@/types/SuggestionBoard"
 import { v4 as uuidv4 } from "uuid"
-import { auth } from "@clerk/nextjs/server"
+import { currentUser } from "@clerk/nextjs/server"
 
 export async function POST(request: Request) {
-  const { userId } = auth()
-  if (!userId) {
+  const user = await currentUser()
+  if (!user) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
   }
 
@@ -44,8 +44,9 @@ export async function POST(request: Request) {
     // add the new suggestion to the board
     const newSuggestion: Suggestion = {
       id: uuidv4(),
-      author: userId,
-      authorImg: "",
+      author: user.id,
+      authorName: user.username || user.firstName || "Anonymous",
+      authorImg: user.imageUrl || "https://flycatcher.app/board-pages/default-pfp.png",
       title,
       description,
       votes: [],

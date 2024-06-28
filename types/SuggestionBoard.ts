@@ -4,6 +4,7 @@ export interface Suggestion {
   id: string
   title: string
   author: string
+  authorName: string
   authorImg: string
   description: string
   votes: Vote[]
@@ -39,6 +40,7 @@ export interface BoardSettings {
 export interface Comment {
   id: string
   author: string
+  authorName: string
   authorImg: string
   isOwnerMessage: boolean
   content: string
@@ -47,7 +49,9 @@ export interface Comment {
 }
 
 export interface Reply {
+  id: string
   author: string
+  authorName: string
   authorImg: string
   isOwnerMessage: boolean
   content: string

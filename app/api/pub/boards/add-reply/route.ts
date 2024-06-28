@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
-import { Suggestion, Comment } from "@/types/SuggestionBoard"
+import { Suggestion, Reply, Comment } from "@/types/SuggestionBoard"
 import { v4 as uuidv4 } from "uuid"
 import { currentUser } from "@clerk/nextjs/server"
 
@@ -11,36 +11,34 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json()
-  const { comment, suggestionId } = body
-  const boardUrlName = body.board.urlName
+  const { reply, commentId, suggestionId, boardUrlName } = body
 
-  if (!comment || !suggestionId) {
+  if (!reply || !commentId || !suggestionId) {
     return NextResponse.json(
       {
-        message: "Missing comment or suggestionId",
+        message: "Missing reply or commentId or suggestionId",
       },
       { status: 400 },
     )
   }
 
-  if (comment.length > 350) {
+  if (reply.length > 350) {
     return NextResponse.json(
       {
-        message: "Comment must be less than 350 characters",
+        message: "Reply must be less than 350 characters",
       },
       { status: 400 },
     )
   }
 
-  const newComment: Comment = {
+  const newReply: Reply = {
     id: uuidv4(),
     author: user.id,
     authorName: user.username || user.firstName || "Anonymous",
     authorImg: user.imageUrl || "https://flycatcher.app/board-pages/default-pfp.png",
     isOwnerMessage: false,
-    content: comment,
+    content: reply,
     createdAt: new Date(),
-    replies: [],
   }
 
   try {
@@ -53,20 +51,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Board not found" }, { status: 404 })
     }
 
-    // find the suggestion by suggestionId and update it with the new comment
-    const updatedSuggestions = board.suggestions.map((suggestion: Suggestion) => {
-      if (suggestion.id === suggestionId) {
-        return {
-          ...suggestion,
-          comments: [...suggestion.comments, newComment],
-        }
-      }
-      return suggestion
-    })
+    const suggestionIndex = board.suggestions.findIndex((s: Suggestion) => s.id === suggestionId)
+    if (suggestionIndex === -1) {
+      return NextResponse.json({ message: "Suggestion not found" }, { status: 404 })
+    }
 
-    await collection.updateOne({ urlName: boardUrlName }, { $set: { suggestions: updatedSuggestions } })
+    const commentIndex = board.suggestions[suggestionIndex].comments.findIndex((c: Comment) => c.id === commentId)
+    if (commentIndex === -1) {
+      return NextResponse.json({ message: "Comment not found" }, { status: 404 })
+    }
 
-    return NextResponse.json({ message: "Comment added successfully", newComment }, { status: 200 })
+    // Update the specific comment with the new reply
+    const updatePath = `suggestions.${suggestionIndex}.comments.${commentIndex}.replies`
+
+    await collection.updateOne({ urlName: boardUrlName }, { $push: { [updatePath]: newReply } as any })
+
+    return NextResponse.json({ message: "Comment added successfully", newReply }, { status: 200 })
   } catch (error) {
     let errorMessage = "An unknown error occurred"
     if (error instanceof Error) {

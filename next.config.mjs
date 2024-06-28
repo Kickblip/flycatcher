@@ -6,6 +6,10 @@ const nextConfig = {
         protocol: "https", // Uploadthing CDN
         hostname: "utfs.io",
       },
+      {
+        protocol: "https",
+        hostname: "img.clerk.com",
+      },
     ],
   },
 }

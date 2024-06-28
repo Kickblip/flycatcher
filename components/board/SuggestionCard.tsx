@@ -1,8 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import { Suggestion, Board, LocalStorageUser } from "@/types/SuggestionBoard"
 import { HandThumbUpIcon, ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline"
+import { ArrowsRightLeftIcon, PaperAirplaneIcon } from "@heroicons/react/16/solid"
 import tinycolor from "tinycolor2"
 import Modal from "react-modal"
 import { useUser } from "@clerk/nextjs"
@@ -18,17 +20,22 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
   const [newComment, setNewComment] = useState("")
   const { isLoaded, isSignedIn, user } = useUser()
   const [isLiked, setIsLiked] = useState(false)
+  const [replyInputs, setReplyInputs] = useState<{ [key: number]: boolean }>({})
+  const [replyTexts, setReplyTexts] = useState<{ [key: number]: string }>({})
 
   useEffect(() => {
     // check if user has already liked the suggestion
     const localStorageData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
-    if (localStorageData.likedSuggestions.includes(suggestion.id)) {
-      setIsLiked(true)
+    if (localStorageData.likedSuggestions) {
+      if (localStorageData.likedSuggestions.includes(suggestion.id)) {
+        setIsLiked(true)
+      }
     }
   }, [suggestion, boardData])
 
   const openModal = () => setModalIsOpen(true)
   const closeModal = () => setModalIsOpen(false)
+
   const customModalStyles = {
     content: {
       top: "50%",
@@ -87,8 +94,74 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
 
       setNewComment("")
     } catch (error) {
-      console.error((error as Error).message || "Failed to create board")
+      console.error((error as Error).message || "Failed to add comment")
       toast.error("Failed to add comment.")
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const handleAddReply = (index: number) => {
+    setReplyInputs((prev) => ({
+      ...prev,
+      [index]: !prev[index],
+    }))
+  }
+
+  const handleReplyChange = (index: number, value: string) => {
+    setReplyTexts((prev) => ({
+      ...prev,
+      [index]: value,
+    }))
+  }
+
+  const handleReplySubmit = async (index: number, commentId: string) => {
+    const replyText = replyTexts[index].trim()
+
+    if (!replyText || !commentId) {
+      return
+    }
+
+    if (replyText.length > 350) {
+      toast.error("Reply must be less than 350 characters")
+      return
+    }
+
+    setSubmitting(true)
+
+    try {
+      const response = await fetch("/api/pub/boards/add-reply", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          reply: replyText,
+          commentId: commentId,
+          suggestionId: suggestion.id,
+          boardUrlName: boardData.urlName,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Failed to add Reply.")
+      } else {
+        const data = await response.json()
+        suggestion.comments[index].replies.push(data.newReply)
+        setReplyTexts((prev) => ({
+          ...prev,
+          [index]: "",
+        }))
+        setReplyInputs((prev) => ({
+          ...prev,
+          [index]: false,
+        }))
+        toast.success("Reply added.")
+      }
+    } catch (error) {
+      console.error((error as Error).message || "Failed to add Reply.")
+      toast.error("Failed to add Reply.")
     } finally {
       setSubmitting(false)
     }
@@ -232,15 +305,29 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
       <Modal isOpen={modalIsOpen} onRequestClose={closeModal} style={customModalStyles} contentLabel="Suggestion Comments Modal">
         <div className="p-4 w-full">
           <div className="mb-4 w-full break-words">
-            <h2 className="text-sm font-semibold mb-2" style={{ color: accentColor }}>
-              {suggestion.status === "working"
-                ? "Currently in-progress..."
-                : suggestion.status === "shipped"
-                ? "Shipped!"
-                : suggestion.status === "planned"
-                ? "Planned"
-                : ""}
-            </h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-semibold mb-2" style={{ color: accentColor }}>
+                {suggestion.status === "working"
+                  ? "Currently in-progress..."
+                  : suggestion.status === "shipped"
+                  ? "Shipped!"
+                  : suggestion.status === "planned"
+                  ? "Planned"
+                  : ""}
+              </h2>
+              <div className="flex items-center">
+                <Image
+                  src={suggestion.authorImg || "/board-pages/default-pfp.png"}
+                  alt="Author"
+                  width={25}
+                  height={25}
+                  className="rounded-full"
+                />
+                <p className="text-xs ml-2" style={{ color: textColor }}>
+                  {suggestion.authorName || "Anonymous"}
+                </p>
+              </div>
+            </div>
             <h2 className="text-2xl font-bold mb-4">{suggestion.title}</h2>
             <p className="text-lg">{suggestion.description}</p>
           </div>
@@ -253,12 +340,71 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
                   className="w-full flex flex-col mb-1 p-2 rounded-lg"
                   // style={{ backgroundColor: lighterSecondaryColor }}
                 >
-                  <p className="text-sm font-medium break-words mb-1" style={{ color: textColor }}>
+                  <div className="flex items-center">
+                    <Image
+                      src={comment.authorImg || "/board-pages/default-pfp.png"}
+                      alt="Author"
+                      width={20}
+                      height={20}
+                      className="rounded-full"
+                    />
+                    <p className="text-xs mx-2" style={{ color: textColor }}>
+                      {comment.authorName || "Anonymous"}
+                    </p>
+                    <p className="text-xs break-words" style={{ color: lighterTextColor }}>
+                      {new Date(comment.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <p className="text-sm font-medium break-words mt-2 mb-1" style={{ color: textColor }}>
                     {comment.content}
                   </p>
-                  <p className="text-xs break-words" style={{ color: lighterTextColor }}>
-                    {new Date(comment.createdAt).toLocaleDateString()}
-                  </p>
+                  <button className="flex items-center" onClick={() => handleAddReply(index)}>
+                    <p className="text-xs">Reply</p>
+                    <ArrowsRightLeftIcon className="w-3 h-3 ml-1" strokeWidth={1.5} />
+                  </button>
+                  {replyInputs[index] && (
+                    <div className="flex items-center mt-2">
+                      <input
+                        type="text"
+                        placeholder="Write your reply..."
+                        className="flex-grow px-2 py-1 rounded-lg"
+                        style={{ color: textColor, backgroundColor: lighterSecondaryColor }}
+                        value={replyTexts[index] || ""}
+                        onChange={(e) => handleReplyChange(index, e.target.value)}
+                      />
+                      <button className="ml-2" onClick={() => handleReplySubmit(index, comment.id)}>
+                        <PaperAirplaneIcon className="w-5 h-5" />
+                      </button>
+                    </div>
+                  )}
+                  <div>
+                    {comment.replies && comment.replies.length > 0 && (
+                      <div className="mt-3 ml-4 border-l-2 pl-2" style={{ borderColor: lighterTextColor }}>
+                        {comment.replies.map((reply, replyIndex) => (
+                          <div key={replyIndex} className="mb-2">
+                            <div className="flex items-center mb-1">
+                              <Image
+                                src={reply.authorImg || "/board-pages/default-pfp.png"}
+                                alt="Author"
+                                width={15}
+                                height={15}
+                                className="rounded-full"
+                              />
+                              <p className="text-xs mx-2" style={{ color: textColor }}>
+                                {reply.authorName || "Anonymous"}
+                              </p>
+                              <p className="text-xs break-words" style={{ color: lighterTextColor }}>
+                                {new Date(reply.createdAt).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <p className="text-sm" style={{ color: textColor }}>
+                              {reply.content}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))
             ) : (
