@@ -11,8 +11,9 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json()
-  const { comment, suggestionId } = body
+  const { suggestionId } = body
   const boardUrlName = body.board.urlName
+  const comment = body.comment.trim()
 
   if (!comment || !suggestionId) {
     return NextResponse.json(
@@ -53,18 +54,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Board not found" }, { status: 404 })
     }
 
-    // find the suggestion by suggestionId and update it with the new comment
-    const updatedSuggestions = board.suggestions.map((suggestion: Suggestion) => {
-      if (suggestion.id === suggestionId) {
-        return {
-          ...suggestion,
-          comments: [...suggestion.comments, newComment],
-        }
-      }
-      return suggestion
-    })
+    // Find the suggestion by suggestionId to make sure it exists
+    const suggestionIndex = board.suggestions.findIndex((suggestion: Suggestion) => suggestion.id === suggestionId)
+    if (suggestionIndex === -1) {
+      return NextResponse.json({ message: "Suggestion not found" }, { status: 404 })
+    }
 
-    await collection.updateOne({ urlName: boardUrlName }, { $set: { suggestions: updatedSuggestions } })
+    // Construct the path to the comments array of the specific suggestion
+    const updatePath = `suggestions.${suggestionIndex}.comments`
+
+    // Use $push to add the new comment to the comments array of the specific suggestion
+    await collection.updateOne({ urlName: boardUrlName }, { $push: { [updatePath]: newComment } as any })
 
     return NextResponse.json({ message: "Comment added successfully", newComment }, { status: 200 })
   } catch (error) {

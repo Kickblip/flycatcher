@@ -1,4 +1,5 @@
 import Modal from "react-modal"
+import Image from "next/image"
 import { Board, Suggestion } from "@/types/SuggestionBoard"
 import { ArchiveBoxIcon, TrashIcon } from "@heroicons/react/24/outline"
 import { useState } from "react"
@@ -93,6 +94,7 @@ const SuggestionAdditionalInfoModal = ({
           suggestions: prevBoard.suggestions.filter((s) => s.id !== suggestionId),
         }))
         setDeletionConfirmationModalIsOpen(false)
+        toast.success("Suggestion deleted.")
       } catch (error) {
         console.error("Error deleting suggestion:", error)
         toast.error("Failed to delete suggestion.")
@@ -112,7 +114,19 @@ const SuggestionAdditionalInfoModal = ({
       >
         <div className="p-4 w-full">
           <div className="flex justify-between items-start w-full mb-4">
-            <h2 className="text-2xl font-bold break-words w-[75%]">{suggestion.title}</h2>
+            <div className="w-[75%] flex flex-col">
+              <div className="flex items-center mb-1">
+                <Image
+                  src={suggestion.authorImg || "/board-pages/default-pfp.png"}
+                  alt="Author"
+                  width={25}
+                  height={25}
+                  className="rounded-full"
+                />
+                <p className="text-xs ml-2">{suggestion.authorName || "Anonymous"}</p>
+              </div>
+              <h2 className="text-2xl font-bold break-words">{suggestion.title}</h2>
+            </div>
             <div className="flex space-x-2">
               <button
                 className="border border-indigo-500 text-indigo-500 hover:bg-indigo-500 hover:text-white transition duration-200 w-12 h-12 rounded-lg flex items-center justify-center"
@@ -139,12 +153,51 @@ const SuggestionAdditionalInfoModal = ({
             <h3 className="text-xl font-bold mb-4">Comments</h3>
             {suggestion.comments.length > 0 ? (
               suggestion.comments.map((comment, index) => (
-                <div key={index} className="mb-2 p-2 rounded-lg bg-gray-50">
-                  <p className="text-sm text-black">{comment.content}</p>
+                <div
+                  key={index}
+                  className="w-full flex flex-col mb-1 p-2 rounded-lg"
+                  // style={{ backgroundColor: lighterSecondaryColor }}
+                >
+                  <div className="flex items-center">
+                    <Image
+                      src={comment.authorImg || "/board-pages/default-pfp.png"}
+                      alt="Author"
+                      width={20}
+                      height={20}
+                      className="rounded-full"
+                    />
+                    <p className="text-xs mx-2">{comment.authorName || "Anonymous"}</p>
+                    <p className="text-xs break-words text-gray-700">{new Date(comment.createdAt).toLocaleDateString()}</p>
+                  </div>
+                  <p className="text-sm font-medium break-words mt-2 mb-1">{comment.content}</p>
+                  <div>
+                    {comment.replies && comment.replies.length > 0 && (
+                      <div className="mt-3 ml-4 border-l-2 pl-2 border-gray-700">
+                        {comment.replies.map((reply, replyIndex) => (
+                          <div key={replyIndex} className="mb-2">
+                            <div className="flex items-center mb-1">
+                              <Image
+                                src={reply.authorImg || "/board-pages/default-pfp.png"}
+                                alt="Author"
+                                width={15}
+                                height={15}
+                                className="rounded-full"
+                              />
+                              <p className="text-xs mx-2">{reply.authorName || "Anonymous"}</p>
+                              <p className="text-xs break-words text-gray-700">
+                                {new Date(reply.createdAt).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <p className="text-sm w-full break-words">{reply.content}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))
             ) : (
-              <p className="text-sm text-black">No comments yet.</p>
+              <p className="text-sm">No comments yet.</p>
             )}
           </div>
         </div>

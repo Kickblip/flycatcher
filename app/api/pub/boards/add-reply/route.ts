@@ -11,7 +11,8 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json()
-  const { reply, commentId, suggestionId, boardUrlName } = body
+  const { commentId, suggestionId, boardUrlName } = body
+  const reply = body.reply.trim()
 
   if (!reply || !commentId || !suggestionId) {
     return NextResponse.json(

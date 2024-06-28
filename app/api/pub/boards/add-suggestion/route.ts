@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
-import { Suggestion } from "@/types/SuggestionBoard"
+import { Suggestion, Vote } from "@/types/SuggestionBoard"
 import { v4 as uuidv4 } from "uuid"
 import { currentUser } from "@clerk/nextjs/server"
 
@@ -11,7 +11,9 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json()
-  const { title, description, board } = body
+  const { board } = body
+  const title = body.title.trim()
+  const description = body.description.trim()
 
   if (!title || !description || !board) {
     return NextResponse.json(
@@ -56,10 +58,10 @@ export async function POST(request: Request) {
       updatedAt: new Date(),
     }
 
-    const updatedSuggestions = [...matchingBoard.suggestions, newSuggestion]
+    const updatedSuggestions: Suggestion[] = [...matchingBoard.suggestions, newSuggestion]
 
     // sort suggestions by votes
-    updatedSuggestions.sort((a, b) => b.votes - a.votes)
+    updatedSuggestions.sort((a: Suggestion, b: Suggestion) => b.votes.length - a.votes.length)
 
     await collection.updateOne({ urlName: board.urlName }, { $set: { suggestions: updatedSuggestions } })
 

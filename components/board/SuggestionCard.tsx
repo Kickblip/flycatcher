@@ -10,6 +10,7 @@ import Modal from "react-modal"
 import { useUser } from "@clerk/nextjs"
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
+import { SignInToastMessage } from "@/components/board/SignInToastMessage"
 
 function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boardData: Board }) {
   const { primaryColor, secondaryColor, accentColor, textColor } = boardData
@@ -22,19 +23,27 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
   const [isLiked, setIsLiked] = useState(false)
   const [replyInputs, setReplyInputs] = useState<{ [key: number]: boolean }>({})
   const [replyTexts, setReplyTexts] = useState<{ [key: number]: string }>({})
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth)
 
   useEffect(() => {
-    // check if user has already liked the suggestion
-    const localStorageData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
-    if (localStorageData.likedSuggestions) {
-      if (localStorageData.likedSuggestions.includes(suggestion.id)) {
-        setIsLiked(true)
+    const checkIfLiked = () => {
+      const localStorageData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
+      if (localStorageData.likedSuggestions && suggestion) {
+        return localStorageData.likedSuggestions.includes(suggestion.id)
       }
+      return false
     }
-  }, [suggestion, boardData])
 
-  const openModal = () => setModalIsOpen(true)
-  const closeModal = () => setModalIsOpen(false)
+    setIsLiked(checkIfLiked())
+  }, [suggestion])
+
+  useEffect(() => {
+    setScreenWidth(window.innerWidth)
+    window.addEventListener("resize", () => setScreenWidth(window.innerWidth))
+    return () => {
+      window.removeEventListener("resize", () => setScreenWidth(window.innerWidth))
+    }
+  }, [])
 
   const customModalStyles = {
     content: {
@@ -49,8 +58,7 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
       padding: "20px",
       borderRadius: "15px",
       border: "0px",
-      width: "40%",
-      height: "80vh",
+      width: screenWidth <= 640 ? "95%" : screenWidth <= 768 ? "90%" : "50%",
       maxHeight: "90vh",
     },
     overlay: {
@@ -63,12 +71,15 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
   }
 
   const handleAddComment = async () => {
-    if (!newComment) {
-      return
-    }
+    if (!newComment.trim()) return
 
     if (newComment.length > 350) {
       toast.error("Comment must be less than 350 characters")
+      return
+    }
+
+    if (!isSignedIn) {
+      SignInToastMessage()
       return
     }
 
@@ -118,7 +129,10 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
   const handleReplySubmit = async (index: number, commentId: string) => {
     const replyText = replyTexts[index].trim()
 
-    if (!replyText || !commentId) {
+    if (!replyText || !commentId) return
+
+    if (!isSignedIn) {
+      SignInToastMessage()
       return
     }
 
@@ -257,7 +271,7 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
       <section
         className="w-full mb-4 p-4 rounded-lg cursor-pointer"
         style={{ backgroundColor: secondaryColor }}
-        onClick={openModal}
+        onClick={() => setModalIsOpen(true)}
       >
         <div className="flex justify-between w-full">
           <div className="flex flex-col break-words max-w-[80%]" style={{ color: textColor }}>
@@ -302,7 +316,13 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
           </div>
         </div>
       </section>
-      <Modal isOpen={modalIsOpen} onRequestClose={closeModal} style={customModalStyles} contentLabel="Suggestion Comments Modal">
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={() => setModalIsOpen(false)}
+        style={customModalStyles}
+        contentLabel="Suggestion Comments Modal"
+        // className="w-[40%]"
+      >
         <div className="p-4 w-full">
           <div className="mb-4 w-full break-words">
             <div className="flex items-center justify-between">
@@ -333,6 +353,25 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
           </div>
           <div className="mb-12 mt-6">
             <h3 className="text-md font-bold mb-2">Comments</h3>
+            <div className="mb-4 flex">
+              <input
+                type="text"
+                className="flex-grow px-2 py-1 border-b-2 bg-transparent outline-none"
+                placeholder="Add a comment..."
+                value={newComment}
+                onChange={handleCommentChange}
+                style={{ borderColor: lighterTextColor, color: textColor }}
+              />
+              <button
+                onClick={handleAddComment}
+                className="ml-2 px-4 py-1 rounded-lg items-center justify-center flex"
+                style={{ backgroundColor: accentColor, color: secondaryColor }}
+                disabled={submitting}
+              >
+                {/* {submitting ? "Commenting..." : "Comment"} */}
+                <PaperAirplaneIcon className="w-5 h-5" />
+              </button>
+            </div>
             {suggestion.comments.length > 0 ? (
               suggestion.comments.map((comment, index) => (
                 <div
@@ -358,21 +397,26 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
                   <p className="text-sm font-medium break-words mt-2 mb-1" style={{ color: textColor }}>
                     {comment.content}
                   </p>
-                  <button className="flex items-center" onClick={() => handleAddReply(index)}>
+                  <button className="flex items-center my-1" onClick={() => handleAddReply(index)} style={{ color: accentColor }}>
                     <p className="text-xs">Reply</p>
                     <ArrowsRightLeftIcon className="w-3 h-3 ml-1" strokeWidth={1.5} />
                   </button>
                   {replyInputs[index] && (
-                    <div className="flex items-center mt-2">
+                    <div className="flex items-center my-2">
                       <input
                         type="text"
-                        placeholder="Write your reply..."
-                        className="flex-grow px-2 py-1 rounded-lg"
-                        style={{ color: textColor, backgroundColor: lighterSecondaryColor }}
+                        placeholder="Add a reply..."
+                        className="flex-grow px-2 py-1 bg-transparent outline-none border-b-2"
+                        style={{ borderColor: lighterTextColor }}
                         value={replyTexts[index] || ""}
                         onChange={(e) => handleReplyChange(index, e.target.value)}
                       />
-                      <button className="ml-2" onClick={() => handleReplySubmit(index, comment.id)}>
+                      <button
+                        className="ml-2 rounded-lg px-4 py-2"
+                        onClick={() => handleReplySubmit(index, comment.id)}
+                        disabled={submitting}
+                        style={{ color: secondaryColor, backgroundColor: accentColor }}
+                      >
                         <PaperAirplaneIcon className="w-5 h-5" />
                       </button>
                     </div>
@@ -397,7 +441,7 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
                                 {new Date(reply.createdAt).toLocaleDateString()}
                               </p>
                             </div>
-                            <p className="text-sm" style={{ color: textColor }}>
+                            <p className="text-sm w-full break-words" style={{ color: textColor }}>
                               {reply.content}
                             </p>
                           </div>
@@ -412,24 +456,6 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
                 No comments yet.
               </p>
             )}
-          </div>
-          <div className="mt-4">
-            <input
-              type="text"
-              className="w-full p-2 rounded-lg outline-none"
-              placeholder="Add a comment..."
-              value={newComment}
-              onChange={handleCommentChange}
-              style={{ backgroundColor: lighterSecondaryColor, color: textColor }}
-            />
-            <button
-              onClick={handleAddComment}
-              className="mt-2 w-full p-2 rounded-lg"
-              style={{ backgroundColor: accentColor, color: secondaryColor }}
-              disabled={submitting}
-            >
-              {submitting ? "Submitting..." : "Submit"}
-            </button>
           </div>
         </div>
       </Modal>
