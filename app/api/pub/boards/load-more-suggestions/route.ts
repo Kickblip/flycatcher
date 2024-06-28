@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
-import { Suggestion, Comment, Vote } from "@/types/SuggestionBoard"
+import { Suggestion, Comment, Vote, Reply } from "@/types/SuggestionBoard"
 import { auth } from "@clerk/nextjs/server"
 
 export async function POST(request: Request) {
@@ -35,6 +35,10 @@ export async function POST(request: Request) {
       comments: suggestion.comments.map((comment: Comment) => ({
         ...comment,
         author: userId ? (comment.author === userId ? comment.author : undefined) : undefined,
+        replies: comment.replies.map((reply: Reply) => ({
+          ...reply,
+          author: userId ? (reply.author === userId ? reply.author : undefined) : undefined,
+        })),
       })),
     }))
 

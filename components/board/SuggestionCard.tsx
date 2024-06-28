@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Suggestion, Board, LocalStorageUser } from "@/types/SuggestionBoard"
-import { HandThumbUpIcon, ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline"
+import { HandThumbUpIcon, ChatBubbleBottomCenterTextIcon, PencilSquareIcon } from "@heroicons/react/24/outline"
 import { ArrowsRightLeftIcon, PaperAirplaneIcon } from "@heroicons/react/16/solid"
 import tinycolor from "tinycolor2"
 import Modal from "react-modal"
@@ -336,6 +336,14 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
                   : ""}
               </h2>
               <div className="flex items-center">
+                {suggestion.author ? (
+                  <button>
+                    <PencilSquareIcon className="w-5 h-5 mr-2" />
+                  </button>
+                ) : (
+                  <></>
+                )}
+
                 <Image
                   src={suggestion.authorImg || "/board-pages/default-pfp.png"}
                   alt="Author"
@@ -368,7 +376,6 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
                 style={{ backgroundColor: accentColor, color: secondaryColor }}
                 disabled={submitting}
               >
-                {/* {submitting ? "Commenting..." : "Comment"} */}
                 <PaperAirplaneIcon className="w-5 h-5" />
               </button>
             </div>
@@ -393,6 +400,13 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
                     <p className="text-xs break-words" style={{ color: lighterTextColor }}>
                       {new Date(comment.createdAt).toLocaleDateString()}
                     </p>
+                    {comment.author ? (
+                      <button>
+                        <PencilSquareIcon className="w-4 h-4 ml-2" />
+                      </button>
+                    ) : (
+                      <></>
+                    )}
                   </div>
                   <p className="text-sm font-medium break-words mt-2 mb-1" style={{ color: textColor }}>
                     {comment.content}
@@ -440,6 +454,13 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
                               <p className="text-xs break-words" style={{ color: lighterTextColor }}>
                                 {new Date(reply.createdAt).toLocaleDateString()}
                               </p>
+                              {reply.author ? (
+                                <button>
+                                  <PencilSquareIcon className="w-4 h-4 ml-2" />
+                                </button>
+                              ) : (
+                                <></>
+                              )}
                             </div>
                             <p className="text-sm w-full break-words" style={{ color: textColor }}>
                               {reply.content}

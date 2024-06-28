@@ -218,70 +218,72 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
 
   return (
     <main
-      className="flex md:flex-row flex-col max-w-7xl md:p-4 p-0 mx-auto min-h-screen w-full"
+      className="flex md:p-4 p-0 min-h-screen w-full"
       style={{ backgroundColor: board?.primaryColor || "#fff", color: board?.textColor || "#000" }}
     >
-      <div className="md:w-1/3 w-full p-4">
-        <div>
-          {board?.logo ? (
-            <Image src={board.logo} alt={`${board.name} logo`} width={175} height={175} className="mb-4" />
-          ) : (
-            <p className="text-xl font-bold mb-4 w-full break-words">{board?.name}</p>
-          )}
+      <div className="w-full max-w-7xl mx-auto flex md:flex-row flex-col">
+        <div className="md:w-1/3 w-full p-4">
+          <div>
+            {board?.logo ? (
+              <Image src={board.logo} alt={`${board.name} logo`} width={175} height={175} className="mb-4" />
+            ) : (
+              <p className="text-xl font-bold mb-4 w-full break-words">{board?.name}</p>
+            )}
+          </div>
+          <div className="p-6 rounded-lg" style={{ backgroundColor: board?.secondaryColor || "#f9fafb" }}>
+            <h1 className="text-lg font-semibold mb-6">Add feedback</h1>
+            <div className="mb-4">
+              <label className="block text-xs font-bold mb-1" htmlFor="suggestionTitle">
+                Post Title
+              </label>
+              <input
+                id="suggestionTitle"
+                type="text"
+                placeholder="Add magic link authentication"
+                className="w-full p-2 rounded-lg focus:outline-none"
+                value={suggestionTitle}
+                onChange={(e) => setsuggestionTitle(e.target.value)}
+                style={{ backgroundColor: lighterSecondaryColor }}
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-xs font-bold mb-1" htmlFor="suggestionDescription">
+                Post Text
+              </label>
+              <textarea
+                id="suggestionDescription"
+                placeholder="I hate having to keep track of all these passwords..."
+                className="w-full p-2 rounded-lg focus:outline-none"
+                value={suggestionDescription}
+                onChange={(e) => setsuggestionDescription(e.target.value)}
+                style={{ backgroundColor: lighterSecondaryColor, height: "100px" }}
+              />
+            </div>
+            <button
+              onClick={handleNewSuggestionSubmission}
+              className="w-full p-2 rounded-lg"
+              style={{ backgroundColor: board?.accentColor || "#6366f1", color: board?.secondaryColor || "#fff" }}
+              disabled={submitting}
+            >
+              {submitting ? "Submitting..." : "Submit"}
+            </button>
+          </div>
+          <PoweredByBadge primaryColor={board?.primaryColor} />
         </div>
-        <div className="p-6 rounded-lg" style={{ backgroundColor: board?.secondaryColor || "#f9fafb" }}>
-          <h1 className="text-lg font-semibold mb-6">Add feedback</h1>
-          <div className="mb-4">
-            <label className="block text-xs font-bold mb-1" htmlFor="suggestionTitle">
-              Post Title
-            </label>
-            <input
-              id="suggestionTitle"
-              type="text"
-              placeholder="Add magic link authentication"
-              className="w-full p-2 rounded-lg focus:outline-none"
-              value={suggestionTitle}
-              onChange={(e) => setsuggestionTitle(e.target.value)}
-              style={{ backgroundColor: lighterSecondaryColor }}
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-xs font-bold mb-1" htmlFor="suggestionDescription">
-              Post Text
-            </label>
-            <textarea
-              id="suggestionDescription"
-              placeholder="I hate having to keep track of all these passwords..."
-              className="w-full p-2 rounded-lg focus:outline-none"
-              value={suggestionDescription}
-              onChange={(e) => setsuggestionDescription(e.target.value)}
-              style={{ backgroundColor: lighterSecondaryColor, height: "100px" }}
-            />
-          </div>
+        <div className="md:w-2/3 w-full p-4">
+          {hideEmptyMessage ? null : <p className="text-md font-semibold">No feedback yet</p>}
+          {board?.suggestions.map((suggestion: Suggestion, index: number) => (
+            <SuggestionCard key={index} suggestion={suggestion} boardData={board} />
+          ))}
           <button
-            onClick={handleNewSuggestionSubmission}
-            className="w-full p-2 rounded-lg"
+            onClick={handleLoadMoreSuggestionsSubmission}
+            className={"w-full p-2 rounded-lg" + (hideLoadMoreButton ? " hidden" : "")}
             style={{ backgroundColor: board?.accentColor || "#6366f1", color: board?.secondaryColor || "#fff" }}
             disabled={submitting}
           >
-            {submitting ? "Submitting..." : "Submit"}
+            {submitting ? "Loading..." : "Load More"}
           </button>
         </div>
-        <PoweredByBadge primaryColor={board?.primaryColor} />
-      </div>
-      <div className="md:w-2/3 w-full p-4">
-        {hideEmptyMessage ? null : <p className="text-md font-semibold">No feedback yet</p>}
-        {board?.suggestions.map((suggestion: Suggestion, index: number) => (
-          <SuggestionCard key={index} suggestion={suggestion} boardData={board} />
-        ))}
-        <button
-          onClick={handleLoadMoreSuggestionsSubmission}
-          className={"w-full p-2 rounded-lg" + (hideLoadMoreButton ? " hidden" : "")}
-          style={{ backgroundColor: board?.accentColor || "#6366f1", color: board?.secondaryColor || "#fff" }}
-          disabled={submitting}
-        >
-          {submitting ? "Loading..." : "Load More"}
-        </button>
       </div>
     </main>
   )
