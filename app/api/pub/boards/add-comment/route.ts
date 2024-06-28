@@ -33,17 +33,6 @@ export async function POST(request: Request) {
     )
   }
 
-  const newComment: Comment = {
-    id: uuidv4(),
-    author: user.id,
-    authorName: user.username || user.firstName || "Anonymous",
-    authorImg: user.imageUrl || "https://flycatcher.app/board-pages/default-pfp.png",
-    isOwnerMessage: false,
-    content: comment,
-    createdAt: new Date(),
-    replies: [],
-  }
-
   try {
     const client = await clientPromise
     const collection = client.db("Main").collection("boards")
@@ -52,6 +41,17 @@ export async function POST(request: Request) {
 
     if (!board) {
       return NextResponse.json({ message: "Board not found" }, { status: 404 })
+    }
+
+    const newComment: Comment = {
+      id: uuidv4(),
+      author: user.id,
+      authorName: user.username || user.firstName || "Anonymous",
+      authorImg: user.imageUrl || "https://flycatcher.app/board-pages/default-pfp.png",
+      isOwnerMessage: board.author === user.id,
+      content: comment,
+      createdAt: new Date(),
+      replies: [],
     }
 
     // Find the suggestion by suggestionId to make sure it exists

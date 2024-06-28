@@ -507,6 +507,16 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
                     <p className="text-xs mx-2" style={{ color: textColor }}>
                       {comment.authorName || "Anonymous"}
                     </p>
+                    {comment.isOwnerMessage ? (
+                      <p
+                        className="px-2 py-0.5 rounded text-xs font-semibold mr-2"
+                        style={{ backgroundColor: accentColor, color: primaryColor }}
+                      >
+                        Board Owner
+                      </p>
+                    ) : (
+                      <> </>
+                    )}
                     <p className="text-xs break-words" style={{ color: lighterTextColor }}>
                       {new Date(comment.createdAt).toLocaleDateString()}
                     </p>
@@ -561,6 +571,16 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
                               <p className="text-xs mx-2" style={{ color: textColor }}>
                                 {reply.authorName || "Anonymous"}
                               </p>
+                              {reply.isOwnerMessage ? (
+                                <p
+                                  className="px-2 py-0.5 rounded text-xs font-semibold mr-2"
+                                  style={{ backgroundColor: accentColor, color: primaryColor }}
+                                >
+                                  Board Owner
+                                </p>
+                              ) : (
+                                <> </>
+                              )}
                               <p className="text-xs break-words" style={{ color: lighterTextColor }}>
                                 {new Date(reply.createdAt).toLocaleDateString()}
                               </p>
