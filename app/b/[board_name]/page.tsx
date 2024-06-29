@@ -7,7 +7,7 @@ import SuggestionCard from "@/components/board/SuggestionCard"
 import { Suggestion, Board, LocalStorageUser, Vote } from "@/types/SuggestionBoard"
 import PoweredByBadge from "@/components/board/PoweredByBadge"
 import { v4 as uuidv4 } from "uuid"
-import { useUser } from "@clerk/nextjs"
+import { useUser, SignedIn, UserButton } from "@clerk/nextjs"
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
@@ -284,6 +284,11 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
             {submitting ? "Loading..." : "Load More"}
           </button>
         </div>
+      </div>
+      <div className="absolute top-6 right-6">
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
       </div>
     </main>
   )

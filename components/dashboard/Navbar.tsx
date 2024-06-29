@@ -11,20 +11,20 @@ function Navbar() {
             <Link href="/dashboard/boards">
               <Image src="/landing/logo.png" alt="Logo" width={170} height={170} />
             </Link>
-            {/* <Link
-              href="/dashboard/waitlist"
+            <Link
+              href="/dashboard/boards"
               className="text-black text-md font-medium opacity-70 hover:opacity-100 transition duration-200"
             >
-              Waitlist Pages
+              Boards
             </Link>
             <Link
-              href="/dashboard/suggestions"
+              href="/dashboard/subscription"
               className="text-black text-md font-medium opacity-70 hover:opacity-100 transition duration-200"
             >
-              Feedback Boards
-            </Link> */}
+              Subscription
+            </Link>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center">
             <SignedIn>
               <UserButton />
             </SignedIn>
