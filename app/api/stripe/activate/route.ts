@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { currentUser } from "@clerk/nextjs/server"
+import { clerkClient, currentUser } from "@clerk/nextjs/server"
 import Stripe from "stripe"
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: "2024-06-20",
@@ -22,6 +22,12 @@ export async function POST(request: Request) {
 
     await stripe.subscriptions.update(user.publicMetadata.stripeSubscriptionId as string, {
       cancel_at_period_end: false,
+    })
+
+    await clerkClient.users.updateUserMetadata(user.id, {
+      publicMetadata: {
+        stripeSubscriptionCancelAtPeriodEnd: false,
+      },
     })
 
     return NextResponse.json({ message: "Subscription activated" }, { status: 200 })

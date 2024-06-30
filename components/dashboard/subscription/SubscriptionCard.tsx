@@ -76,7 +76,7 @@ export default function SubscriptionCard({
           <p className="text-lg font-medium my-4">What you get:</p>
           <ul className="mb-4 space-y-3">
             {features.map((feature, index) => (
-              <div className="flex items-center space-x-2">
+              <div key={index} className="flex items-center space-x-2">
                 <CheckCircleIcon className="h-5 w-5 text-indigo-500" />
                 <li key={index} className="text-sm font-normal text-gray-500">
                   {feature}

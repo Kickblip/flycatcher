@@ -71,7 +71,7 @@ export default function BillingManagerPanel() {
   return (
     <div className="w-full h-32 flex flex-col">
       <p className="font-semibold mt-4">Next Charge Date</p>
-      <p className="text-gray-700">{isCancelled ? "Cancelled" : formattedDate}</p>
+      <p className="text-gray-700">{isCancelled ? `Cancelled. Ends on ${formattedDate}` : formattedDate}</p>
       <div className="flex items-center mt-4">
         {!isCancelled ? (
           <button
