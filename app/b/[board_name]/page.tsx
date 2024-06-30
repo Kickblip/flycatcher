@@ -155,8 +155,12 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
       })
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || "Failed to post feedback")
+        if (response.status === 403) {
+          throw new Error("MAX_SUGGESTIONS_REACHED")
+        } else {
+          const errorData = await response.json()
+          throw new Error(errorData.message || "Failed to post feedback")
+        }
       } else {
         const data = await response.json()
         setBoard((prevBoard) => {
@@ -172,8 +176,12 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
       setsuggestionTitle("")
       setsuggestionDescription("")
       toast.success("Feedback posted.")
-    } catch (error) {
-      toast.error("Failed to post feedback.")
+    } catch (error: any) {
+      if (error.message === "MAX_SUGGESTIONS_REACHED") {
+        toast.error("This board has reached it's feedback limit.")
+      } else {
+        toast.error("Failed to post feedback.")
+      }
     } finally {
       setSubmitting(false)
     }

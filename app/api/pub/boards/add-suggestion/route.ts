@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
-import { Suggestion, Vote } from "@/types/SuggestionBoard"
+import { Suggestion } from "@/types/SuggestionBoard"
 import { v4 as uuidv4 } from "uuid"
-import { currentUser } from "@clerk/nextjs/server"
+import { clerkClient, currentUser } from "@clerk/nextjs/server"
+import Stripe from "stripe"
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+  apiVersion: "2024-06-20",
+})
 
 export async function POST(request: Request) {
   const user = await currentUser()
@@ -41,6 +45,20 @@ export async function POST(request: Request) {
 
     if (!matchingBoard) {
       return NextResponse.json({ message: "Board not found" }, { status: 404 })
+    }
+
+    const authorData = await clerkClient.users.getUser(matchingBoard.author)
+    console.log("authorData", authorData)
+
+    let isPremium = false
+    if (authorData.publicMetadata.stripeSubscriptionId) {
+      // check their subscription status
+      const subscription = await stripe.subscriptions.retrieve(user.publicMetadata.stripeSubscriptionId as string)
+      isPremium = subscription.status === "active"
+    }
+
+    if (matchingBoard.suggestions.length >= 50 && !isPremium) {
+      return NextResponse.json({ message: "Reached suggestion limit for board" }, { status: 403 })
     }
 
     // add the new suggestion to the board

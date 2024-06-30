@@ -1,12 +1,16 @@
 import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
-import { auth } from "@clerk/nextjs/server"
+import { currentUser } from "@clerk/nextjs/server"
 import { Board } from "@/types/SuggestionBoard"
+import Stripe from "stripe"
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+  apiVersion: "2024-06-20",
+})
 
 export async function POST(request: Request) {
-  const { userId } = auth()
+  const user = await currentUser()
 
-  if (!userId) {
+  if (!user) {
     return NextResponse.json(
       {
         message: "User not authenticated",
@@ -47,6 +51,13 @@ export async function POST(request: Request) {
     )
   }
 
+  let isPremium = false
+  if (user.publicMetadata.stripeSubscriptionId) {
+    // check their subscription status
+    const subscription = await stripe.subscriptions.retrieve(user.publicMetadata.stripeSubscriptionId as string)
+    isPremium = subscription.status === "active"
+  }
+
   const newBoard: Board = {
     name,
     urlName: name.toLowerCase().replace(/\s+/g, "-"),
@@ -59,7 +70,7 @@ export async function POST(request: Request) {
     secondaryColor: "#f3f4f6", // gray-100
     accentColor: "#6366f1", // indigo-500
     textColor: "#000000",
-    author: userId,
+    author: user.id,
     suggestions: [],
     settings: {
       forceSignIn: false,
@@ -68,11 +79,32 @@ export async function POST(request: Request) {
     createdAt: new Date(),
   }
 
-  console.log("Creating board:", newBoard)
-
   try {
     const client = await clientPromise
     const collection = client.db("Main").collection("boards")
+
+    // get the total amount of boards the user currently has
+    const boards = await collection.find({ author: user.id }).toArray()
+
+    if (!isPremium && boards.length >= 1) {
+      // 1 is the limit for free users
+      return NextResponse.json(
+        {
+          message: "Exceeded board limit",
+        },
+        { status: 403 },
+      )
+    }
+
+    if (isPremium && boards.length >= 10) {
+      // 10 is the limit for premium users
+      return NextResponse.json(
+        {
+          message: "Exceeded board limit",
+        },
+        { status: 403 },
+      )
+    }
 
     // check if a board with the same name already exists (case-insensitive)
     const existingBoard = await collection.findOne({ urlName: new RegExp(`^${name.toLowerCase().replace(/\s+/g, "-")}$`, "i") })

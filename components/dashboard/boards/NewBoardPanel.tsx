@@ -1,17 +1,38 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Board } from "@/types/SuggestionBoard"
 import { toast } from "react-toastify"
+import { useUser } from "@clerk/nextjs"
 import "react-toastify/dist/ReactToastify.css"
 
 function NewBoardPanel({ boards, setBoards }: { boards: Board[]; setBoards: (boards: Board[]) => void }) {
   const [boardName, setBoardName] = useState("")
   const [loading, setLoading] = useState(false)
+  const [isPremium, setIsPremium] = useState(false)
+  const { user } = useUser()
+
+  useEffect(() => {
+    if (user) {
+      if (user.publicMetadata.isPremium) {
+        setIsPremium(true)
+      }
+    }
+  }, [user])
 
   const handleSubmit = async () => {
     if (!boardName) {
       toast.error("Board name is required")
+      return
+    }
+
+    if (!isPremium && boards.length >= 1) {
+      toast.error("Board limit for the free plan reached.")
+      return
+    }
+
+    if (isPremium && boards.length >= 10) {
+      toast.error("Board limit for the growth plan reached.")
       return
     }
 
