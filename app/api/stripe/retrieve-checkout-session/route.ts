@@ -24,10 +24,7 @@ export async function POST(request: Request) {
       : []
 
     if (previousCheckoutSessionIds.includes(sessionId)) {
-      return {
-        success: true,
-        error: null,
-      }
+      return NextResponse.json({ success: true, error: null }, { status: 200 })
     }
 
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
