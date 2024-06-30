@@ -45,6 +45,8 @@ const SuggestionAdditionalInfoModal = ({
 }: SuggestionAdditionalInfoModalProps) => {
   const [loading, setLoading] = useState(false)
   const [deletionConfirmationModalIsOpen, setDeletionConfirmationModalIsOpen] = useState(false)
+  const [commentDeletionConfirmationModalIsOpen, setCommentDeletionConfirmationModalIsOpen] = useState(false)
+  const [commentIdToDelete, setCommentIdToDelete] = useState("")
 
   if (!suggestion) return null
 
@@ -104,6 +106,58 @@ const SuggestionAdditionalInfoModal = ({
     }
   }
 
+  const handleDeleteComment = (commentId: string) => {
+    return async () => {
+      setLoading(true)
+      try {
+        const response = await fetch(`/api/boards/delete-comment`, {
+          method: "POST",
+          body: JSON.stringify({ suggestionId: suggestion.id, commentId, boardName: board.urlName }),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.message || "Board does not exist")
+        }
+
+        const deleteCommentById = (comments: any[], commentId: string): any[] => {
+          return comments
+            .map((comment) => {
+              if (comment.id === commentId) {
+                return null // remove comment
+              }
+              if (comment.replies) {
+                comment.replies = deleteCommentById(comment.replies, commentId)
+              }
+              return comment
+            })
+            .filter(Boolean) // filter null
+        }
+
+        setBoard((prevBoard: Board) => ({
+          ...prevBoard,
+          suggestions: prevBoard.suggestions.map((s) => {
+            if (s.id === suggestion.id) {
+              return {
+                ...s,
+                comments: deleteCommentById(s.comments, commentId),
+              }
+            }
+            return s
+          }),
+        }))
+
+        setCommentDeletionConfirmationModalIsOpen(false)
+        toast.success("Comment deleted.")
+      } catch (error) {
+        console.error("Error deleting comment:", error)
+        toast.error("Failed to delete comment.")
+      } finally {
+        setLoading(false)
+      }
+    }
+  }
+
   return (
     <>
       <Modal
@@ -115,13 +169,13 @@ const SuggestionAdditionalInfoModal = ({
         <div className="p-4 w-full">
           <div className="flex justify-between items-start w-full mb-4">
             <div className="w-[75%] flex flex-col">
-              <div className="flex items-center mb-1">
+              <div className="flex items-center mb-2">
                 <Image
                   src={suggestion.authorImg || "/board-pages/default-pfp.png"}
                   alt="Author"
-                  width={25}
-                  height={25}
-                  className="rounded-full"
+                  className="rounded-full object-cover w-6 h-6"
+                  width={500}
+                  height={500}
                 />
                 <p className="text-xs ml-2">{suggestion.authorName || "Anonymous"}</p>
               </div>
@@ -129,7 +183,7 @@ const SuggestionAdditionalInfoModal = ({
             </div>
             <div className="flex space-x-2">
               <button
-                className="border border-indigo-500 text-indigo-500 hover:bg-indigo-500 hover:text-white transition duration-200 w-12 h-12 rounded-lg flex items-center justify-center"
+                className="border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition duration-200 w-12 h-12 rounded-lg flex items-center justify-center"
                 title="Delete the suggestion"
                 onClick={() => setDeletionConfirmationModalIsOpen(true)}
                 disabled={loading}
@@ -162,12 +216,23 @@ const SuggestionAdditionalInfoModal = ({
                     <Image
                       src={comment.authorImg || "/board-pages/default-pfp.png"}
                       alt="Author"
-                      width={20}
-                      height={20}
-                      className="rounded-full"
+                      width={500}
+                      height={500}
+                      className="rounded-full object-cover w-6 h-6"
                     />
                     <p className="text-xs mx-2">{comment.authorName || "Anonymous"}</p>
                     <p className="text-xs break-words text-gray-700">{new Date(comment.createdAt).toLocaleDateString()}</p>
+                    <button
+                      className="text-red-500 flex items-center justify-center ml-2"
+                      title="Delete this comment"
+                      onClick={() => {
+                        setCommentDeletionConfirmationModalIsOpen(true)
+                        setCommentIdToDelete(comment.id)
+                      }}
+                      disabled={loading}
+                    >
+                      <TrashIcon className="w-4 h-4" />
+                    </button>
                   </div>
                   <p className="text-sm font-medium break-words mt-2 mb-1">{comment.content}</p>
                   <div>
@@ -179,14 +244,25 @@ const SuggestionAdditionalInfoModal = ({
                               <Image
                                 src={reply.authorImg || "/board-pages/default-pfp.png"}
                                 alt="Author"
-                                width={15}
-                                height={15}
-                                className="rounded-full"
+                                width={500}
+                                height={500}
+                                className="rounded-full object-cover w-6 h-6"
                               />
                               <p className="text-xs mx-2">{reply.authorName || "Anonymous"}</p>
                               <p className="text-xs break-words text-gray-700">
                                 {new Date(reply.createdAt).toLocaleDateString()}
                               </p>
+                              <button
+                                className="text-red-500 flex items-center justify-center ml-2"
+                                title="Delete this comment"
+                                onClick={() => {
+                                  setCommentDeletionConfirmationModalIsOpen(true)
+                                  setCommentIdToDelete(reply.id)
+                                }}
+                                disabled={loading}
+                              >
+                                <TrashIcon className="w-4 h-4" />
+                              </button>
                             </div>
                             <p className="text-sm w-full break-words">{reply.content}</p>
                           </div>
@@ -207,6 +283,12 @@ const SuggestionAdditionalInfoModal = ({
         onRequestClose={() => setDeletionConfirmationModalIsOpen(false)}
         onConfirmDelete={handleDeleteSuggestion(suggestion.id)}
         contentMessage="Are you sure you want to delete this suggestion? This action cannot be undone."
+      />
+      <DeletionConfirmationModal
+        isOpen={commentDeletionConfirmationModalIsOpen}
+        onRequestClose={() => setCommentDeletionConfirmationModalIsOpen(false)}
+        onConfirmDelete={handleDeleteComment(commentIdToDelete)}
+        contentMessage="Are you sure you want to delete this comment? This action cannot be undone."
       />
     </>
   )

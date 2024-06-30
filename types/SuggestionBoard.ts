@@ -22,6 +22,7 @@ export interface Board {
   logoKey: string
   favicon: string
   faviconKey: string
+  metadataTabTitle: string
   primaryColor: string
   secondaryColor: string
   accentColor: string

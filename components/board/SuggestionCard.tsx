@@ -438,9 +438,9 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
                 <Image
                   src={suggestion.authorImg || "/board-pages/default-pfp.png"}
                   alt="Author"
-                  width={25}
-                  height={25}
-                  className="rounded-full"
+                  width={500}
+                  height={500}
+                  className="rounded-full object-cover w-7 h-7"
                 />
                 <p className="text-xs ml-2" style={{ color: textColor }}>
                   {suggestion.authorName || "Anonymous"}
@@ -500,9 +500,9 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
                     <Image
                       src={comment.authorImg || "/board-pages/default-pfp.png"}
                       alt="Author"
-                      width={20}
-                      height={20}
-                      className="rounded-full"
+                      width={500}
+                      height={500}
+                      className="rounded-full object-cover w-6 h-6"
                     />
                     <p className="text-xs mx-2" style={{ color: textColor }}>
                       {comment.authorName || "Anonymous"}
@@ -564,9 +564,9 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
                               <Image
                                 src={reply.authorImg || "/board-pages/default-pfp.png"}
                                 alt="Author"
-                                width={15}
-                                height={15}
-                                className="rounded-full"
+                                width={500}
+                                height={500}
+                                className="rounded-full object-cover w-5 h-5"
                               />
                               <p className="text-xs mx-2" style={{ color: textColor }}>
                                 {reply.authorName || "Anonymous"}

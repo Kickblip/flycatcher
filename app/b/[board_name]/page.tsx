@@ -268,7 +268,9 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
               {submitting ? "Submitting..." : "Submit"}
             </button>
           </div>
-          <PoweredByBadge primaryColor={board?.primaryColor} />
+          <div className={board?.settings.disableBranding ? `hidden` : ""}>
+            <PoweredByBadge primaryColor={board?.primaryColor} />
+          </div>
         </div>
         <div className="md:w-2/3 w-full p-4">
           {hideEmptyMessage ? null : <p className="text-md font-semibold">No feedback yet</p>}

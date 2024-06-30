@@ -54,6 +54,7 @@ export async function POST(request: Request) {
     logoKey: "",
     favicon: "",
     faviconKey: "",
+    metadataTabTitle: `Feedback | ${name}`,
     primaryColor: "#ffffff",
     secondaryColor: "#f3f4f6", // gray-100
     accentColor: "#6366f1", // indigo-500
