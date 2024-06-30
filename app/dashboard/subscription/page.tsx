@@ -4,6 +4,7 @@ import Image from "next/image"
 import SubscriptionCard from "@/components/dashboard/subscription/SubscriptionCard"
 import UsagePanel from "@/components/dashboard/subscription/UsagePanel"
 import { currentUser } from "@clerk/nextjs/server"
+import BillingManagerPanel from "@/components/dashboard/subscription/BillingManagerPanel"
 
 export const metadata: Metadata = {
   title: "Subscriptions | Flycatcher",
@@ -20,8 +21,7 @@ export default async function DashboardSubscriptions() {
       <Navbar />
       <div className="w-full max-w-7xl mx-auto p-4 flex flex-wrap justify-center">
         <div className="flex flex-col w-full">
-          {/* @ts-ignore */}
-          {!user?.isPremium ? (
+          {user?.publicMetadata.isPremium ? (
             <>
               <div className="flex items-center">
                 <Image
@@ -37,31 +37,33 @@ export default async function DashboardSubscriptions() {
                 </div>
               </div>
               <h2 className="text-xl font-semibold mt-8">Billing</h2>
+              <BillingManagerPanel />
             </>
           ) : (
             <></>
           )}
           <h2 className="text-xl font-semibold mt-8">Usage</h2>
-          {/* @ts-ignore */}
-          <UsagePanel isPremium={user?.isPremium} />
-          {/* @ts-ignore */}
-          {!user?.isPremium ? (
+          <UsagePanel isPremium={user?.publicMetadata.isPremium as boolean} />
+          {user?.publicMetadata.isPremium ? (
             <></>
           ) : (
-            <div className="flex items-center">
-              <SubscriptionCard
-                title="Free"
-                subtitle="Essential features to set up your feedback board"
-                price={0}
-                features={freeFeatures}
-              />
-              <SubscriptionCard
-                title="Growth"
-                subtitle="More feedback and additional features"
-                price={10}
-                features={paidFeatures}
-              />
-            </div>
+            <>
+              <h2 className="text-xl font-semibold mt-8">Upgrade</h2>
+              <div className="flex items-center">
+                <SubscriptionCard
+                  title="Free"
+                  subtitle="Essential features to set up your feedback board"
+                  price={0}
+                  features={freeFeatures}
+                />
+                <SubscriptionCard
+                  title="Growth"
+                  subtitle="More feedback and additional features"
+                  price={10}
+                  features={paidFeatures}
+                />
+              </div>
+            </>
           )}
         </div>
       </div>

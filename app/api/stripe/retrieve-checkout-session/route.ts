@@ -48,6 +48,9 @@ export async function POST(request: Request) {
         stripeSubscriptionId: subscriptionId,
         stripeCurrentPeriodEnd: typeof session.subscription === "string" ? undefined : session.subscription?.current_period_end,
         isPremium,
+        stripeSubscriptionStatus: typeof session.subscription === "string" ? undefined : session.subscription?.status,
+        stripeSubscriptionCancelAtPeriodEnd:
+          typeof session.subscription === "string" ? undefined : session.subscription?.cancel_at_period_end,
       },
       privateMetadata: {
         stripeCustomerId: session.customer,
