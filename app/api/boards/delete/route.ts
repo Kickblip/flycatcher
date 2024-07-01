@@ -44,7 +44,7 @@ export async function POST(request: Request) {
       }
 
       board.suggestions.forEach(async (suggestion: Suggestion) => {
-        if (suggestion.imageUrls.length > 0) {
+        if (suggestion.imageUrls[0]) {
           await utapi.deleteFiles(extractFileKey(suggestion.imageUrls[0]), { keyType: "fileKey" })
         }
       })

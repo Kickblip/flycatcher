@@ -212,7 +212,18 @@ const SuggestionAdditionalInfoModal = ({
             </div>
           </div>
           <div className="mb-6">
-            <p className="text-lg break-words">{suggestion.description}</p>
+            <p className="text-lg break-words mb-4">{suggestion.description}</p>
+            {suggestion.imageUrls[0] ? (
+              <Image
+                src={suggestion.imageUrls[0]}
+                alt="Image attachment"
+                width={500}
+                height={500}
+                className="object-contain w-full max-h-96"
+              />
+            ) : (
+              <></>
+            )}
           </div>
           <div>
             <h3 className="text-xl font-bold mb-4">Comments</h3>

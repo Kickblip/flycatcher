@@ -32,7 +32,7 @@ const extractFileKey = (url: string) => {
   return filename
 }
 
-export async function POST(request: Request) {
+export async function GET(request: Request) {
   console.time("totalTime")
   try {
     const secretKey = request.headers.get("x-cron-secret")
@@ -52,7 +52,7 @@ export async function POST(request: Request) {
       if (board.favicon) dbImageUrls.add(board.favicon)
       if (board.suggestions) {
         board.suggestions.forEach((suggestion: Suggestion) => {
-          if (suggestion.imageUrls) {
+          if (suggestion.imageUrls[0]) {
             suggestion.imageUrls.forEach((url: string) => dbImageUrls.add(url))
           }
         })

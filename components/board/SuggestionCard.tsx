@@ -472,6 +472,17 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
                 <p className="text-lg mb-4">{suggestionDescription}</p>
               </>
             )}
+            {suggestion.imageUrls[0] ? (
+              <Image
+                src={suggestion.imageUrls[0]}
+                alt="Image attachment"
+                width={500}
+                height={500}
+                className="object-contain w-full max-h-96"
+              />
+            ) : (
+              <></>
+            )}
           </div>
           <div className="mb-12 mt-6">
             <h3 className="text-md font-bold mb-2">Comments</h3>
