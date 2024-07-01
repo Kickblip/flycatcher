@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
 import { auth } from "@clerk/nextjs/server"
 import { utapi } from "@/utils/server/uploadthing"
+import { Suggestion } from "@/types/SuggestionBoard"
 
 export async function POST(request: Request) {
   const { userId } = auth()
@@ -36,10 +37,22 @@ export async function POST(request: Request) {
       if (board.author !== userId)
         return NextResponse.json({ message: "User not authorized to delete this board" }, { status: 403 })
 
-      const result = await collection.deleteOne({ urlName })
+      const extractFileKey = (url: string) => {
+        const parts = url.split("/")
+        const filename = parts[parts.length - 1]
+        return filename
+      }
+
+      board.suggestions.forEach(async (suggestion: Suggestion) => {
+        if (suggestion.imageUrls.length > 0) {
+          await utapi.deleteFiles(extractFileKey(suggestion.imageUrls[0]), { keyType: "fileKey" })
+        }
+      })
 
       await utapi.deleteFiles(board.logoKey, { keyType: "fileKey" })
       await utapi.deleteFiles(board.faviconKey, { keyType: "fileKey" })
+
+      const result = await collection.deleteOne({ urlName })
 
       return NextResponse.json(
         {

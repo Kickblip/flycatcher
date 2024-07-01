@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
 import { auth } from "@clerk/nextjs/server"
+import { utapi } from "@/utils/server/uploadthing"
 
 export async function POST(request: Request) {
   const { userId } = auth()
@@ -36,12 +37,27 @@ export async function POST(request: Request) {
         return NextResponse.json({ message: "User not authorized to delete this suggestion" }, { status: 403 })
       }
 
-      const suggestionIndex = board.suggestions.findIndex((suggestion: any) => suggestion.id === suggestionId)
+      const findSuggestionWithIndex = (board: any, suggestionId: string) => {
+        const suggestionIndex = board.suggestions.findIndex((suggestion: any) => suggestion.id === suggestionId)
+        const suggestion = suggestionIndex !== -1 ? board.suggestions[suggestionIndex] : null
+        return { suggestion, suggestionIndex }
+      }
+      const { suggestion, suggestionIndex } = findSuggestionWithIndex(board, suggestionId)
 
       if (suggestionIndex !== -1) {
         board.suggestions.splice(suggestionIndex, 1)
 
         await collection.updateOne({ urlName: boardName }, { $set: { suggestions: board.suggestions } })
+
+        const extractFileKey = (url: string) => {
+          const parts = url.split("/")
+          const filename = parts[parts.length - 1]
+          return filename
+        }
+
+        if (suggestion.imageUrls.length > 0) {
+          await utapi.deleteFiles(extractFileKey(suggestion.imageUrls[0]), { keyType: "fileKey" })
+        }
 
         return NextResponse.json(
           {

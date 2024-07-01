@@ -15,7 +15,7 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json()
-  const { board } = body
+  const { board, suggestionImageUrl } = body
   const title = body.title.trim()
   const description = body.description.trim()
 
@@ -69,6 +69,7 @@ export async function POST(request: Request) {
       authorImg: user.imageUrl || "https://flycatcher.app/board-pages/default-pfp.png",
       title,
       description,
+      imageUrls: isPremium ? (suggestionImageUrl ? [suggestionImageUrl] : [""]) : [""],
       votes: [],
       status: "new",
       comments: [],

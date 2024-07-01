@@ -7,6 +7,7 @@ export interface Suggestion {
   authorName: string
   authorImg: string
   description: string
+  imageUrls: string[]
   votes: Vote[]
   status: string
   comments: Comment[]

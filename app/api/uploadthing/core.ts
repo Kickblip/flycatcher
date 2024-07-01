@@ -91,6 +91,21 @@ export const ourFileRouter = {
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
       return { boardName: metadata.boardName, favicon: file.url }
     }),
+  suggestionImage: f({ image: { maxFileSize: "1MB", maxFileCount: 1 } })
+    // Public view suggestion image attachments
+    .middleware(async ({ req }) => {
+      const { userId } = auth()
+
+      if (!userId) throw new UploadThingError("Unauthorized")
+
+      return { userId }
+    })
+    .onUploadComplete(async ({ metadata, file }) => {
+      // This code RUNS ON YOUR SERVER after upload
+
+      // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
+      return { favicon: file.url }
+    }),
 } satisfies FileRouter
 
 export type OurFileRouter = typeof ourFileRouter

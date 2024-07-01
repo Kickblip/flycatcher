@@ -12,6 +12,8 @@ import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
 import { SignInToastMessage } from "@/components/board/SignInToastMessage"
+import { UploadButton } from "@/utils/uploadthing"
+import { XMarkIcon } from "@heroicons/react/24/outline"
 
 export default function BoardInfo({ params }: { params: { board_name: string } }) {
   const [error, setError] = useState<string | null>(null)
@@ -25,11 +27,14 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
   const [hideLoadMoreButton, setHideLoadMoreButton] = useState(false)
   const [hideEmptyMessage, setHideEmptyMessage] = useState(true)
   const { isLoaded, isSignedIn, user } = useUser()
+  const [showUploadDropzone, setShowUploadDropzone] = useState(false)
+  const [suggestionImageUrl, setSuggestionImageUrl] = useState("")
+  const [imageSubmitting, setImageSubmitting] = useState(false)
 
   useEffect(() => {
     if (board) {
       // set tab title
-      document.title = `Feedback | ${board.name}`
+      document.title = board.metadataTabTitle || `Feedback | ${board.name}`
       // set favicon
       const favicon = (document.querySelector("link[rel='icon']") as HTMLLinkElement) || document.createElement("link")
       favicon.type = "image/x-icon"
@@ -151,7 +156,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ title: trimmedTitle, description: trimmedDescription, board: board }),
+        body: JSON.stringify({ title: trimmedTitle, description: trimmedDescription, board: board, suggestionImageUrl }),
       })
 
       if (!response.ok) {
@@ -163,6 +168,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
         }
       } else {
         const data = await response.json()
+        setSuggestionImageUrl("")
         setBoard((prevBoard) => {
           if (!prevBoard) return prevBoard
           return {
@@ -254,7 +260,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
                 style={{ backgroundColor: lighterSecondaryColor }}
               />
             </div>
-            <div className="mb-4">
+            <div className="mb-2">
               <label className="block text-xs font-bold mb-1" htmlFor="suggestionDescription">
                 Post Text
               </label>
@@ -266,14 +272,72 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
                 onChange={(e) => setsuggestionDescription(e.target.value)}
                 style={{ backgroundColor: lighterSecondaryColor, height: "100px" }}
               />
+              <button
+                className="text-xs mt-2"
+                style={{ color: board?.accentColor || "#000" }}
+                onClick={() => {
+                  setShowUploadDropzone(!showUploadDropzone)
+                }}
+              >
+                Attach an image
+              </button>
             </div>
+            <UploadButton
+              endpoint="suggestionImage"
+              onUploadBegin={() => {
+                setImageSubmitting(true)
+                setSubmitting(true)
+              }}
+              onClientUploadComplete={(res) => {
+                toast.success("Logo updated successfully.")
+                setSuggestionImageUrl(res[0].url)
+                setImageSubmitting(false)
+                setSubmitting(false)
+              }}
+              onUploadError={(error: Error) => {
+                console.error(error.message)
+                toast.error("Failed to update logo.")
+                setImageSubmitting(false)
+                setSubmitting(false)
+              }}
+              className={`mb-4 ${showUploadDropzone ? "" : " hidden"}`}
+              appearance={{
+                button: {
+                  backgroundColor: board?.accentColor,
+                  color: board?.secondaryColor,
+                },
+                allowedContent: {
+                  color: board?.textColor,
+                },
+              }}
+            />
+            {suggestionImageUrl ? (
+              <div className="relative group mb-4">
+                <Image
+                  src={suggestionImageUrl}
+                  alt="Uploaded image"
+                  width={500}
+                  height={500}
+                  className={`w-full ${showUploadDropzone ? "" : "hidden"}`}
+                />
+                <button
+                  onClick={() => setSuggestionImageUrl("")}
+                  className="absolute top-0 right-0 m-2 p-1 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                  style={{ backgroundColor: board?.secondaryColor || "#f9fafb" }}
+                >
+                  <XMarkIcon className="h-5 w-5" style={{ color: board?.accentColor || "#6366f1" }} />
+                </button>
+              </div>
+            ) : (
+              <></>
+            )}
             <button
               onClick={handleNewSuggestionSubmission}
               className="w-full p-2 rounded-lg"
               style={{ backgroundColor: board?.accentColor || "#6366f1", color: board?.secondaryColor || "#fff" }}
               disabled={submitting}
             >
-              {submitting ? "Submitting..." : "Submit"}
+              {submitting ? (imageSubmitting ? "Uploading..." : "Submitting...") : "Submit"}
             </button>
           </div>
           <div className={board?.settings.disableBranding ? `hidden` : ""}>
