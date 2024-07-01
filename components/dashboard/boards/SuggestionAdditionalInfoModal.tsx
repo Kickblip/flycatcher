@@ -1,32 +1,13 @@
+"use client"
+
 import Modal from "react-modal"
 import Image from "next/image"
 import { Board, Suggestion } from "@/types/SuggestionBoard"
 import { ArchiveBoxIcon, TrashIcon } from "@heroicons/react/24/outline"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import DeletionConfirmationModal from "./DeletionConfirmationModal"
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
-
-const suggestionAdditionalInfoModalStyles = {
-  content: {
-    top: "50%",
-    left: "50%",
-    right: "auto",
-    bottom: "auto",
-    marginRight: "-50%",
-    transform: "translate(-50%, -50%)",
-    backgroundColor: "gray-50",
-    color: "black",
-    padding: "20px",
-    borderRadius: "15px",
-    border: "0px",
-    width: "45%",
-    maxHeight: "90vh",
-  },
-  overlay: {
-    backgroundColor: "rgba(0, 0, 0, 0.75)",
-  },
-}
 
 type SuggestionAdditionalInfoModalProps = {
   isOpen: boolean
@@ -47,6 +28,36 @@ const SuggestionAdditionalInfoModal = ({
   const [deletionConfirmationModalIsOpen, setDeletionConfirmationModalIsOpen] = useState(false)
   const [commentDeletionConfirmationModalIsOpen, setCommentDeletionConfirmationModalIsOpen] = useState(false)
   const [commentIdToDelete, setCommentIdToDelete] = useState("")
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth)
+
+  const suggestionAdditionalInfoModalStyles = {
+    content: {
+      top: "50%",
+      left: "50%",
+      right: "auto",
+      bottom: "auto",
+      marginRight: "-50%",
+      transform: "translate(-50%, -50%)",
+      backgroundColor: "gray-50",
+      color: "black",
+      padding: "20px",
+      borderRadius: "15px",
+      border: "0px",
+      width: screenWidth <= 640 ? "95%" : screenWidth <= 768 ? "90%" : "50%",
+      maxHeight: "90vh",
+    },
+    overlay: {
+      backgroundColor: "rgba(0, 0, 0, 0.75)",
+    },
+  }
+
+  useEffect(() => {
+    setScreenWidth(window.innerWidth)
+    window.addEventListener("resize", () => setScreenWidth(window.innerWidth))
+    return () => {
+      window.removeEventListener("resize", () => setScreenWidth(window.innerWidth))
+    }
+  }, [])
 
   if (!suggestion) return null
 
@@ -166,9 +177,9 @@ const SuggestionAdditionalInfoModal = ({
         style={suggestionAdditionalInfoModalStyles}
         contentLabel="Suggestion Comments Modal"
       >
-        <div className="p-4 w-full">
-          <div className="flex justify-between items-start w-full mb-4">
-            <div className="w-[75%] flex flex-col">
+        <div className="md:p-4 p-2 w-full">
+          <div className="flex flex-col md:flex-row justify-between items-start w-full mb-4">
+            <div className="w-full md:w-[75%] flex flex-col">
               <div className="flex items-center mb-2">
                 <Image
                   src={suggestion.authorImg || "/board-pages/default-pfp.png"}
@@ -181,7 +192,7 @@ const SuggestionAdditionalInfoModal = ({
               </div>
               <h2 className="text-2xl font-bold break-words">{suggestion.title}</h2>
             </div>
-            <div className="flex space-x-2">
+            <div className="flex space-x-2 mt-2 md:mt-0">
               <button
                 className="border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition duration-200 w-12 h-12 rounded-lg flex items-center justify-center"
                 title="Delete the suggestion"

@@ -336,7 +336,7 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
         onClick={() => setModalIsOpen(true)}
       >
         <div className="flex justify-between w-full">
-          <div className="flex flex-col break-words max-w-[80%]" style={{ color: textColor }}>
+          <div className="flex flex-col break-words max-w-[72%] md:max-w-[80%]" style={{ color: textColor }}>
             <h2 className="text-xs font-semibold mb-2" style={{ color: accentColor }}>
               {suggestion.status === "working"
                 ? "Currently in-progress..."
@@ -386,8 +386,8 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
       >
         <div className="p-4 w-full">
           <div className="mb-4 w-full break-words flex flex-col">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
+            <div className="flex flex-col md:flex-row justify-between md:mb-4 mb-2">
+              <div className="flex items-center order-2 md:order-1">
                 <h2 className="text-sm font-semibold" style={{ color: accentColor }}>
                   {suggestion.status === "working"
                     ? "Currently in-progress..."
@@ -410,7 +410,7 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
                     : `${new Date(suggestion.createdAt).toLocaleDateString()}`}
                 </p>
               </div>
-              <div className="flex items-center">
+              <div className="flex order-1 md:order-2 md:mb-0 mb-2 items-center">
                 {suggestion.author ? (
                   editing ? (
                     <button // save button

@@ -22,11 +22,11 @@ function OwnerViewSuggestionCard({
   return (
     <>
       <section className="w-full mb-4 p-4 rounded-lg cursor-pointer bg-white shadow" onClick={openModal}>
-        <div className="flex justify-between w-full">
-          <div className="flex flex-col max-w-[80%] text-black break-words">
+        <div className="flex flex-col justify-between w-full">
+          <div className="flex flex-col w-full text-black break-words">
             <h2 className="text-lg font-bold">{suggestion.title}</h2>
           </div>
-          <div className="flex">
+          <div className="flex my-2">
             <div className="flex items-center justify-center text-black mr-2">
               <span className="text-sm mr-1">{suggestion.comments.length}</span>
               <ChatBubbleBottomCenterTextIcon className="w-4 h-4" strokeWidth={1.5} />

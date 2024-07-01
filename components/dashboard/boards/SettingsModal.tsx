@@ -5,24 +5,11 @@ import { Board } from "@/types/SuggestionBoard"
 import { TrashIcon, ArrowPathIcon } from "@heroicons/react/24/outline"
 import { useEffect, useState } from "react"
 import { Switch } from "@headlessui/react"
-import { UploadButton, UploadDropzone } from "@/utils/uploadthing"
+import { UploadButton } from "@/utils/uploadthing"
 import { toast } from "react-toastify"
 import { useUser } from "@clerk/nextjs"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
-
-const customStyles = {
-  content: {
-    top: "50%",
-    left: "50%",
-    right: "auto",
-    bottom: "auto",
-    marginRight: "-50%",
-    transform: "translate(-50%, -50%)",
-    borderRadius: "15px",
-    width: "50%",
-  },
-}
 
 type SettingsModalProps = {
   isOpen: boolean
@@ -51,7 +38,30 @@ const SettingsModal = ({
   const [prevForceSignIn, setPrevForceSignIn] = useState(false)
   const [prevDisableBranding, setPrevDisableBranding] = useState(false)
   const [prevMetadataTabTitle, setPrevMetadataTabTitle] = useState("")
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth)
   const { user } = useUser()
+
+  const customStyles = {
+    content: {
+      top: "50%",
+      left: "50%",
+      right: "auto",
+      bottom: "auto",
+      marginRight: "-50%",
+      transform: "translate(-50%, -50%)",
+      borderRadius: "15px",
+      width:
+        screenWidth <= 640
+          ? "95%"
+          : screenWidth <= 768
+          ? "90%"
+          : screenWidth <= 950
+          ? "90%"
+          : screenWidth <= 1050
+          ? "70%"
+          : "50%",
+    },
+  }
 
   useEffect(() => {
     setForceSignIn(currentBoard.settings.forceSignIn)
@@ -64,6 +74,14 @@ const SettingsModal = ({
     setPrevMetadataTabTitle(currentBoard.metadataTabTitle)
     setBoardName(currentBoard.name)
   }, [currentBoard])
+
+  useEffect(() => {
+    setScreenWidth(window.innerWidth)
+    window.addEventListener("resize", () => setScreenWidth(window.innerWidth))
+    return () => {
+      window.removeEventListener("resize", () => setScreenWidth(window.innerWidth))
+    }
+  }, [])
 
   const saveSettings = async () => {
     if (metadataTabTitle.length > 60) {
@@ -95,8 +113,8 @@ const SettingsModal = ({
 
   return (
     <Modal isOpen={isOpen} onRequestClose={onRequestClose} style={customStyles} contentLabel="Settings Modal">
-      <div className="p-4">
-        <div className="flex items-center justify-between mb-6 w-[65%]">
+      <div className="p-2 md:p-4">
+        <div className="flex items-center justify-between mb-6 w-full">
           <h1 className="text-xl font-semibold">Board Settings</h1>
           <button
             className="py-2 px-4 bg-indigo-500 hover:bg-indigo-600 transition duration-200 text-white rounded-lg"
@@ -108,7 +126,7 @@ const SettingsModal = ({
 
         <div className="mb-4">
           <div className="flex items-center">
-            <div className="w-[55%]">
+            <div className="w-full md:w-[85%] lg:w-[55%]">
               <h2 className="font-semibold text-gray-900">Disable Flycatcher branding</h2>
               <p className="text-gray-600 text-sm">Remove the Flycatcher "powered by" badge from your board's public view.</p>
             </div>
@@ -128,7 +146,7 @@ const SettingsModal = ({
             >
               <span
                 className={`${
-                  disableBranding ? "translate-x-6" : "translate-x-1"
+                  disableBranding ? "translate-x-5 md:translate-x-6" : "translate-x-1"
                 } inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out`}
               />
             </Switch>
@@ -136,7 +154,7 @@ const SettingsModal = ({
         </div>
         <div className="mb-4">
           <div className="flex items-center">
-            <div className="w-[55%]">
+            <div className="w-full md:w-[85%] lg:w-[55%]">
               <h2 className="font-semibold text-gray-900">Metadata tab title</h2>
               <p className="text-gray-600 text-sm">
                 Edit the title of the browser tab that users see on your board's public view.

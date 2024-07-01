@@ -48,8 +48,8 @@ export default async function DashboardSubscriptions() {
             <></>
           ) : (
             <>
-              <h2 className="text-xl font-semibold mt-8">Upgrade</h2>
-              <div className="flex items-center">
+              <h2 className="text-xl font-semibold mt-32">Upgrade</h2>
+              <div className="flex flex-col md:flex-row items-center">
                 <SubscriptionCard
                   title="Free"
                   subtitle="Essential features to set up your feedback board"

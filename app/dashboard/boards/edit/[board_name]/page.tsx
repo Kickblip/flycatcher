@@ -150,11 +150,11 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
   return (
     <main className="flex flex-col items-center min-h-screen w-full">
       <Navbar />
-      <div className="w-full max-w-7xl mx-auto p-4 flex">
-        <div className="flex flex-col w-1/2 p-4">
-          <div className="flex justify-between w-full mb-8">
+      <div className="w-full max-w-7xl mx-auto p-4 flex flex-col md:flex-row">
+        <div className="flex flex-col w-full md:w-1/2 p-4">
+          <div className="flex flex-col md:flex-row justify-between w-full mb-8">
             <h2 className="text-2xl font-bold max-w-[55%] break-words">{board.name}</h2>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 mt-4 md:mt-0">
               <button
                 className="px-4 py-2 border border-gray-400 text-gray-800 hover:text-gray-900 hover:border-gray-500 rounded-lg transition duration-200"
                 onClick={() => setSettingsModalIsOpen(true)}
@@ -193,7 +193,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
             <span className="text-gray-500">Choose a Theme</span>
             <div className="border-t border-gray-300 flex-grow ml-2"></div>
           </div>
-          <div className="grid grid-cols-2 gap-4 mb-8">
+          <div className="grid md:grid-cols-2 grid-cols-1 gap-4 mb-8">
             {themes.map((theme, index) => (
               <PremadeThemeSquare key={index} theme={theme} index={index} applyPremadeTheme={applyPremadeTheme} />
             ))}
@@ -266,7 +266,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
             </div>
           </div>
         </div>
-        <div className="w-1/2 shadow-xl rounded-lg">
+        <div className="w-full md:w-1/2 shadow-xl rounded-lg">
           <BoardPreviewPanel {...board} />
         </div>
       </div>

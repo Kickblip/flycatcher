@@ -15,9 +15,13 @@ interface KanbanColumnProps {
 
 const KanbanColumn = ({ title, status, suggestions, onDrop, onDragOver, onDragStart, board, setBoard }: KanbanColumnProps) => {
   return (
-    <div className="flex flex-col w-1/3 min-w-[200px]">
+    <div className="flex flex-col w-full md:w-1/3 min-w-[200px] min-h-[300px] md:min-h-[800px] max-h-[800px] p-6 md:p-0">
       <h2 className="text-lg font-semibold mb-4">{title}</h2>
-      <div className="flex-grow bg-gray-100 p-4 rounded-lg" onDrop={(e) => onDrop(e, status)} onDragOver={onDragOver}>
+      <div
+        className="flex-grow bg-gray-200 p-4 rounded-lg overflow-y-auto"
+        onDrop={(e) => onDrop(e, status)}
+        onDragOver={onDragOver}
+      >
         {suggestions
           .filter((suggestion: Suggestion) => suggestion.status === status)
           .map((suggestion: Suggestion, index: number) => (

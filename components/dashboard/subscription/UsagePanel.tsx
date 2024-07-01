@@ -37,15 +37,15 @@ export default function UsagePanel({ isPremium }: { isPremium: boolean }) {
   }
 
   return (
-    <div className="w-full h-32 flex items-center">
-      <div className="w-48 bg-gray-100 p-4 rounded-lg flex flex-col">
+    <div className="w-full h-32 flex flex-col md:flex-row items-center space-y-4 md:space-y-0 mt-4 md:mt-0">
+      <div className="md:w-48 w-full bg-gray-100 p-4 rounded-lg flex flex-col">
         <p className="text-sm font-semibold text-gray-500 mb-1">Boards</p>
         <p className="text-4xl font-semibold">
           {boardCount}
           <span className="text-sm font-normal text-gray-600 ml-2">{isPremium ? "/ 10" : "/ 1"}</span>
         </p>
       </div>
-      <div className="w-48 bg-gray-100 p-4 rounded-lg flex flex-col ml-8">
+      <div className="md:w-48 w-full bg-gray-100 p-4 rounded-lg flex flex-col md:ml-8">
         <p className="text-sm font-semibold text-gray-500 mb-1">Suggestions</p>
         <p className="text-4xl font-semibold">
           {totalSuggestions}

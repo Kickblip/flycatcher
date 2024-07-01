@@ -114,12 +114,12 @@ export default function BoardFeedback({ params }: { params: { board_name: string
   }
 
   return (
-    <main className="flex flex-col items-center min-h-screen w-full">
+    <main className="flex flex-col items-center w-full">
       <Navbar />
-      <div className="flex max-w-7xl w-full mx-auto mt-10 mb-6">
+      <div className="flex max-w-7xl w-full mx-auto mt-10 md:mb-6 mb-2">
         <KanbanNewSuggestionsSection board={board!} setBoard={setBoard} />
       </div>
-      <div className="flex flex-grow gap-4 max-w-7xl w-full mx-auto">
+      <div className="flex flex-col md:flex-row flex-grow gap-4 max-w-7xl w-full mx-auto">
         <KanbanColumn
           title="Planned"
           status="planned"
