@@ -29,6 +29,7 @@ export interface Board {
   accentColor: string
   textColor: string
   author: string
+  authorIsPremium: boolean
   suggestions: Suggestion[]
   settings: BoardSettings
   createdAt: Date

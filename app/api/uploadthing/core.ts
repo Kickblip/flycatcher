@@ -112,7 +112,8 @@ export const ourFileRouter = {
     }),
   suggestionImage: f({ image: { maxFileSize: "1MB", maxFileCount: 1 } })
     // Public view suggestion image attachments
-    .middleware(async ({ req }) => {
+    .input(z.string())
+    .middleware(async ({ req, input }) => {
       const { userId } = auth()
 
       if (!userId) throw new UploadThingError("Unauthorized")
@@ -122,6 +123,14 @@ export const ourFileRouter = {
       if (!success) {
         throw new UploadThingError("Rate limit exceeded")
       }
+
+      const client = await clientPromise
+      const collection = client.db("Main").collection("boards")
+      const board = await collection.findOne({ urlName: input })
+
+      // CHECK IF THE BOARD IS PREMIUM AND ALLOWED TO UPLOAD
+      if (!board) throw new UploadThingError("Board not found")
+      if (!board.authorIsPremium) throw new UploadThingError("Uploads not allowed on this board")
 
       return { userId }
     })

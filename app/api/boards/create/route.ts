@@ -75,6 +75,7 @@ export async function POST(request: Request) {
     accentColor: "#6366f1", // indigo-500
     textColor: "#000000",
     author: user.id,
+    authorIsPremium: isPremium,
     suggestions: [],
     settings: {
       forceSignIn: false,
