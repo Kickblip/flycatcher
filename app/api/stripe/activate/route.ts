@@ -1,6 +1,14 @@
 import { NextResponse } from "next/server"
 import { clerkClient, currentUser } from "@clerk/nextjs/server"
 import Stripe from "stripe"
+import { Ratelimit } from "@upstash/ratelimit"
+import { Redis } from "@upstash/redis"
+
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(4, "10 s"),
+})
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: "2024-06-20",
 })
@@ -9,6 +17,11 @@ export async function POST(request: Request) {
   const user = await currentUser()
   if (!user) {
     return NextResponse.json({ error: "User not authenticated" }, { status: 401 })
+  }
+  const { success, reset } = await ratelimit.limit(user.id)
+
+  if (!success) {
+    return NextResponse.json({ message: "Rate limit exceeded" }, { status: 429 })
   }
 
   try {

@@ -272,18 +272,23 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
                 onChange={(e) => setsuggestionDescription(e.target.value)}
                 style={{ backgroundColor: lighterSecondaryColor, height: "100px" }}
               />
-              <button
-                className="text-xs mt-2"
-                style={{ color: board?.accentColor || "#000" }}
-                onClick={() => {
-                  setShowUploadDropzone(!showUploadDropzone)
-                }}
-              >
-                Attach an image
-              </button>
+              {board?.authorIsPremium ? (
+                <button
+                  className="text-xs mt-2"
+                  style={{ color: board?.accentColor || "#000" }}
+                  onClick={() => {
+                    setShowUploadDropzone(!showUploadDropzone)
+                  }}
+                >
+                  Attach an image
+                </button>
+              ) : (
+                <></>
+              )}
             </div>
             <UploadButton
               endpoint="suggestionImage"
+              input={board?.urlName!}
               onUploadBegin={() => {
                 setImageSubmitting(true)
                 setSubmitting(true)

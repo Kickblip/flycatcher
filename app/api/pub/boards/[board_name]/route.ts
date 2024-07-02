@@ -2,8 +2,23 @@ import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
 import { Suggestion, Comment, Vote, Reply } from "@/types/SuggestionBoard"
 import { auth } from "@clerk/nextjs/server"
+import { Ratelimit } from "@upstash/ratelimit"
+import { Redis } from "@upstash/redis"
+
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(2, "10 s"),
+})
 
 export async function GET(request: Request, { params }: { params: { board_name: string } }) {
+  const ip = request.headers.get("x-forwarded-for") ?? request.headers.get("remote-addr") ?? ""
+
+  const { success, reset } = await ratelimit.limit(ip)
+
+  if (!success) {
+    return NextResponse.json({ message: "Rate limit exceeded" }, { status: 429 })
+  }
+
   const urlName = params.board_name
   const { userId } = auth()
 

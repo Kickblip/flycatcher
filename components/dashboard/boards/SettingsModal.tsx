@@ -30,6 +30,7 @@ const SettingsModal = ({
 }: SettingsModalProps) => {
   const [forceSignIn, setForceSignIn] = useState(false)
   const [disableBranding, setDisableBranding] = useState(false)
+  const [disableAnonVoting, setDisableAnonVoting] = useState(false)
   const [loading, setLoading] = useState(false)
   const [logo, setLogo] = useState("")
   const [favicon, setFavicon] = useState("")
@@ -38,6 +39,7 @@ const SettingsModal = ({
   const [prevForceSignIn, setPrevForceSignIn] = useState(false)
   const [prevDisableBranding, setPrevDisableBranding] = useState(false)
   const [prevMetadataTabTitle, setPrevMetadataTabTitle] = useState("")
+  const [prevDisableAnonVoting, setPrevDisableAnonVoting] = useState(false)
   const [screenWidth, setScreenWidth] = useState(window.innerWidth)
   const { user } = useUser()
 
@@ -68,10 +70,12 @@ const SettingsModal = ({
     setPrevForceSignIn(currentBoard.settings.forceSignIn)
     setDisableBranding(currentBoard.settings.disableBranding)
     setPrevDisableBranding(currentBoard.settings.disableBranding)
+    setDisableAnonVoting(currentBoard.settings.disableAnonVoting)
     setLogo(currentBoard.logo)
     setFavicon(currentBoard.favicon)
     setMetadataTabTitle(currentBoard.metadataTabTitle)
     setPrevMetadataTabTitle(currentBoard.metadataTabTitle)
+    setPrevDisableAnonVoting(currentBoard.settings.disableAnonVoting)
     setBoardName(currentBoard.name)
   }, [currentBoard])
 
@@ -88,14 +92,25 @@ const SettingsModal = ({
       toast.error("Metadata tab title must be less than 60 characters.")
       return
     }
-    if (forceSignIn === prevForceSignIn && disableBranding === prevDisableBranding && metadataTabTitle === prevMetadataTabTitle) {
+    if (
+      forceSignIn === prevForceSignIn &&
+      disableBranding === prevDisableBranding &&
+      metadataTabTitle === prevMetadataTabTitle &&
+      disableAnonVoting === prevDisableAnonVoting
+    ) {
       return
     }
     setLoading(true)
     try {
       const response = await fetch(`/api/boards/update-settings`, {
         method: "POST",
-        body: JSON.stringify({ metadataTabTitle, forceSignIn, disableBranding, boardUrlName: currentBoard.urlName }),
+        body: JSON.stringify({
+          metadataTabTitle,
+          forceSignIn,
+          disableAnonVoting,
+          disableBranding,
+          boardUrlName: currentBoard.urlName,
+        }),
       })
 
       if (!response.ok) {
@@ -147,6 +162,29 @@ const SettingsModal = ({
               <span
                 className={`${
                   disableBranding ? "translate-x-5 md:translate-x-6" : "translate-x-1"
+                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out`}
+              />
+            </Switch>
+          </div>
+        </div>
+        <div className="mb-8">
+          <div className="flex items-center">
+            <div className="w-full md:w-[85%] lg:w-[55%]">
+              <h2 className="font-semibold text-gray-900">Force voting sign in</h2>
+              <p className="text-gray-600 text-sm">Force users to sign in before voting on board feedback.</p>
+            </div>
+            <Switch
+              checked={disableAnonVoting}
+              onChange={() => {
+                setDisableAnonVoting(!disableAnonVoting)
+              }}
+              className={`${
+                disableAnonVoting ? "bg-indigo-500" : "bg-gray-200"
+              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out ml-4`}
+            >
+              <span
+                className={`${
+                  disableAnonVoting ? "translate-x-5 md:translate-x-6" : "translate-x-1"
                 } inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out`}
               />
             </Switch>

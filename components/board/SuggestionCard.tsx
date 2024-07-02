@@ -196,6 +196,11 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
   const handleVoteClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
 
+    if (isSignedIn === false && boardData.settings.disableAnonVoting === true) {
+      SignInToastMessage()
+      return
+    }
+
     setSubmitting(true)
 
     // set author id depending on if user is signed in or not

@@ -33,7 +33,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
     setError(null)
 
     try {
-      const response = await fetch(`/api/boards/full-data/${params.board_name}`, {
+      const response = await fetch(`/api/boards/partial-data/${params.board_name}`, {
         method: "GET",
       })
 

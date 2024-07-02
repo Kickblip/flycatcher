@@ -29,6 +29,7 @@ export interface Board {
   accentColor: string
   textColor: string
   author: string
+  authorIsPremium: boolean
   suggestions: Suggestion[]
   settings: BoardSettings
   createdAt: Date
@@ -37,6 +38,7 @@ export interface Board {
 export interface BoardSettings {
   forceSignIn: boolean
   disableBranding: boolean
+  disableAnonVoting: boolean
 }
 
 export interface Comment {

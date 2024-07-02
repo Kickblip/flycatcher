@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { clerkClient, currentUser } from "@clerk/nextjs/server"
+import { updateBoardOwnerPremiumStatus } from "@/utils/actions/updateBoardOwnerPremiumStatus"
 import Stripe from "stripe"
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: "2024-06-20",
 })
@@ -36,7 +38,7 @@ export async function POST(request: Request) {
     let isPremium = false
     if (subscriptionId) {
       const subscription = await stripe.subscriptions.retrieve(subscriptionId)
-      isPremium = subscription.status === "active" || subscription.status === "trialing"
+      isPremium = subscription.status === "active"
     }
 
     await clerkClient.users.updateUserMetadata(user.id, {
@@ -53,6 +55,10 @@ export async function POST(request: Request) {
         stripeCustomerId: session.customer,
       },
     })
+
+    if (isPremium) {
+      await updateBoardOwnerPremiumStatus(user.id, isPremium)
+    }
 
     return NextResponse.json({ success: true, error: null }, { status: 200 })
   } catch (error) {

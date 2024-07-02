@@ -9,7 +9,8 @@ const ratelimit = new Ratelimit({
   limiter: Ratelimit.slidingWindow(3, "5 s"),
 })
 
-export async function GET(request: Request) {
+export async function GET(request: Request, { params }: { params: { board_name: string } }) {
+  const urlName = params.board_name
   const { userId } = auth()
 
   if (!userId) {
@@ -26,21 +27,33 @@ export async function GET(request: Request) {
     const client = await clientPromise
     const collection = client.db("Main").collection("boards")
 
-    const userBoards = await collection.find({ author: userId }, { projection: { suggestions: 0 } }).toArray()
+    const board = await collection.findOne({ urlName }, { projection: { suggestions: 0 } })
 
-    return NextResponse.json(
-      {
-        message: "Boards retrieved successfully",
-        boards: userBoards,
-      },
-      { status: 200 },
-    )
+    if (!board) {
+      return NextResponse.json(
+        {
+          message: "Board not found",
+        },
+        { status: 404 },
+      )
+    }
+
+    if (board.author !== userId) {
+      return NextResponse.json(
+        {
+          message: "User not authorized to view this board",
+        },
+        { status: 403 },
+      )
+    }
+
+    return NextResponse.json(board, { status: 200 })
   } catch (error) {
     let errorMessage = "An unknown error occurred"
     if (error instanceof Error) {
       errorMessage = error.message
     }
-    console.error("Error getting board:", errorMessage)
+    console.error("Error retrieving board:", errorMessage)
     return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }
