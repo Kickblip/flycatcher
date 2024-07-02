@@ -79,6 +79,7 @@ export async function POST(request: Request) {
     settings: {
       forceSignIn: false,
       disableBranding: false,
+      disableAnonVoting: false,
     },
     createdAt: new Date(),
   }

@@ -37,6 +37,7 @@ export interface Board {
 export interface BoardSettings {
   forceSignIn: boolean
   disableBranding: boolean
+  disableAnonVoting: boolean
 }
 
 export interface Comment {

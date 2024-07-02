@@ -6,7 +6,7 @@ import { Redis } from "@upstash/redis"
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
-  limiter: Ratelimit.slidingWindow(2, "10 s"),
+  limiter: Ratelimit.slidingWindow(4, "10 s"),
 })
 
 export async function GET(request: Request, { params }: { params: { board_name: string } }) {
