@@ -2,6 +2,23 @@ import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
 import { auth } from "@clerk/nextjs/server"
 
+const deleteCommentById = (comments: any[], commentId: string) => {
+  for (let i = 0; i < comments.length; i++) {
+    if (comments[i].id === commentId) {
+      comments.splice(i, 1)
+      return true
+    }
+
+    if (comments[i].replies) {
+      const foundInReplies = deleteCommentById(comments[i].replies, commentId)
+      if (foundInReplies) {
+        return true
+      }
+    }
+  }
+  return false
+}
+
 export async function POST(request: Request) {
   const { userId } = auth()
 
@@ -37,23 +54,6 @@ export async function POST(request: Request) {
 
     if (!suggestion) {
       return NextResponse.json({ message: "Suggestion not found" }, { status: 404 })
-    }
-
-    const deleteCommentById = (comments: any[], commentId: string) => {
-      for (let i = 0; i < comments.length; i++) {
-        if (comments[i].id === commentId) {
-          comments.splice(i, 1)
-          return true
-        }
-
-        if (comments[i].replies) {
-          const foundInReplies = deleteCommentById(comments[i].replies, commentId)
-          if (foundInReplies) {
-            return true
-          }
-        }
-      }
-      return false
     }
 
     const commentDeleted = deleteCommentById(suggestion.comments, commentId)

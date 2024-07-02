@@ -36,7 +36,7 @@ export async function GET(request: Request, { params }: { params: { board_name: 
     if (error instanceof Error) {
       errorMessage = error.message
     }
-    console.error("Error creating board:", errorMessage)
+    console.error("Error retrieving board:", errorMessage)
     return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }

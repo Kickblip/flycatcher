@@ -72,7 +72,7 @@ export async function POST(request: Request) {
     if (error instanceof Error) {
       errorMessage = error.message
     }
-    console.error("Error creating board:", errorMessage)
+    console.error("Error adding comment:", errorMessage)
     return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }
