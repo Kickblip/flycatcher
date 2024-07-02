@@ -23,10 +23,16 @@ export async function POST(request: Request) {
 
   const body = await request.json()
   const { boardUrlName } = body
-  let { disableBranding, metadataTabTitle } = body
+  let { disableBranding, metadataTabTitle, disableAnonVoting } = body
   const forceSignIn = false // temp until this maybe becomes a feature
 
-  if (!metadataTabTitle || typeof forceSignIn !== "boolean" || typeof disableBranding !== "boolean" || !boardUrlName) {
+  if (
+    !metadataTabTitle ||
+    typeof forceSignIn !== "boolean" ||
+    typeof disableBranding !== "boolean" ||
+    typeof disableAnonVoting !== "boolean" ||
+    !boardUrlName
+  ) {
     return NextResponse.json({ message: "Missing required fields" }, { status: 400 })
   }
 
@@ -55,6 +61,7 @@ export async function POST(request: Request) {
           $set: {
             "settings.forceSignIn": forceSignIn,
             "settings.disableBranding": disableBranding,
+            "settings.disableAnonVoting": disableAnonVoting,
             metadataTabTitle,
           },
         },

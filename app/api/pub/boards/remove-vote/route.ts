@@ -41,6 +41,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Board not found" }, { status: 404 })
     }
 
+    if (matchingBoard.settings.disableAnonVoting && !userId) {
+      return NextResponse.json({ message: "Anonymous voting is disabled" }, { status: 403 })
+    }
+
     const updatedSuggestions = matchingBoard.suggestions.map((suggestion: Suggestion) => {
       if (suggestion.id === suggestionId) {
         return {
