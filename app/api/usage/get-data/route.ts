@@ -1,12 +1,25 @@
 import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
 import { currentUser } from "@clerk/nextjs/server"
+import { Ratelimit } from "@upstash/ratelimit"
+import { Redis } from "@upstash/redis"
+
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(3, "10 s"),
+})
 
 export async function GET(request: Request) {
   const user = await currentUser()
 
   if (!user) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
+  }
+
+  const { success, reset } = await ratelimit.limit(user.id)
+
+  if (!success) {
+    return NextResponse.json({ message: "Rate limit exceeded" }, { status: 429 })
   }
 
   try {

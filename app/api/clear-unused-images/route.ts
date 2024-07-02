@@ -2,6 +2,13 @@ import { utapi } from "@/utils/server/uploadthing"
 import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
 import { Suggestion } from "@/types/SuggestionBoard"
+import { Ratelimit } from "@upstash/ratelimit"
+import { Redis } from "@upstash/redis"
+
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(1, "10 m"),
+})
 
 interface File {
   id: string
@@ -38,6 +45,13 @@ export async function GET(request: Request) {
     const secretKey = request.headers.get("x-cron-secret")
     if (secretKey !== process.env.CRON_SECRET) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const ip = request.headers.get("x-forwarded-for") ?? request.headers.get("remote-addr") ?? ""
+    const { success, reset } = await ratelimit.limit(ip)
+
+    if (!success) {
+      return NextResponse.json({ message: "Rate limit exceeded" }, { status: 429 })
     }
 
     const client = await clientPromise

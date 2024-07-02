@@ -3,6 +3,14 @@ import clientPromise from "@/utils/mongodb"
 import { currentUser } from "@clerk/nextjs/server"
 import { Board } from "@/types/SuggestionBoard"
 import Stripe from "stripe"
+import { Ratelimit } from "@upstash/ratelimit"
+import { Redis } from "@upstash/redis"
+
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(2, "10 s"),
+})
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: "2024-06-20",
 })
@@ -11,24 +19,20 @@ export async function POST(request: Request) {
   const user = await currentUser()
 
   if (!user) {
-    return NextResponse.json(
-      {
-        message: "User not authenticated",
-      },
-      { status: 401 },
-    )
+    return NextResponse.json({ message: "User not authenticated" }, { status: 401 })
+  }
+
+  const { success, reset } = await ratelimit.limit(user.id)
+
+  if (!success) {
+    return NextResponse.json({ message: "Rate limit exceeded" }, { status: 429 })
   }
 
   const body = await request.json()
   let { name } = body
 
   if (!name) {
-    return NextResponse.json(
-      {
-        message: "Board name is required",
-      },
-      { status: 400 },
-    )
+    return NextResponse.json({ message: "Board name is required" }, { status: 400 })
   }
 
   name = name.trim()

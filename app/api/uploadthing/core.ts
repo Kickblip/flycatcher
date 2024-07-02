@@ -4,6 +4,13 @@ import { utapi } from "@/utils/server/uploadthing"
 import { auth } from "@clerk/nextjs/server"
 import { z } from "zod"
 import clientPromise from "@/utils/mongodb"
+import { Ratelimit } from "@upstash/ratelimit"
+import { Redis } from "@upstash/redis"
+
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(2, "10 s"),
+})
 
 const f = createUploadthing()
 
@@ -19,6 +26,12 @@ export const ourFileRouter = {
 
       // If you throw, the user will not be able to upload
       if (!userId) throw new UploadThingError("Unauthorized")
+
+      const { success, reset } = await ratelimit.limit(userId)
+
+      if (!success) {
+        throw new UploadThingError("Rate limit exceeded")
+      }
 
       const client = await clientPromise
       const collection = client.db("Main").collection("boards")
@@ -60,6 +73,12 @@ export const ourFileRouter = {
 
       if (!userId) throw new UploadThingError("Unauthorized")
 
+      const { success, reset } = await ratelimit.limit(userId)
+
+      if (!success) {
+        throw new UploadThingError("Rate limit exceeded")
+      }
+
       const client = await clientPromise
       const collection = client.db("Main").collection("boards")
       const board = await collection.findOne({ urlName: input })
@@ -97,6 +116,12 @@ export const ourFileRouter = {
       const { userId } = auth()
 
       if (!userId) throw new UploadThingError("Unauthorized")
+
+      const { success, reset } = await ratelimit.limit(userId)
+
+      if (!success) {
+        throw new UploadThingError("Rate limit exceeded")
+      }
 
       return { userId }
     })
