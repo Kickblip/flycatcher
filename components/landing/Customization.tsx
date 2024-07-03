@@ -14,12 +14,12 @@ function Customization() {
           <div className="flex flex-col items-center justify-center p-4">
             <LockClosedIcon className="w-10 h-10 mb-2 text-fuchsia-500" />
             <span className="text-center text-black text-lg font-bold">Authentication</span>
-            <span className="text-center text-gray-800 text-sm">Choose to force sign in or allow anonymous feedback</span>
+            <span className="text-center text-gray-800 text-sm">Force sign in or allow anonymous voting</span>
           </div>
           <div className="flex flex-col items-center justify-center p-4">
             <CubeIcon className="w-10 h-10 mb-2 text-fuchsia-500" />
             <span className="text-center text-black text-lg font-bold">Custom Branding</span>
-            <span className="text-center text-gray-800 text-sm">Upload your logo to display it directly on your board</span>
+            <span className="text-center text-gray-800 text-sm">Upload your logo and display it directly on your board</span>
           </div>
           <div className="flex flex-col items-center justify-center p-4">
             <InformationCircleIcon className="w-10 h-10 mb-2 text-fuchsia-500" />

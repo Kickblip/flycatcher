@@ -31,7 +31,7 @@ function Hero() {
                 </Button>
               </Link>
               <Link href="/b/flycatcher" target="_blank" className="text-xs text-gray-500 mt-1 cursor-pointer">
-                See a live feedback board
+                Visit the official Flycatcher board
               </Link>
             </div>
 

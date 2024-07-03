@@ -6,7 +6,7 @@ function Pricing() {
   const paidFeatures = [
     "Unlimited posts",
     "Up to 10 feedback boards",
-    "Audience can upload images to your board",
+    "Audience can attach images to their suggestions",
     "Remove Flycatcher branding",
   ]
 
@@ -25,9 +25,9 @@ function Pricing() {
               </p>
               <Link
                 href="/dashboard/subscription"
-                className="block w-full text-center transition duration-200 font-semibold py-2 px-4 rounded-lg bg-fuchsia-500 text-white hover:bg-fuchsia-600"
+                className="block w-full text-center transition duration-200 font-semibold py-2 px-4 rounded-lg border border-fuchsia-500 text-fuchsia-500 hover:bg-fuchsia-500 hover:text-white hover:bg-fuchsia-600"
               >
-                Get Started
+                Create your first board
               </Link>
               <p className="text-lg font-medium mb-4 mt-6">What you get:</p>
               <ul className="mb-4 space-y-3">
@@ -56,7 +56,7 @@ function Pricing() {
                 href="/dashboard/subscription"
                 className="block w-full text-center transition duration-200 font-semibold py-2 px-4 rounded-lg bg-fuchsia-500 text-white hover:bg-fuchsia-600"
               >
-                Get Started
+                Create an account
               </Link>
               <p className="text-lg font-medium mb-4 mt-6">What you get:</p>
               <ul className="mb-4 space-y-3">
