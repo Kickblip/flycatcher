@@ -7,10 +7,9 @@ import { HandThumbUpIcon, ChatBubbleBottomCenterTextIcon, PencilSquareIcon, Chec
 import { ArrowsRightLeftIcon, PaperAirplaneIcon } from "@heroicons/react/16/solid"
 import tinycolor from "tinycolor2"
 import Modal from "react-modal"
-import { useUser } from "@clerk/nextjs"
+import { useUser, useClerk } from "@clerk/nextjs"
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
-import { SignInToastMessage } from "@/components/board/SignInToastMessage"
 
 function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boardData: Board }) {
   const { primaryColor, secondaryColor, accentColor, textColor } = boardData
@@ -29,6 +28,7 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
   const [suggestionDescription, setSuggestionDescription] = useState("")
   const [previousSuggestionTitle, setPreviousSuggestionTitle] = useState("")
   const [previousSuggestionDescription, setPreviousSuggestionDescription] = useState("")
+  const { openSignUp } = useClerk()
 
   useEffect(() => {
     const checkIfLiked = () => {
@@ -91,7 +91,11 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
     }
 
     if (!isSignedIn) {
-      SignInToastMessage()
+      openSignUp({
+        fallbackRedirectUrl: `/b/${boardData.urlName}`,
+        signInForceRedirectUrl: `/b/${boardData.urlName}`,
+        signInFallbackRedirectUrl: `/b/${boardData.urlName}`,
+      })
       return
     }
 
@@ -144,7 +148,11 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
     if (!replyText || !commentId) return
 
     if (!isSignedIn) {
-      SignInToastMessage()
+      openSignUp({
+        fallbackRedirectUrl: `/b/${boardData.urlName}`,
+        signInForceRedirectUrl: `/b/${boardData.urlName}`,
+        signInFallbackRedirectUrl: `/b/${boardData.urlName}`,
+      })
       return
     }
 
@@ -197,7 +205,11 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
     event.stopPropagation()
 
     if (isSignedIn === false && boardData.settings.disableAnonVoting === true) {
-      SignInToastMessage()
+      openSignUp({
+        fallbackRedirectUrl: `/b/${boardData.urlName}`,
+        signInForceRedirectUrl: `/b/${boardData.urlName}`,
+        signInFallbackRedirectUrl: `/b/${boardData.urlName}`,
+      })
       return
     }
 

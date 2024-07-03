@@ -7,11 +7,10 @@ import SuggestionCard from "@/components/board/SuggestionCard"
 import { Suggestion, Board, LocalStorageUser, Vote } from "@/types/SuggestionBoard"
 import PoweredByBadge from "@/components/board/PoweredByBadge"
 import { v4 as uuidv4 } from "uuid"
-import { useUser, SignedIn, UserButton } from "@clerk/nextjs"
+import { useUser, SignedIn, UserButton, useClerk } from "@clerk/nextjs"
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
-import { SignInToastMessage } from "@/components/board/SignInToastMessage"
 import { UploadButton } from "@/utils/uploadthing"
 import { XMarkIcon } from "@heroicons/react/24/outline"
 
@@ -30,6 +29,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
   const [showUploadDropzone, setShowUploadDropzone] = useState(false)
   const [suggestionImageUrl, setSuggestionImageUrl] = useState("")
   const [imageSubmitting, setImageSubmitting] = useState(false)
+  const { openSignUp } = useClerk()
 
   useEffect(() => {
     if (board) {
@@ -134,7 +134,11 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
     if (!trimmedTitle || !trimmedDescription) return
 
     if (!isSignedIn) {
-      SignInToastMessage()
+      openSignUp({
+        fallbackRedirectUrl: `/b/${params.board_name}`,
+        signInForceRedirectUrl: `/b/${params.board_name}`,
+        signInFallbackRedirectUrl: `/b/${params.board_name}`,
+      })
       return
     }
 
