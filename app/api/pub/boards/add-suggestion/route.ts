@@ -61,7 +61,6 @@ export async function POST(request: Request) {
     }
 
     const authorData = await clerkClient.users.getUser(matchingBoard.author)
-    console.log("authorData", authorData)
 
     let isPremium = false
     if (authorData.publicMetadata.stripeSubscriptionId) {
