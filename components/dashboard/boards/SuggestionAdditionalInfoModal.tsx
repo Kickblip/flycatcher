@@ -256,7 +256,7 @@ const SuggestionAdditionalInfoModal = ({
                       <TrashIcon className="w-4 h-4" />
                     </button>
                   </div>
-                  <p className="text-sm font-medium break-words mt-2 mb-1">{comment.content}</p>
+                  <p className="text-sm break-words mt-2 mb-1">{comment.content}</p>
                   <div>
                     {comment.replies && comment.replies.length > 0 && (
                       <div className="mt-3 ml-4 border-l-2 pl-2 border-gray-700">

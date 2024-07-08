@@ -556,7 +556,7 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
                       <></>
                     )} */}
                   </div>
-                  <p className="text-sm font-medium break-words mt-2 mb-1" style={{ color: textColor }}>
+                  <p className="text-sm break-words mt-2 mb-1" style={{ color: textColor }}>
                     {comment.content}
                   </p>
                   <button className="flex items-center my-1" onClick={() => handleAddReply(index)} style={{ color: accentColor }}>
