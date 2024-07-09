@@ -84,6 +84,8 @@ export async function POST(request: Request) {
       imageUrls: isPremium ? (suggestionImageUrl ? [suggestionImageUrl] : [""]) : [""],
       votes: [],
       status: "new",
+      priority: 1,
+      tags: ["Feature"],
       comments: [],
       createdAt: new Date(),
       updatedAt: undefined,

@@ -76,6 +76,7 @@ export async function POST(request: Request) {
     textColor: "#000000",
     author: user.id,
     authorIsPremium: isPremium,
+    tags: [],
     suggestions: [],
     settings: {
       forceSignIn: false,

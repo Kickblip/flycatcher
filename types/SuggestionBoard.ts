@@ -7,9 +7,11 @@ export interface Suggestion {
   authorName: string
   authorImg: string
   description: string
+  priority: number
+  tags: string[]
   imageUrls: string[]
   votes: Vote[]
-  status: string
+  status: "working" | "todo" | "backlog" | "done" | "new" | "cancelled" | "shipped"
   comments: Comment[]
   createdAt: Date
   updatedAt: Date | undefined
@@ -29,6 +31,7 @@ export interface Board {
   accentColor: string
   textColor: string
   author: string
+  tags: string[]
   authorIsPremium: boolean
   suggestions: Suggestion[]
   settings: BoardSettings
