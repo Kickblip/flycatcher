@@ -25,9 +25,9 @@ export type Priority = {
 
 export const statuses: Status[] = [
   {
-    value: "backlog",
-    label: "Backlog",
-    icon: QuestionMarkCircleIcon,
+    value: "new",
+    label: "New",
+    icon: ExclamationCircleIcon,
   },
   {
     value: "todo",
@@ -40,32 +40,32 @@ export const statuses: Status[] = [
     icon: ClockIcon,
   },
   {
+    value: "backlog",
+    label: "Backlog",
+    icon: QuestionMarkCircleIcon,
+  },
+  {
     value: "done",
     label: "Done",
     icon: MinusCircleIcon,
-  },
-  {
-    value: "canceled",
-    label: "Canceled",
-    icon: XCircleIcon,
-  },
-  {
-    value: "new",
-    label: "New",
-    icon: ExclamationCircleIcon,
   },
   {
     value: "shipped",
     label: "Shipped",
     icon: CheckCircleIcon,
   },
+  {
+    value: "canceled",
+    label: "Canceled",
+    icon: XCircleIcon,
+  },
 ]
 
 export const priorities: Priority[] = [
   {
-    value: 3,
-    label: "Low",
-    icon: ArrowDownIcon,
+    value: 1,
+    label: "High",
+    icon: ArrowUpIcon,
   },
   {
     value: 2,
@@ -73,8 +73,8 @@ export const priorities: Priority[] = [
     icon: ArrowRightIcon,
   },
   {
-    value: 1,
-    label: "High",
-    icon: ArrowUpIcon,
+    value: 3,
+    label: "Low",
+    icon: ArrowDownIcon,
   },
 ]

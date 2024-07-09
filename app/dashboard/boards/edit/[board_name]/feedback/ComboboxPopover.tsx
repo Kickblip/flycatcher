@@ -21,7 +21,7 @@ export function ComboboxPopover({ currentStatus, onStatusChange }: ComboboxPopov
     <div className="flex items-center space-x-4">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="ghost" size="sm" className="w-[150px] justify-start">
+          <Button variant="ghost" size="sm" className="w-[120px] justify-start">
             {selectedStatus ? (
               <>
                 <selectedStatus.icon className="mr-1 h-4 w-4 shrink-0" strokeWidth={1.7} />
@@ -33,7 +33,7 @@ export function ComboboxPopover({ currentStatus, onStatusChange }: ComboboxPopov
                 {currentStatus.label}
               </>
             ) : (
-              <>+ Set status</>
+              <>Status</>
             )}
           </Button>
         </PopoverTrigger>
@@ -46,9 +46,10 @@ export function ComboboxPopover({ currentStatus, onStatusChange }: ComboboxPopov
                     key={status.value}
                     value={status.value}
                     onSelect={(value) => {
-                      setSelectedStatus(statuses.find((priority) => priority.value === value) || null)
+                      const newSelectedStatus = statuses.find((status) => status.value === value) || null
+                      setSelectedStatus(newSelectedStatus)
                       setOpen(false)
-                      onStatusChange(selectedStatus!)
+                      onStatusChange(newSelectedStatus!)
                     }}
                     className="cursor-pointer"
                   >

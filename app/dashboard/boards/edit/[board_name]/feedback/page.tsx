@@ -66,24 +66,29 @@ export default function BoardFeedback({ params }: { params: { board_name: string
     <main className="flex flex-col items-center w-full">
       <Navbar />
       <div className="flex max-w-7xl w-full mx-auto mt-10 md:mb-6 mb-2">
-        <KanbanNewSuggestionsSection board={board!} setBoard={setBoard} />
+        {/* <KanbanNewSuggestionsSection board={board!} setBoard={setBoard} /> */}
       </div>
       <div className="container max-w-7xl mx-auto">
         <DataTable
-          columns={createColumns(board!, (suggestion: Suggestion) => {
-            if (slideOutMenuOpen) {
-              setSelectedSuggestion(suggestion)
-            } else {
-              setSelectedSuggestion(suggestion)
-              setSlideOutMenuOpen(!slideOutMenuOpen)
-            }
-          })}
+          columns={createColumns(
+            board!,
+            (suggestion: Suggestion) => {
+              if (slideOutMenuOpen) {
+                setSelectedSuggestion(suggestion)
+              } else {
+                setSelectedSuggestion(suggestion)
+                setSlideOutMenuOpen(!slideOutMenuOpen)
+              }
+            },
+            setBoard,
+          )}
           data={board!.suggestions}
           boardName={board!.urlName}
         />
       </div>
       <SlideOutMenu
         board={board!}
+        setBoard={setBoard}
         suggestion={selectedSuggestion!}
         isOpen={slideOutMenuOpen}
         onClose={() => {

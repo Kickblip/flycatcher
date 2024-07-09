@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { Suggestion, Board } from "@/types/SuggestionBoard"
 import { ArrowUpDown, MoreHorizontal } from "lucide-react"
-import { statuses, Status } from "./utils"
+import { statuses, priorities, Status, Priority } from "./utils"
 import { ChatBubbleLeftRightIcon, HandThumbUpIcon, TrashIcon } from "@heroicons/react/24/outline"
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
@@ -29,9 +29,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { ComboboxPopover } from "./status-popover"
+import { ComboboxPopover } from "./ComboboxPopover"
+import { PriorityComboboxPopover } from "./PriorityComboboxPopover"
 
-export const createColumns = (board: Board, onSuggestionClick: (suggestion: Suggestion) => void): ColumnDef<Suggestion>[] => [
+export const createColumns = (
+  board: Board,
+  onSuggestionClick: (suggestion: Suggestion) => void,
+  setBoard: (board: any) => void,
+): ColumnDef<Suggestion>[] => [
   {
     id: "actions",
     cell: ({ row }) => {
@@ -44,7 +49,12 @@ export const createColumns = (board: Board, onSuggestionClick: (suggestion: Sugg
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem className="cursor-pointer" onClick={() => {}}>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => {
+                onSuggestionClick(row.original)
+              }}
+            >
               View details
             </DropdownMenuItem>
             <DropdownMenuItem
@@ -89,7 +99,7 @@ export const createColumns = (board: Board, onSuggestionClick: (suggestion: Sugg
     cell: ({ row }) => {
       return (
         <div
-          className="flex items-center space-x-2 w-[500px] cursor-pointer"
+          className="flex items-center space-x-2 w-[450px] cursor-pointer"
           onClick={() => {
             onSuggestionClick(row.original)
           }}
@@ -143,7 +153,7 @@ export const createColumns = (board: Board, onSuggestionClick: (suggestion: Sugg
     },
   },
   {
-    accessorKey: "title",
+    accessorKey: "priority",
     header: ({ column }) => {
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
@@ -153,7 +163,35 @@ export const createColumns = (board: Board, onSuggestionClick: (suggestion: Sugg
       )
     },
     cell: ({ row }) => {
-      return <div className="font-medium text-center">{row.original.comments.length}</div>
+      const priority = row.original.priority
+      const selectedPriority = priorities.find((s) => s.value === priority)
+
+      const handlePriorityChange = async (newPriority: Priority) => {
+        if (!newPriority) return
+        try {
+          const response = await fetch(`/api/boards/update-suggestion-priority`, {
+            method: "POST",
+            body: JSON.stringify({ priority: newPriority.value, suggestionId: row.original.id, boardName: board.urlName }),
+          })
+          if (!response.ok) {
+            const errorData = await response.json()
+            throw new Error(errorData.message || "Board does not exist")
+          }
+          setBoard((prevBoard: Board) => ({
+            ...prevBoard,
+            suggestions: prevBoard.suggestions.map((s) => (s.id === row.original.id ? { ...s, priority: newPriority.value } : s)),
+          }))
+        } catch (error) {
+          console.error("Error updating suggestion priority:", error)
+          toast.error("Failed to update suggestion priority.")
+        }
+      }
+
+      return (
+        <div className="flex items-center space-x-1">
+          <PriorityComboboxPopover currentPriority={selectedPriority || null} onPriorityChange={handlePriorityChange} />
+        </div>
+      )
     },
   },
   {
@@ -170,8 +208,27 @@ export const createColumns = (board: Board, onSuggestionClick: (suggestion: Sugg
       const status = row.original.status
       const selectedStatus = statuses.find((s) => s.value === status)
 
-      const handleStatusChange = (newStatus: any) => {
-        console.log("Status changed to:", newStatus)
+      const handleStatusChange = async (newStatus: Status) => {
+        if (!newStatus) return
+        try {
+          const response = await fetch(`/api/boards/update-suggestion-status`, {
+            method: "POST",
+            body: JSON.stringify({ status: newStatus.value, suggestionId: row.original.id, boardName: board.urlName }),
+          })
+
+          if (!response.ok) {
+            const errorData = await response.json()
+            throw new Error(errorData.message || "Board does not exist")
+          }
+
+          setBoard((prevBoard: Board) => ({
+            ...prevBoard,
+            suggestions: prevBoard.suggestions.map((s) => (s.id === row.original.id ? { ...s, status: newStatus.value } : s)),
+          }))
+        } catch (error) {
+          console.error("Error updating suggestion status:", error)
+          toast.error("Failed to update suggestion status.")
+        }
       }
 
       return (
