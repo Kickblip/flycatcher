@@ -109,7 +109,7 @@ export default function SlideOutMenu({ board, suggestion, isOpen, onClose, setBo
           </button>
           <div className="px-16 pb-16 pt-4">
             <div className="flex items-center justify-between p-4">
-              <h2 className="text-xl font-bold">{suggestion.title}</h2>
+              <h2 className="text-xl font-bold break-words">{suggestion.title}</h2>
             </div>
             <div className="flex items-center space-x-2 px-4">
               <Image
@@ -200,7 +200,7 @@ export default function SlideOutMenu({ board, suggestion, isOpen, onClose, setBo
               <div className="border-t my-8"></div>
 
               <div className="mt-4">
-                <p className="mt-2">{suggestion.description}</p>
+                <p className="mt-2 break-words">{suggestion.description}</p>
                 {suggestion.imageUrls[0] ? (
                   <Image
                     src={suggestion.imageUrls[0]}

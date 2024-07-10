@@ -103,7 +103,7 @@ export function DataTableFacetedTagFilter<TData>({ table, title, possibleTags }:
                 <CommandGroup>
                   <CommandItem
                     onSelect={() => table.getColumn("tags")?.setFilterValue(undefined)}
-                    className="justify-center text-center"
+                    className="justify-center text-center cursor-pointer"
                   >
                     Clear filters
                   </CommandItem>

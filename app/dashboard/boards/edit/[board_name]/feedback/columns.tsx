@@ -37,6 +37,14 @@ const tagFilterFn = (row: Row<any>, columnId: string, filterValue: string[]) => 
   return filterValue.some((filter: string) => rowValue.map((tag) => tag.label).includes(filter))
 }
 
+const includesString = (row: Row<any>, columnId: string, filterValue: string | string[]) => {
+  const value = row.getValue(columnId)
+  if (Array.isArray(filterValue)) {
+    return filterValue.some((val) => String(value).toLowerCase().includes(String(val).toLowerCase()))
+  }
+  return String(value).toLowerCase().includes(String(filterValue).toLowerCase())
+}
+
 export const createColumns = (
   board: Board,
   onSuggestionClick: (suggestion: Suggestion) => void,
@@ -199,6 +207,7 @@ export const createColumns = (
   },
   {
     accessorKey: "priority",
+    filterFn: includesString,
     header: ({ column }) => {
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
@@ -241,6 +250,7 @@ export const createColumns = (
   },
   {
     accessorKey: "status",
+    filterFn: includesString,
     header: ({ column }) => {
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>

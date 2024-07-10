@@ -40,19 +40,22 @@ export function TagComboboxPopover({ possibleTags, currentTags, onTagsChange }: 
         <PopoverTrigger asChild>
           <div className="flex flex-wrap space-x-2" onClick={() => setOpen(true)}>
             {selectedTags.length > 0 ? (
-              selectedTags.map((tag) => (
-                <span
-                  key={tag.label}
-                  className="text-xs px-2 py-1 rounded-lg border"
-                  style={{
-                    color: tag.primaryColor,
-                    backgroundColor: tag.secondaryColor,
-                    borderColor: tag.primaryColor,
-                  }}
-                >
-                  {tag.label}
-                </span>
-              ))
+              <div className="flex items-center space-x-2">
+                {selectedTags.map((tag) => (
+                  <span
+                    key={tag.label}
+                    className="text-xs px-2 py-1 rounded-lg border"
+                    style={{
+                      color: tag.primaryColor,
+                      backgroundColor: tag.secondaryColor,
+                      borderColor: tag.primaryColor,
+                    }}
+                  >
+                    {tag.label}
+                  </span>
+                ))}
+                <PlusIcon className="h-3.5 w-3.5 text-gray-700 text-xs" strokeWidth={1.7} />
+              </div>
             ) : (
               <PlusIcon className="h-3.5 w-3.5 text-gray-700 text-xs my-2 mx-1" strokeWidth={1.7} />
             )}

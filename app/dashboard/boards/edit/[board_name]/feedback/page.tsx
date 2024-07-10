@@ -65,9 +65,6 @@ export default function BoardFeedback({ params }: { params: { board_name: string
   return (
     <main className="flex flex-col items-center w-full">
       <Navbar />
-      <div className="flex max-w-7xl w-full mx-auto mt-10 md:mb-6 mb-2">
-        {/* <KanbanNewSuggestionsSection board={board!} setBoard={setBoard} /> */}
-      </div>
       <div className="container max-w-7xl mx-auto">
         <DataTable
           columns={createColumns(
