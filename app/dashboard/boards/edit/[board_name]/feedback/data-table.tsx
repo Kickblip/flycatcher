@@ -18,14 +18,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { DataTableToolbar } from "./data-table-toolbar"
+import { Tag } from "@/types/SuggestionBoard"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
-  boardName: string
+  possibleTags: Tag[]
 }
 
-export function DataTable<TData, TValue>({ columns, data, boardName }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({ columns, data, possibleTags }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const table = useReactTable({
@@ -46,12 +48,7 @@ export function DataTable<TData, TValue>({ columns, data, boardName }: DataTable
   return (
     <div>
       <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter suggestions..."
-          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
-          onChange={(event) => table.getColumn("title")?.setFilterValue(event.target.value)}
-          className="max-w-sm"
-        />
+        <DataTableToolbar table={table} possibleTags={possibleTags} />
       </div>
       <div className="rounded-md border">
         <Table>

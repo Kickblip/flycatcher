@@ -5,6 +5,7 @@ import { Board } from "@/types/SuggestionBoard"
 import Stripe from "stripe"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
+import { possibleTags } from "./tags"
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
@@ -76,7 +77,7 @@ export async function POST(request: Request) {
     textColor: "#000000",
     author: user.id,
     authorIsPremium: isPremium,
-    tags: [],
+    tags: possibleTags,
     suggestions: [],
     settings: {
       forceSignIn: false,

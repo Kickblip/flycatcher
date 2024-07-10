@@ -8,7 +8,7 @@ export interface Suggestion {
   authorImg: string
   description: string
   priority: number
-  tags: string[]
+  tags: Tag[]
   imageUrls: string[]
   votes: Vote[]
   status: "working" | "todo" | "backlog" | "done" | "new" | "cancelled" | "shipped"
@@ -31,11 +31,17 @@ export interface Board {
   accentColor: string
   textColor: string
   author: string
-  tags: string[]
+  tags: Tag[]
   authorIsPremium: boolean
   suggestions: Suggestion[]
   settings: BoardSettings
   createdAt: Date
+}
+
+export interface Tag {
+  label: string
+  primaryColor: string
+  secondaryColor: string
 }
 
 export interface BoardSettings {

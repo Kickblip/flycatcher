@@ -1,7 +1,7 @@
 "use client"
 
-import { ColumnDef } from "@tanstack/react-table"
-import { Suggestion, Board } from "@/types/SuggestionBoard"
+import { ColumnDef, Row } from "@tanstack/react-table"
+import { Suggestion, Board, Tag } from "@/types/SuggestionBoard"
 import { ArrowUpDown, MoreHorizontal } from "lucide-react"
 import { statuses, priorities, Status, Priority } from "./utils"
 import { ChatBubbleLeftRightIcon, HandThumbUpIcon, TrashIcon } from "@heroicons/react/24/outline"
@@ -31,6 +31,11 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { ComboboxPopover } from "./ComboboxPopover"
 import { PriorityComboboxPopover } from "./PriorityComboboxPopover"
+
+const tagFilterFn = (row: Row<any>, columnId: string, filterValue: string[]) => {
+  const rowValue = row.getValue(columnId) as Tag[]
+  return filterValue.some((filter: string) => rowValue.map((tag) => tag.label).includes(filter))
+}
 
 export const createColumns = (
   board: Board,
@@ -84,7 +89,32 @@ export const createColumns = (
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => {}}>Delete</AlertDialogAction>
+                  <AlertDialogAction
+                    onClick={async () => {
+                      try {
+                        const response = await fetch(`/api/boards/delete-suggestion`, {
+                          method: "POST",
+                          body: JSON.stringify({ suggestionId: row.original.id, boardName: board.urlName }),
+                        })
+
+                        if (!response.ok) {
+                          const errorData = await response.json()
+                          throw new Error(errorData.message || "Board does not exist")
+                        }
+
+                        setBoard((prevBoard: Board) => ({
+                          ...prevBoard,
+                          suggestions: prevBoard.suggestions.filter((s) => s.id !== row.original.id),
+                        }))
+                        toast.success("Feedback deleted.")
+                      } catch (error) {
+                        console.error("Error deleting feedback:", error)
+                        toast.error("Failed to delete feedback.")
+                      }
+                    }}
+                  >
+                    Delete
+                  </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
@@ -97,6 +127,10 @@ export const createColumns = (
     accessorKey: "title",
     header: "Title",
     cell: ({ row }) => {
+      const tags = row.original.tags
+      const displayedTags = tags.slice(0, 2)
+      const remainingTagsCount = tags.length - displayedTags.length
+
       return (
         <div
           className="flex items-center space-x-2 w-[450px] cursor-pointer"
@@ -104,11 +138,22 @@ export const createColumns = (
             onSuggestionClick(row.original)
           }}
         >
-          {row.original.tags.map((tag: string) => (
-            <span key={tag} className="text-xs text-indigo-500 bg-indigo-100 border border-indigo-500 px-2 py-1 rounded-lg">
-              {tag}
+          {displayedTags.map((tag: Tag) => (
+            <span
+              key={tag.label}
+              className="text-xs px-2 py-1 rounded-lg border"
+              style={{
+                color: tag.primaryColor,
+                backgroundColor: tag.secondaryColor,
+                borderColor: tag.primaryColor,
+              }}
+            >
+              {tag.label}
             </span>
           ))}
+          {remainingTagsCount > 0 && (
+            <span className="text-xs px-2 py-1 rounded-lg border text-gray-700">+{remainingTagsCount} more</span>
+          )}
           <span className="truncate font-medium">{row.getValue("title")}</span>
         </div>
       )
@@ -237,5 +282,15 @@ export const createColumns = (
         </div>
       )
     },
+  },
+  {
+    accessorKey: "tags",
+    header: ({ column }) => {
+      return <></>
+    },
+    cell: ({ row }) => {
+      return <></>
+    },
+    filterFn: tagFilterFn,
   },
 ]

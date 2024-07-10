@@ -85,7 +85,13 @@ export async function POST(request: Request) {
       votes: [],
       status: "new",
       priority: 1,
-      tags: ["Feature"],
+      tags: [
+        {
+          label: "Suggestion",
+          primaryColor: "#6366f1", // Indigo-500
+          secondaryColor: "#c7d2fe", // Indigo-200
+        },
+      ],
       comments: [],
       createdAt: new Date(),
       updatedAt: undefined,

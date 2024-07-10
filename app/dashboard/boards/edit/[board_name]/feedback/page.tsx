@@ -83,7 +83,7 @@ export default function BoardFeedback({ params }: { params: { board_name: string
             setBoard,
           )}
           data={board!.suggestions}
-          boardName={board!.urlName}
+          possibleTags={board!.tags}
         />
       </div>
       <SlideOutMenu

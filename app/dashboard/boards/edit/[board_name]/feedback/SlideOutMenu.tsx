@@ -27,6 +27,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { TagComboboxPopover } from "./TagsComboboxPopover"
 
 type SlideOutMenuProps = {
   board: Board
@@ -123,46 +124,76 @@ export default function SlideOutMenu({ board, suggestion, isOpen, onClose, setBo
               </p>
             </div>
             <div className="p-4">
-              <div className="grid grid-cols-2 gap-4 w-1/2">
-                <div className="flex items-center space-x-1.5">
+              <div className="grid grid-cols-4 gap-4">
+                <div className="col-span-1 flex items-center space-x-1.5">
                   <ClockIcon className="h-5 w-5 text-gray-700" />
                   <p className="text-sm font-medium text-gray-700">Created</p>
                 </div>
-                <p className="text-sm text-gray-500">{new Date(suggestion.createdAt).toLocaleDateString()}</p>
+                <p className="col-span-3 text-sm text-gray-500">{new Date(suggestion.createdAt).toLocaleDateString()}</p>
                 {suggestion.updatedAt && (
                   <>
-                    <div className="flex items-center space-x-1.5">
+                    <div className="col-span-1 flex items-center space-x-1.5">
                       <ClockIcon className="h-5 w-5 text-gray-700" />
                       <p className="text-sm font-medium text-gray-700">Last updated time</p>
                     </div>
-                    <p className="text-sm text-gray-500">{new Date(suggestion.updatedAt).toLocaleDateString()}</p>
+                    <p className="col-span-3 text-sm text-gray-500">{new Date(suggestion.updatedAt).toLocaleDateString()}</p>
                   </>
                 )}
-                <div className="flex items-center space-x-1.5">
+                <div className="col-span-1 flex items-center space-x-1.5">
                   <InformationCircleIcon className="h-5 w-5 text-gray-700" />
                   <p className="text-sm font-medium text-gray-700">Status</p>
                 </div>
-                <p className="text-sm text-gray-500">{statuses.find((s) => s.value === suggestion.status)?.label}</p>
+                <p className="col-span-3 text-sm text-gray-500">{statuses.find((s) => s.value === suggestion.status)?.label}</p>
 
-                <div className="flex items-center space-x-1.5">
+                <div className="col-span-1 flex items-center space-x-1.5">
                   <ChartBarSquareIcon className="h-5 w-5 text-gray-700" />
                   <p className="text-sm font-medium text-gray-700">Priority</p>
                 </div>
-                <p className="text-sm text-gray-500">{priorities.find((s) => s.value === suggestion.priority)?.label}</p>
+                <p className="col-span-3 text-sm text-gray-500">
+                  {priorities.find((s) => s.value === suggestion.priority)?.label}
+                </p>
 
-                <div className="flex items-center space-x-1.5">
+                <div className="col-span-1 flex items-center space-x-1.5">
                   <ListBulletIcon className="h-5 w-5 text-gray-700" />
                   <p className="text-sm font-medium text-gray-700">Tags</p>
                 </div>
-                <div className="flex flex-wrap space-x-2">
-                  {suggestion.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-xs text-indigo-500 bg-indigo-100 border border-indigo-500 px-2 py-1 rounded-lg"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+                <div className="col-span-3 flex flex-wrap space-x-2 hover:bg-gray-100 rounded-lg transition duration-200 cursor-pointer">
+                  <TagComboboxPopover
+                    currentTags={suggestion.tags}
+                    possibleTags={board.tags}
+                    onTagsChange={async (tags) => {
+                      // update local state
+                      suggestion.tags = tags
+
+                      // update db
+                      try {
+                        const response = await fetch(`/api/boards/update-suggestion-tags`, {
+                          method: "POST",
+                          body: JSON.stringify({
+                            tags: suggestion.tags,
+                            suggestionId: suggestion.id,
+                            boardName: board.urlName,
+                          }),
+                        })
+                        if (!response.ok) {
+                          const errorData = await response.json()
+                          throw new Error(errorData.message || "Board does not exist")
+                        }
+                        setBoard((prevBoard: Board) => ({
+                          ...prevBoard,
+                          suggestions: prevBoard.suggestions.map((s) => {
+                            if (s.id === suggestion.id) {
+                              return suggestion
+                            }
+                            return s
+                          }),
+                        }))
+                      } catch (error) {
+                        console.error("Error updating suggestion tags:", error)
+                        toast.error("Failed to update suggestion tags.")
+                      }
+                    }}
+                  />
                 </div>
               </div>
 
