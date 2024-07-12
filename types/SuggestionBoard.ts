@@ -14,7 +14,7 @@ export interface Suggestion {
   status: "working" | "todo" | "backlog" | "done" | "new" | "cancelled" | "shipped"
   comments: Comment[]
   createdAt: Date
-  updatedAt: Date | undefined
+  updatedAt: Date | null
 }
 
 export interface Board {

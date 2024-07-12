@@ -40,11 +40,11 @@ export function TagComboboxPopover({ possibleTags, currentTags, onTagsChange }: 
         <PopoverTrigger asChild>
           <div className="flex flex-wrap space-x-2" onClick={() => setOpen(true)}>
             {selectedTags.length > 0 ? (
-              <div className="flex items-center space-x-2">
+              <div className="flex flex-wrap items-center">
                 {selectedTags.map((tag) => (
                   <span
                     key={tag.label}
-                    className="text-xs px-2 py-1 rounded-lg border"
+                    className="text-xs px-2 py-1 rounded-lg border mr-2 my-0.5"
                     style={{
                       color: tag.primaryColor,
                       backgroundColor: tag.secondaryColor,

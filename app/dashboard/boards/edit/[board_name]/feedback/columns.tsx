@@ -160,7 +160,7 @@ export const createColumns = (
             </span>
           ))}
           {remainingTagsCount > 0 && (
-            <span className="text-xs px-2 py-1 rounded-lg border text-gray-700">+{remainingTagsCount} more</span>
+            <span className="text-xs px-2 py-1 rounded-lg border text-gray-700">+{remainingTagsCount}</span>
           )}
           <span className="truncate font-medium">{row.getValue("title")}</span>
         </div>

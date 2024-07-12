@@ -65,10 +65,10 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
       bottom: "auto",
       marginRight: "-50%",
       transform: "translate(-50%, -50%)",
-      backgroundColor: secondaryColor,
+      backgroundColor: primaryColor,
       color: textColor,
       padding: "20px",
-      borderRadius: "15px",
+      borderRadius: "7px",
       border: "0px",
       width: screenWidth <= 640 ? "95%" : screenWidth <= 768 ? "90%" : "50%",
       maxHeight: "90vh",
@@ -359,7 +359,9 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
                 ? "Currently in-progress..."
                 : suggestion.status === "shipped"
                 ? "Shipped!"
-                : suggestion.status === "planned"
+                : suggestion.status === "done"
+                ? "Ready for next release"
+                : suggestion.status === "todo"
                 ? "Planned"
                 : ""}
             </h2>
@@ -410,13 +412,18 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
                     ? "Currently in-progress..."
                     : suggestion.status === "shipped"
                     ? "Shipped!"
-                    : suggestion.status === "planned"
+                    : suggestion.status === "done"
+                    ? "Ready for next release"
+                    : suggestion.status === "todo"
                     ? "Planned"
                     : ""}
                 </h2>
                 <p
                   className={`text-sm font-semibold ${
-                    suggestion.status === "working" || suggestion.status === "shipped" || suggestion.status === "planned"
+                    suggestion.status === "working" ||
+                    suggestion.status === "shipped" ||
+                    suggestion.status === "done" ||
+                    suggestion.status === "todo"
                       ? "ml-2"
                       : ""
                   }`}
