@@ -8,17 +8,37 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { PlusIcon } from "@heroicons/react/24/outline"
+import { PlusIcon, TagIcon, TrashIcon } from "@heroicons/react/24/outline"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 interface TagComboboxPopoverProps {
   possibleTags: Tag[]
   currentTags: Tag[]
   onTagsChange: (tags: Tag[]) => void
+  onTagCreate: (tagName: string) => void
+  onTagDelete: (tag: Tag) => void
 }
 
-export function TagComboboxPopover({ possibleTags, currentTags, onTagsChange }: TagComboboxPopoverProps) {
+export function TagComboboxPopover({
+  possibleTags,
+  currentTags,
+  onTagsChange,
+  onTagCreate,
+  onTagDelete,
+}: TagComboboxPopoverProps) {
   const [open, setOpen] = React.useState(false)
   const [selectedTags, setSelectedTags] = React.useState<Tag[]>(currentTags)
+  const [newTagName, setNewTagName] = React.useState("")
 
   const toggleTag = (tag: Tag) => {
     const isSelected = selectedTags.some((selectedTag) => selectedTag.label === tag.label)
@@ -70,23 +90,66 @@ export function TagComboboxPopover({ possibleTags, currentTags, onTagsChange }: 
                     key={tag.label}
                     value={tag.label}
                     onSelect={() => toggleTag(tag)}
-                    className="cursor-pointer flex items-center space-x-2"
+                    className="cursor-pointer flex items-center space-x-2 justify-between w-full"
                   >
-                    <span
-                      className="w-4 h-4 inline-block rounded-full"
+                    <div
+                      key={tag.label}
+                      className="text-xs px-2 py-1 rounded-lg border mr-2 my-0.5"
                       style={{
-                        backgroundColor: tag.primaryColor,
-                      }}
-                    />
-                    <span
-                      style={{
-                        color: selectedTags.some((selectedTag) => selectedTag.label === tag.label) ? tag.primaryColor : "inherit",
+                        color: tag.primaryColor,
+                        backgroundColor: tag.secondaryColor,
+                        borderColor: tag.primaryColor,
+                        opacity: selectedTags.some((selectedTag) => selectedTag.label === tag.label) ? 1 : 0.7,
                       }}
                     >
                       {tag.label}
-                    </span>
+                    </div>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <TrashIcon className="h-4 w-4 text-gray-500" strokeWidth={1.7} />
+                        </div>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This tag will be permanently deleted.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => {
+                              onTagDelete(tag)
+                            }}
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </CommandItem>
                 ))}
+              </CommandGroup>
+              <CommandGroup>
+                <CommandItem className="flex items-center justify-between w-full">
+                  <input
+                    type="text"
+                    placeholder="New tag"
+                    value={newTagName}
+                    onChange={(e) => setNewTagName(e.target.value)}
+                    className="py-1 px-2 border border-gray-300 rounded-md focus:outline-none"
+                  />
+                  <button
+                    onClick={() => {
+                      onTagCreate(newTagName)
+                    }}
+                    className="hover:bg-gray-100 transition duration-200 rounded-lg p-1.5"
+                  >
+                    <PlusIcon className="h-4 w-4 text-gray-500" strokeWidth={1.7} />
+                  </button>
+                </CommandItem>
               </CommandGroup>
             </CommandList>
           </Command>

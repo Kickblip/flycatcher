@@ -1,6 +1,6 @@
 import { Tag } from "@/types/SuggestionBoard"
 
-export const possibleTags: Tag[] = [
+export const starterTags: Tag[] = [
   {
     label: "Suggestion",
     primaryColor: "#6366f1", // Indigo-500

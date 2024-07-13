@@ -85,7 +85,7 @@ export async function POST(request: Request) {
     }
 
     // Filter out tags that do not exist in board.tags
-    if (!tags.every((tag) => board.tags.some((boardTag: Tag) => boardTag.label === tag.label))) {
+    if (!tags.every((tag) => board.activeTags.some((boardTag: Tag) => boardTag.label === tag.label))) {
       tags = tags.filter((tag) => board.tags.some((boardTag: Tag) => boardTag.label === tag.label))
     }
 

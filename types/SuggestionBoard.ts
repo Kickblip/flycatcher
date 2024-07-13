@@ -31,7 +31,8 @@ export interface Board {
   accentColor: string
   textColor: string
   author: string
-  tags: Tag[]
+  allTags: Tag[]
+  activeTags: Tag[]
   authorIsPremium: boolean
   suggestions: Suggestion[]
   settings: BoardSettings

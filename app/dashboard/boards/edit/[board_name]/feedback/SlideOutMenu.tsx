@@ -6,7 +6,7 @@ import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { motion, AnimatePresence } from "framer-motion"
 import { Board, Suggestion } from "@/types/SuggestionBoard"
-import { statuses, priorities } from "./utils"
+import { statuses, priorities, tagColors } from "./utils"
 import {
   ChevronDoubleRightIcon,
   ClockIcon,
@@ -102,7 +102,7 @@ export default function SlideOutMenu({ board, suggestion, isOpen, onClose, setBo
           animate={{ x: 0 }}
           exit={{ x: "100%" }}
           transition={{ type: "spring", stiffness: 200, damping: 30 }}
-          className="fixed top-0 right-0 bottom-0 w-[45%] bg-white shadow-xl z-50 overflow-y-auto"
+          className="fixed top-0 right-0 bottom-0 w-[98%] md:w-[45%] bg-white shadow-xl z-50 overflow-y-auto"
         >
           <button onClick={onClose} className="p-4">
             <ChevronDoubleRightIcon className="h-6 w-6 text-gray-600" />
@@ -160,7 +160,7 @@ export default function SlideOutMenu({ board, suggestion, isOpen, onClose, setBo
                 <div className="col-span-3 flex flex-wrap space-x-2 hover:bg-gray-100 rounded-lg transition duration-200 cursor-pointer">
                   <TagComboboxPopover
                     currentTags={suggestion.tags}
-                    possibleTags={board.tags}
+                    possibleTags={board.activeTags}
                     onTagsChange={async (tags) => {
                       // update local state
                       suggestion.tags = tags
@@ -187,6 +187,63 @@ export default function SlideOutMenu({ board, suggestion, isOpen, onClose, setBo
                             }
                             return s
                           }),
+                        }))
+                      } catch (error) {
+                        console.error("Error updating suggestion tags:", error)
+                        toast.error("Failed to update suggestion tags.")
+                      }
+                    }}
+                    onTagCreate={async (tagName) => {
+                      try {
+                        const randomTagColor = tagColors[Math.floor(Math.random() * tagColors.length)]
+
+                        const response = await fetch(`/api/boards/create-suggestion-tag`, {
+                          method: "POST",
+                          body: JSON.stringify({
+                            newTag: {
+                              label: tagName,
+                              primaryColor: randomTagColor.primaryColor,
+                              secondaryColor: randomTagColor.secondaryColor,
+                            },
+                            boardName: board.urlName,
+                          }),
+                        })
+                        if (!response.ok) {
+                          const errorData = await response.json()
+                          throw new Error(errorData.message || "Board does not exist")
+                        }
+                        setBoard((prevBoard: Board) => ({
+                          ...prevBoard,
+                          activeTags: [
+                            ...prevBoard.activeTags,
+                            {
+                              label: tagName,
+                              primaryColor: randomTagColor.primaryColor,
+                              secondaryColor: randomTagColor.secondaryColor,
+                            },
+                          ],
+                        }))
+                      } catch (error) {
+                        console.error("Error updating suggestion tags:", error)
+                        toast.error("Failed to update suggestion tags.")
+                      }
+                    }}
+                    onTagDelete={async (tag) => {
+                      try {
+                        const response = await fetch(`/api/boards/delete-suggestion-tag`, {
+                          method: "POST",
+                          body: JSON.stringify({
+                            tagToDelete: tag,
+                            boardName: board.urlName,
+                          }),
+                        })
+                        if (!response.ok) {
+                          const errorData = await response.json()
+                          throw new Error(errorData.message || "Board does not exist")
+                        }
+                        setBoard((prevBoard: Board) => ({
+                          ...prevBoard,
+                          activeTags: prevBoard.activeTags.filter((t) => t !== tag),
                         }))
                       } catch (error) {
                         console.error("Error updating suggestion tags:", error)

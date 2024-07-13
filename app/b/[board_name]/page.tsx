@@ -312,7 +312,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
                 Tags
               </label>
               <div className="flex flex-wrap items-center">
-                {board?.tags.map((tag, index) => (
+                {board?.activeTags.map((tag, index) => (
                   <div
                     key={index}
                     className="text-xs font-medium px-2 py-1 rounded-lg mr-2 my-1 cursor-pointer"
