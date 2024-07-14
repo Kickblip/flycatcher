@@ -7,12 +7,14 @@ export interface Suggestion {
   authorName: string
   authorImg: string
   description: string
+  priority: number
+  tags: Tag[]
   imageUrls: string[]
   votes: Vote[]
-  status: string
+  status: "working" | "todo" | "backlog" | "done" | "new" | "cancelled" | "shipped"
   comments: Comment[]
   createdAt: Date
-  updatedAt: Date | undefined
+  updatedAt: Date | null
 }
 
 export interface Board {
@@ -29,10 +31,18 @@ export interface Board {
   accentColor: string
   textColor: string
   author: string
+  allTags: Tag[]
+  activeTags: Tag[]
   authorIsPremium: boolean
   suggestions: Suggestion[]
   settings: BoardSettings
   createdAt: Date
+}
+
+export interface Tag {
+  label: string
+  primaryColor: string
+  secondaryColor: string
 }
 
 export interface BoardSettings {

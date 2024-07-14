@@ -4,7 +4,7 @@ import LoadingWheel from "@/components/dashboard/LoadingWheel"
 import { useEffect, useState } from "react"
 import tinycolor from "tinycolor2"
 import SuggestionCard from "@/components/board/SuggestionCard"
-import { Suggestion, Board, LocalStorageUser, Vote } from "@/types/SuggestionBoard"
+import { Suggestion, Board, LocalStorageUser, Vote, Tag } from "@/types/SuggestionBoard"
 import PoweredByBadge from "@/components/board/PoweredByBadge"
 import { v4 as uuidv4 } from "uuid"
 import { useUser, SignedIn, UserButton, useClerk } from "@clerk/nextjs"
@@ -29,6 +29,8 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
   const [showUploadDropzone, setShowUploadDropzone] = useState(false)
   const [suggestionImageUrl, setSuggestionImageUrl] = useState("")
   const [imageSubmitting, setImageSubmitting] = useState(false)
+  const [selectedPriority, setSelectedPriority] = useState<number>(0)
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([])
   const { openSignUp } = useClerk()
 
   useEffect(() => {
@@ -160,7 +162,14 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ title: trimmedTitle, description: trimmedDescription, board: board, suggestionImageUrl }),
+        body: JSON.stringify({
+          title: trimmedTitle,
+          description: trimmedDescription,
+          board: board,
+          suggestionImageUrl,
+          tags: selectedTags,
+          priority: 3 - selectedPriority, // 3 - low, 2 - medium, 1 - high
+        }),
       })
 
       if (!response.ok) {
@@ -264,7 +273,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
                 style={{ backgroundColor: lighterSecondaryColor }}
               />
             </div>
-            <div className="mb-2">
+            <div className="mb-4">
               <label className="block text-xs font-bold mb-1" htmlFor="suggestionDescription">
                 Post Text
               </label>
@@ -276,6 +285,53 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
                 onChange={(e) => setsuggestionDescription(e.target.value)}
                 style={{ backgroundColor: lighterSecondaryColor, height: "100px" }}
               />
+            </div>
+            <div className="mb-4">
+              <label className="block text-xs font-bold mb-1" htmlFor="suggestionDescription">
+                Priority
+              </label>
+              <div className="flex items-center">
+                {["Low", "Medium", "High"].map((button, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setSelectedPriority(index)}
+                    className={`flex-1 py-2 px-4 m-1 text-center rounded-lg text-xs font-semibold`}
+                    style={{
+                      backgroundColor:
+                        selectedPriority === index ? board?.accentColor || "#6366f1" : lighterSecondaryColor || "#fff",
+                      color: selectedPriority === index ? board?.secondaryColor || "#fff" : board?.textColor || "#000",
+                    }}
+                  >
+                    {button}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="mb-4">
+              <label className="block text-xs font-bold mb-1" htmlFor="suggestionDescription">
+                Tags
+              </label>
+              <div className="flex flex-wrap items-center">
+                {board?.activeTags.map((tag, index) => (
+                  <div
+                    key={index}
+                    className="text-xs font-medium px-2 py-1 rounded-lg mr-2 my-1 cursor-pointer"
+                    style={{
+                      backgroundColor: selectedTags.includes(tag)
+                        ? board?.accentColor || "#6366f1"
+                        : lighterSecondaryColor || "#fff",
+                      color: selectedTags.includes(tag) ? board?.secondaryColor || "#fff" : board?.textColor || "#000",
+                    }}
+                    onClick={() => {
+                      setSelectedTags((prevTags) => {
+                        return prevTags.includes(tag) ? prevTags.filter((t) => t !== tag) : [...prevTags, tag]
+                      })
+                    }}
+                  >
+                    {tag.label}
+                  </div>
+                ))}
+              </div>
               {board?.authorIsPremium ? (
                 <button
                   className="text-xs mt-2"

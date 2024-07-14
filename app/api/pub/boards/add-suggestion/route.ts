@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
-import { Suggestion } from "@/types/SuggestionBoard"
+import { Suggestion, Tag } from "@/types/SuggestionBoard"
 import { v4 as uuidv4 } from "uuid"
 import { clerkClient, currentUser } from "@clerk/nextjs/server"
 import Stripe from "stripe"
@@ -28,14 +28,25 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json()
-  const { board, suggestionImageUrl } = body
+  const { board, suggestionImageUrl, priority } = body
+  let { tags } = body
   const title = body.title.trim()
   const description = body.description.trim()
 
-  if (!title || !description || !board) {
+  if (
+    !title ||
+    !description ||
+    !board ||
+    !priority ||
+    ![1, 2, 3].includes(priority) || // make sure priority is 1, 2, or 3
+    !Array.isArray(tags) || // make sure tags is an array
+    (tags.length > 0 &&
+      // make sure the tags are the proper Tag type if array is not empty
+      !tags.every((tag) => typeof tag === "object" && "label" in tag && "primaryColor" in tag && "secondaryColor" in tag))
+  ) {
     return NextResponse.json(
       {
-        message: "Missing title, description, or board",
+        message: "Missing required fields or invalid data types",
       },
       { status: 400 },
     )
@@ -73,6 +84,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Reached suggestion limit for board" }, { status: 403 })
     }
 
+    // Filter out tags that do not exist in board.tags
+    if (!tags.every((tag) => board.activeTags.some((boardTag: Tag) => boardTag.label === tag.label))) {
+      tags = tags.filter((tag) => board.tags.some((boardTag: Tag) => boardTag.label === tag.label))
+    }
+
     // add the new suggestion to the board
     const newSuggestion: Suggestion = {
       id: uuidv4(),
@@ -84,9 +100,11 @@ export async function POST(request: Request) {
       imageUrls: isPremium ? (suggestionImageUrl ? [suggestionImageUrl] : [""]) : [""],
       votes: [],
       status: "new",
+      priority,
+      tags,
       comments: [],
       createdAt: new Date(),
-      updatedAt: undefined,
+      updatedAt: null,
     }
 
     const updatedSuggestions: Suggestion[] = [...matchingBoard.suggestions, newSuggestion]
