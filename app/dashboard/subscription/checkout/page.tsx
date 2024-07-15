@@ -3,18 +3,19 @@
 import Link from "next/link"
 import Navbar from "@/components/dashboard/Navbar"
 import { useEffect } from "react"
-import { useClerk } from "@clerk/nextjs"
 import { useSearchParams } from "next/navigation"
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
+import { useUser } from "@/hooks/supabase"
+import { createClient } from "@/utils/supabase/client"
 
 export default function Checkout() {
-  const { session } = useClerk()
+  const { user, stripeData, error } = useUser()
   const searchParams = useSearchParams()
   const sessionId = searchParams.get("sessionId")
 
   useEffect(() => {
-    if (!sessionId || !session) return
+    if (!sessionId || !user) return
 
     retrieveStripeCheckoutSession(sessionId).then((result) => {
       if (!result) {
@@ -25,14 +26,15 @@ export default function Checkout() {
       const { success, error } = result
       if (success) {
         toast.success("Checkout completed successfully. Thank you for joining Flycatcher.")
-        session?.reload()
+        const supabase = createClient()
+        supabase.auth.refreshSession()
       }
 
       if (error) {
         toast.error("Failed to retrieve checkout session.")
       }
     })
-  }, [sessionId, session])
+  }, [sessionId, user?.id])
 
   const retrieveStripeCheckoutSession = async (sessionId: string) => {
     try {

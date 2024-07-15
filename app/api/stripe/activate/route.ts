@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server"
-import { clerkClient, currentUser } from "@clerk/nextjs/server"
 import Stripe from "stripe"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
+import { createClient } from "@/utils/supabase/server"
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
@@ -14,8 +14,13 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 })
 
 export async function POST(request: Request) {
-  const user = await currentUser()
-  if (!user) {
+  const supabase = createClient()
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
+
+  if (!user?.id) {
     return NextResponse.json({ error: "User not authenticated" }, { status: 401 })
   }
   const { success, reset } = await ratelimit.limit(user.id)
@@ -25,7 +30,21 @@ export async function POST(request: Request) {
   }
 
   try {
-    const subscription = await stripe.subscriptions.retrieve(user.publicMetadata.stripeSubscriptionId as string)
+    const { data: userMetadata, error: userMetadataError } = await supabase
+      .from("user")
+      .select("*")
+      .eq("user_id", user.id)
+      .single()
+
+    let subscription
+    let stripeSubscriptionId
+    if (!userMetadataError) {
+      stripeSubscriptionId = userMetadata?.stripe_subscription_id
+      if (stripeSubscriptionId) {
+        subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId as string)
+      }
+    }
+
     if (!subscription) {
       return NextResponse.json({ error: "Subscription not found" }, { status: 404 })
     }
@@ -33,15 +52,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Subscription already active" }, { status: 400 })
     }
 
-    await stripe.subscriptions.update(user.publicMetadata.stripeSubscriptionId as string, {
+    await stripe.subscriptions.update(stripeSubscriptionId, {
       cancel_at_period_end: false,
     })
 
-    await clerkClient.users.updateUserMetadata(user.id, {
-      publicMetadata: {
-        stripeSubscriptionCancelAtPeriodEnd: false,
-      },
-    })
+    const { error } = await supabase
+      .from("user_metadata")
+      .update({ stripe_subscription_cancel_at_period_end: false })
+      .eq("user_id", user.id)
 
     return NextResponse.json({ message: "Subscription activated" }, { status: 200 })
   } catch (error) {

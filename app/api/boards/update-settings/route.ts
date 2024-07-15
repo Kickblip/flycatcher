@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
-import { currentUser } from "@clerk/nextjs/server"
+import { createClient } from "@/utils/supabase/server"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
 
@@ -10,7 +10,11 @@ const ratelimit = new Ratelimit({
 })
 
 export async function POST(request: Request) {
-  const user = await currentUser()
+  const supabase = createClient()
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
 
   if (!user) {
     return NextResponse.json({ message: "User not authenticated" }, { status: 401 })
@@ -42,7 +46,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Metadata tab title too long" }, { status: 400 })
   }
 
-  if (disableBranding === true && !user.publicMetadata.isPremium) {
+  const { data: userMetadata, error: userMetadataError } = await supabase.from("user").select("*").eq("user_id", user.id).single()
+  let isPremium = false
+  if (!userMetadataError) {
+    if (userMetadata?.is_premium) isPremium = true
+  }
+
+  if (disableBranding === true && !isPremium) {
     disableBranding = false
   }
 

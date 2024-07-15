@@ -7,9 +7,9 @@ import { HandThumbUpIcon, ChatBubbleBottomCenterTextIcon, PencilSquareIcon, Chec
 import { ArrowsRightLeftIcon, PaperAirplaneIcon } from "@heroicons/react/16/solid"
 import tinycolor from "tinycolor2"
 import Modal from "react-modal"
-import { useUser, useClerk } from "@clerk/nextjs"
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
+import { useUser } from "@/hooks/supabase"
 
 function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boardData: Board }) {
   const { primaryColor, secondaryColor, accentColor, textColor } = boardData
@@ -18,7 +18,6 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [newComment, setNewComment] = useState("")
-  const { isLoaded, isSignedIn, user } = useUser()
   const [isLiked, setIsLiked] = useState(false)
   const [replyInputs, setReplyInputs] = useState<{ [key: number]: boolean }>({})
   const [replyTexts, setReplyTexts] = useState<{ [key: number]: string }>({})
@@ -28,7 +27,7 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
   const [suggestionDescription, setSuggestionDescription] = useState("")
   const [previousSuggestionTitle, setPreviousSuggestionTitle] = useState("")
   const [previousSuggestionDescription, setPreviousSuggestionDescription] = useState("")
-  const { openSignUp } = useClerk()
+  const { user, stripeData, error } = useUser()
 
   useEffect(() => {
     const checkIfLiked = () => {
@@ -90,12 +89,13 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
       return
     }
 
-    if (!isSignedIn) {
-      openSignUp({
-        fallbackRedirectUrl: `/b/${boardData.urlName}`,
-        signInForceRedirectUrl: `/b/${boardData.urlName}`,
-        signInFallbackRedirectUrl: `/b/${boardData.urlName}`,
-      })
+    if (!user?.id) {
+      // openSignUp({
+      //   fallbackRedirectUrl: `/b/${boardData.urlName}`,
+      //   signInForceRedirectUrl: `/b/${boardData.urlName}`,
+      //   signInFallbackRedirectUrl: `/b/${boardData.urlName}`,
+      // })
+      // TODO: OPEN SIGNUP MODAL
       return
     }
 
@@ -147,12 +147,13 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
 
     if (!replyText || !commentId) return
 
-    if (!isSignedIn) {
-      openSignUp({
-        fallbackRedirectUrl: `/b/${boardData.urlName}`,
-        signInForceRedirectUrl: `/b/${boardData.urlName}`,
-        signInFallbackRedirectUrl: `/b/${boardData.urlName}`,
-      })
+    if (!user?.id) {
+      // openSignUp({
+      //   fallbackRedirectUrl: `/b/${boardData.urlName}`,
+      //   signInForceRedirectUrl: `/b/${boardData.urlName}`,
+      //   signInFallbackRedirectUrl: `/b/${boardData.urlName}`,
+      // })
+      // TODO: OPEN SIGNUP MODAL
       return
     }
 
@@ -204,12 +205,13 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
   const handleVoteClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
 
-    if (isSignedIn === false && boardData.settings.disableAnonVoting === true) {
-      openSignUp({
-        fallbackRedirectUrl: `/b/${boardData.urlName}`,
-        signInForceRedirectUrl: `/b/${boardData.urlName}`,
-        signInFallbackRedirectUrl: `/b/${boardData.urlName}`,
-      })
+    if (user?.id && boardData.settings.disableAnonVoting === true) {
+      // openSignUp({
+      //   fallbackRedirectUrl: `/b/${boardData.urlName}`,
+      //   signInForceRedirectUrl: `/b/${boardData.urlName}`,
+      //   signInFallbackRedirectUrl: `/b/${boardData.urlName}`,
+      // })
+      // TODO: OPEN SIGNUP MODAL
       return
     }
 
@@ -217,7 +219,7 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
 
     // set author id depending on if user is signed in or not
     const localStorageData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
-    let author = isSignedIn ? user?.id : localStorageData?.id
+    let author = user?.id ? user?.id : localStorageData?.id
 
     if (isLiked) {
       let temp = suggestion.votes.pop()

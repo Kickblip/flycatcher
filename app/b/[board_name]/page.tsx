@@ -7,17 +7,18 @@ import SuggestionCard from "@/components/board/SuggestionCard"
 import { Suggestion, Board, LocalStorageUser, Vote, Tag } from "@/types/SuggestionBoard"
 import PoweredByBadge from "@/components/board/PoweredByBadge"
 import { v4 as uuidv4 } from "uuid"
-import { useUser, SignedIn, UserButton, useClerk } from "@clerk/nextjs"
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
 import { UploadButton } from "@/utils/uploadthing"
 import { XMarkIcon } from "@heroicons/react/24/outline"
+import { useUser } from "@/hooks/supabase"
+import UserButton from "@/components/shared/UserButton"
 
 export default function BoardInfo({ params }: { params: { board_name: string } }) {
-  const [error, setError] = useState<string | null>(null)
+  const [loadingError, setLoadingError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
-  const [board, setBoard] = useState<Board | null>(null) // TODO: Define types
+  const [board, setBoard] = useState<Board | null>(null)
   const [suggestionTitle, setsuggestionTitle] = useState("")
   const [suggestionDescription, setsuggestionDescription] = useState("")
   const lighterSecondaryColor = board?.secondaryColor ? tinycolor(board.secondaryColor).lighten(20).toString() : "#f9fafb" // #f9fafb is tailwind gray-50
@@ -25,13 +26,12 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
   const [page, setPage] = useState(2)
   const [hideLoadMoreButton, setHideLoadMoreButton] = useState(false)
   const [hideEmptyMessage, setHideEmptyMessage] = useState(true)
-  const { isLoaded, isSignedIn, user } = useUser()
   const [showUploadDropzone, setShowUploadDropzone] = useState(false)
   const [suggestionImageUrl, setSuggestionImageUrl] = useState("")
   const [imageSubmitting, setImageSubmitting] = useState(false)
   const [selectedPriority, setSelectedPriority] = useState<number>(0)
   const [selectedTags, setSelectedTags] = useState<Tag[]>([])
-  const { openSignUp } = useClerk()
+  const { user, stripeData, error } = useUser()
 
   useEffect(() => {
     if (board) {
@@ -52,10 +52,10 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
 
   useEffect(() => {
     setLocalStorage()
-  }, [board, isLoaded, isSignedIn, user])
+  }, [board, user?.id])
 
   const fetchBoardData = async () => {
-    setError(null)
+    setLoadingError(null)
     setLoading(true)
 
     try {
@@ -77,7 +77,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
       setBoard(data)
       setLoading(false)
     } catch (error) {
-      setError((error as Error).message || "Board does not exist")
+      setLoadingError((error as Error).message || "Board does not exist")
       setLoading(false)
     }
   }
@@ -86,7 +86,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
     const existingUser: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
     let userLikes: string[] = []
 
-    if (isSignedIn && isLoaded && user && board) {
+    if (user?.id && board) {
       userLikes = board.suggestions
         .filter((suggestion: Suggestion) => suggestion.votes.some((vote: Vote) => vote.author === user.id))
         .map((suggestion: Suggestion) => suggestion.id)
@@ -106,7 +106,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
         }
         localStorage.setItem("user", JSON.stringify(newUser))
       }
-    } else if (!isSignedIn && isLoaded && board) {
+    } else if (!user?.id && board) {
       if (existingUser.id) {
         // not logged in and not first visit or logged in user that logged out
         return // no action needs to be taken
@@ -125,7 +125,8 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
     return <LoadingWheel />
   }
 
-  if (error) {
+  if (loadingError) {
+    console.error(error)
     return <div className="text-red-500">{JSON.stringify(board)}</div>
   }
 
@@ -135,12 +136,14 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
 
     if (!trimmedTitle || !trimmedDescription) return
 
-    if (!isSignedIn) {
-      openSignUp({
-        fallbackRedirectUrl: `/b/${params.board_name}`,
-        signInForceRedirectUrl: `/b/${params.board_name}`,
-        signInFallbackRedirectUrl: `/b/${params.board_name}`,
-      })
+    if (!user?.id) {
+      // openSignUp({
+      //   fallbackRedirectUrl: `/b/${params.board_name}`,
+      //   signInForceRedirectUrl: `/b/${params.board_name}`,
+      //   signInFallbackRedirectUrl: `/b/${params.board_name}`,
+      // })
+      console.log("OPEN SIGN UP")
+      // TODO: Open sign up modal
       return
     }
 
@@ -424,11 +427,13 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
           </button>
         </div>
       </div>
-      <div className="absolute top-6 right-6">
-        <SignedIn>
+      {user ? (
+        <div className="absolute top-6 right-6">
           <UserButton />
-        </SignedIn>
-      </div>
+        </div>
+      ) : (
+        <></>
+      )}
     </main>
   )
 }

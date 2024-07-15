@@ -1,6 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
-import { SignedIn, UserButton } from "@clerk/nextjs"
+import UserButton from "@/components/shared/UserButton"
 
 function Navbar() {
   return (
@@ -25,9 +25,7 @@ function Navbar() {
             </Link>
           </div>
           <div className="flex items-center">
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
+            <UserButton />
           </div>
         </div>
       </div>

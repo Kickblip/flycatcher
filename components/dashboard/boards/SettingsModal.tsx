@@ -7,9 +7,9 @@ import { useEffect, useState } from "react"
 import { Switch } from "@headlessui/react"
 import { UploadButton } from "@/utils/uploadthing"
 import { toast } from "react-toastify"
-import { useUser } from "@clerk/nextjs"
 import "react-toastify/dist/ReactToastify.css"
 import Image from "next/image"
+import { useUser } from "@/hooks/supabase"
 
 type SettingsModalProps = {
   isOpen: boolean
@@ -41,7 +41,7 @@ const SettingsModal = ({
   const [prevMetadataTabTitle, setPrevMetadataTabTitle] = useState("")
   const [prevDisableAnonVoting, setPrevDisableAnonVoting] = useState(false)
   const [screenWidth, setScreenWidth] = useState(window.innerWidth)
-  const { user } = useUser()
+  const { user, stripeData, error } = useUser()
 
   const customStyles = {
     content: {
@@ -148,7 +148,7 @@ const SettingsModal = ({
             <Switch
               checked={disableBranding}
               onChange={() => {
-                if (user?.publicMetadata.isPremium) {
+                if (stripeData?.is_premium) {
                   setDisableBranding(!disableBranding)
                 } else {
                   toast.error("This feature is only available for paid users.")

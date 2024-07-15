@@ -2,22 +2,22 @@
 
 import { format } from "date-fns"
 import { useEffect, useState } from "react"
-import { useUser } from "@clerk/nextjs"
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
+import { useUser } from "@/hooks/supabase"
 
 export default function BillingManagerPanel() {
-  const { user } = useUser()
+  const { user, stripeData, error } = useUser()
   const [isCancelled, setIsCancelled] = useState(false)
   const [formattedDate, setFormattedDate] = useState("")
 
   useEffect(() => {
-    if (user?.publicMetadata.stripeSubscriptionCancelAtPeriodEnd) {
+    if (stripeData?.stripe_subscription_cancel_at_period_end) {
       setIsCancelled(true)
     } else {
       setIsCancelled(false)
     }
-    const stripeCurrentPeriodEnd = user?.publicMetadata.stripeCurrentPeriodEnd as number
+    const stripeCurrentPeriodEnd = stripeData?.stripe_current_period_end as number
     if (stripeCurrentPeriodEnd) {
       const nextChargeDate = new Date(stripeCurrentPeriodEnd * 1000)
       if (!isNaN(nextChargeDate.getTime())) {

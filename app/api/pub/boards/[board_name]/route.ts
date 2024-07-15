@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
 import { Suggestion, Comment, Vote, Reply } from "@/types/SuggestionBoard"
-import { auth } from "@clerk/nextjs/server"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
+import { createClient } from "@/utils/supabase/server"
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
@@ -20,7 +20,11 @@ export async function GET(request: Request, { params }: { params: { board_name: 
   }
 
   const urlName = params.board_name
-  const { userId } = auth()
+  const supabase = createClient()
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
 
   try {
     const client = await clientPromise
@@ -42,17 +46,17 @@ export async function GET(request: Request, { params }: { params: { board_name: 
       ...board,
       suggestions: board.suggestions.map((suggestion: Suggestion) => ({
         ...suggestion,
-        author: userId ? (suggestion.author === userId ? suggestion.author : undefined) : undefined,
+        author: user?.id ? (suggestion.author === user?.id ? suggestion.author : undefined) : undefined,
         votes: suggestion.votes.map((vote: Vote) => ({
           ...vote,
-          author: userId ? (vote.author === userId ? vote.author : undefined) : undefined,
+          author: user?.id ? (vote.author === user?.id ? vote.author : undefined) : undefined,
         })),
         comments: suggestion.comments.map((comment: Comment) => ({
           ...comment,
-          author: userId ? (comment.author === userId ? comment.author : undefined) : undefined,
+          author: user?.id ? (comment.author === user?.id ? comment.author : undefined) : undefined,
           replies: comment.replies.map((reply: Reply) => ({
             ...reply,
-            author: userId ? (reply.author === userId ? reply.author : undefined) : undefined,
+            author: user?.id ? (reply.author === user?.id ? reply.author : undefined) : undefined,
           })),
         })),
       })),

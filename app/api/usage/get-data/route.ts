@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
-import { currentUser } from "@clerk/nextjs/server"
+import { createClient } from "@/utils/supabase/server"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
 
@@ -10,9 +10,13 @@ const ratelimit = new Ratelimit({
 })
 
 export async function GET(request: Request) {
-  const user = await currentUser()
+  const supabase = createClient()
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
 
-  if (!user) {
+  if (!user?.id) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
   }
 
