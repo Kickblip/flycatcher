@@ -14,7 +14,7 @@ const SignInPage = () => {
       <Link href="/" passHref>
         <Image src="/landing/logo.png" alt="Redirect to Home" className="mb-4" width={200} height={200} />
       </Link>
-      <SignInForm />
+      <SignInForm redirectUrl={`${process.env.NEXT_PUBLIC_SITE_URL}/dashboard/boards`} />
     </div>
   )
 }

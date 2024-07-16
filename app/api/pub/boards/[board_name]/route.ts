@@ -41,22 +41,24 @@ export async function GET(request: Request, { params }: { params: { board_name: 
       )
     }
 
+    const userId = user?.id ?? null
+
     // sanitize the board data but keep instances where the userId is the author
     const sanitizedBoard = {
       ...board,
       suggestions: board.suggestions.map((suggestion: Suggestion) => ({
         ...suggestion,
-        author: user?.id ? (suggestion.author === user?.id ? suggestion.author : undefined) : undefined,
+        author: userId && suggestion.author === userId ? suggestion.author : undefined,
         votes: suggestion.votes.map((vote: Vote) => ({
           ...vote,
-          author: user?.id ? (vote.author === user?.id ? vote.author : undefined) : undefined,
+          author: userId && vote.author === userId ? vote.author : undefined,
         })),
         comments: suggestion.comments.map((comment: Comment) => ({
           ...comment,
-          author: user?.id ? (comment.author === user?.id ? comment.author : undefined) : undefined,
+          author: userId && comment.author === userId ? comment.author : undefined,
           replies: comment.replies.map((reply: Reply) => ({
             ...reply,
-            author: user?.id ? (reply.author === user?.id ? reply.author : undefined) : undefined,
+            author: userId && reply.author === userId ? reply.author : undefined,
           })),
         })),
       })),

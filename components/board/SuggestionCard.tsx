@@ -10,6 +10,7 @@ import Modal from "react-modal"
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { useUser } from "@/hooks/supabase"
+import SignInForm from "@/components/shared/SignInForm"
 
 function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boardData: Board }) {
   const { primaryColor, secondaryColor, accentColor, textColor } = boardData
@@ -28,6 +29,7 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
   const [previousSuggestionTitle, setPreviousSuggestionTitle] = useState("")
   const [previousSuggestionDescription, setPreviousSuggestionDescription] = useState("")
   const { user, stripeData, error } = useUser()
+  const [signInModalIsOpen, setSignInModalIsOpen] = useState(false)
 
   useEffect(() => {
     const checkIfLiked = () => {
@@ -90,12 +92,7 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
     }
 
     if (!user?.id) {
-      // openSignUp({
-      //   fallbackRedirectUrl: `/b/${boardData.urlName}`,
-      //   signInForceRedirectUrl: `/b/${boardData.urlName}`,
-      //   signInFallbackRedirectUrl: `/b/${boardData.urlName}`,
-      // })
-      // TODO: OPEN SIGNUP MODAL
+      setSignInModalIsOpen(true)
       return
     }
 
@@ -148,12 +145,7 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
     if (!replyText || !commentId) return
 
     if (!user?.id) {
-      // openSignUp({
-      //   fallbackRedirectUrl: `/b/${boardData.urlName}`,
-      //   signInForceRedirectUrl: `/b/${boardData.urlName}`,
-      //   signInFallbackRedirectUrl: `/b/${boardData.urlName}`,
-      // })
-      // TODO: OPEN SIGNUP MODAL
+      setSignInModalIsOpen(true)
       return
     }
 
@@ -206,12 +198,7 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
     event.stopPropagation()
 
     if (user?.id && boardData.settings.disableAnonVoting === true) {
-      // openSignUp({
-      //   fallbackRedirectUrl: `/b/${boardData.urlName}`,
-      //   signInForceRedirectUrl: `/b/${boardData.urlName}`,
-      //   signInFallbackRedirectUrl: `/b/${boardData.urlName}`,
-      // })
-      // TODO: OPEN SIGNUP MODAL
+      setSignInModalIsOpen(true)
       return
     }
 
@@ -646,6 +633,27 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
             )}
           </div>
         </div>
+      </Modal>
+      <Modal
+        isOpen={signInModalIsOpen}
+        onRequestClose={() => {
+          setSignInModalIsOpen(false)
+        }}
+        contentLabel="Sign In Modal"
+        style={{
+          content: {
+            top: "50%",
+            left: "50%",
+            right: "auto",
+            bottom: "auto",
+            marginRight: "-50%",
+            transform: "translate(-50%, -50%)",
+            border: "none",
+            boxShadow: "none",
+          },
+        }}
+      >
+        <SignInForm redirectUrl={`${window.location.origin}/b/${boardData?.urlName}`} />
       </Modal>
     </>
   )

@@ -1,26 +1,28 @@
+"use client"
+
 import Image from "next/image"
-import { createClient } from "@/utils/supabase/server"
-import { redirect } from "next/navigation"
-import { headers } from "next/headers"
+import { createClient } from "@/utils/supabase/client"
+import { Provider } from "@supabase/supabase-js"
+import { useRouter } from "next/navigation"
 
-export default function SignInForm() {
-  const signIn = async () => {
-    "use server"
+export default function SignInForm({ redirectUrl }: { redirectUrl?: string }) {
+  const router = useRouter()
 
+  const signIn = async (provider: Provider) => {
     const supabase = createClient()
-    const origin = headers().get("origin")
+    const origin = window.location.origin
 
     const { error, data } = await supabase.auth.signInWithOAuth({
-      provider: "github",
+      provider,
       options: {
-        redirectTo: `${origin}/auth/callback`,
+        redirectTo: `${origin}/auth/callback?redirect=${encodeURIComponent(redirectUrl ? redirectUrl : "/")}`,
       },
     })
 
     if (error) {
       console.error(error)
     } else {
-      return redirect(data.url)
+      router.push(data.url)
     }
   }
 
@@ -32,15 +34,29 @@ export default function SignInForm() {
       </div>
 
       <div className="space-y-4">
-        <button className="flex items-center justify-center w-full shadow border border-gray-300 text-white py-2 rounded-lg hover:bg-gray-100 transition duration-200">
+        <button
+          onClick={() => {
+            signIn("google")
+          }}
+          className="flex items-center justify-center w-full shadow border border-gray-300 text-white py-2 rounded-lg hover:bg-gray-100 transition duration-200"
+        >
           <Image src="/shared/google-144.png" alt="Sign in with Google" width={24} height={24} className="mr-2" />
         </button>
-        <form action={signIn}>
-          <button className="flex items-center justify-center w-full shadow border border-gray-300 text-white py-2 rounded-lg hover:bg-gray-100 transition duration-200">
-            <Image src="/shared/github-128.png" alt="Sign in with GitHub" width={24} height={24} className="mr-2" />
-          </button>
-        </form>
-        <button className="flex items-center justify-center w-full shadow border border-gray-300 text-white py-2 rounded-lg hover:bg-gray-100 transition duration-200">
+        <button
+          onClick={() => {
+            signIn("github")
+          }}
+          className="flex items-center justify-center w-full shadow border border-gray-300 text-white py-2 rounded-lg hover:bg-gray-100 transition duration-200"
+        >
+          <Image src="/shared/github-128.png" alt="Sign in with GitHub" width={24} height={24} className="mr-2" />
+        </button>
+
+        <button
+          onClick={() => {
+            signIn("discord")
+          }}
+          className="flex items-center justify-center w-full shadow border border-gray-300 text-white py-2 rounded-lg hover:bg-gray-100 transition duration-200"
+        >
           <Image src="/shared/discord-144.png" alt="Sign in with Discord" width={24} height={24} className="mr-2" />
         </button>
       </div>

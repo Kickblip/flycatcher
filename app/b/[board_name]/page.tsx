@@ -14,6 +14,8 @@ import { UploadButton } from "@/utils/uploadthing"
 import { XMarkIcon } from "@heroicons/react/24/outline"
 import { useUser } from "@/hooks/supabase"
 import UserButton from "@/components/shared/UserButton"
+import Modal from "react-modal"
+import SignInForm from "@/components/shared/SignInForm"
 
 export default function BoardInfo({ params }: { params: { board_name: string } }) {
   const [loadingError, setLoadingError] = useState<string | null>(null)
@@ -32,6 +34,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
   const [selectedPriority, setSelectedPriority] = useState<number>(0)
   const [selectedTags, setSelectedTags] = useState<Tag[]>([])
   const { user, stripeData, error } = useUser()
+  const [signInModalIsOpen, setSignInModalIsOpen] = useState(false)
 
   useEffect(() => {
     if (board) {
@@ -52,7 +55,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
 
   useEffect(() => {
     setLocalStorage()
-  }, [board, user?.id])
+  }, [board, user ? user.id : null])
 
   const fetchBoardData = async () => {
     setLoadingError(null)
@@ -137,13 +140,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
     if (!trimmedTitle || !trimmedDescription) return
 
     if (!user?.id) {
-      // openSignUp({
-      //   fallbackRedirectUrl: `/b/${params.board_name}`,
-      //   signInForceRedirectUrl: `/b/${params.board_name}`,
-      //   signInFallbackRedirectUrl: `/b/${params.board_name}`,
-      // })
-      console.log("OPEN SIGN UP")
-      // TODO: Open sign up modal
+      setSignInModalIsOpen(true)
       return
     }
 
@@ -427,6 +424,27 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
           </button>
         </div>
       </div>
+      <Modal
+        isOpen={signInModalIsOpen}
+        onRequestClose={() => {
+          setSignInModalIsOpen(false)
+        }}
+        contentLabel="Sign In Modal"
+        style={{
+          content: {
+            top: "50%",
+            left: "50%",
+            right: "auto",
+            bottom: "auto",
+            marginRight: "-50%",
+            transform: "translate(-50%, -50%)",
+            border: "none",
+            boxShadow: "none",
+          },
+        }}
+      >
+        <SignInForm redirectUrl={`${window.location.origin}/b/${board?.urlName}`} />
+      </Modal>
       {user ? (
         <div className="absolute top-6 right-6">
           <UserButton />

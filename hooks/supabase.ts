@@ -16,12 +16,6 @@ export function useUser() {
         error,
       } = await supabase.auth.getUser()
 
-      console.log(user)
-
-      if (error) {
-        setError(error)
-      }
-
       if (user) {
         const { data: userStripeData, error: userStripeDataError } = await supabase
           .from("user")
