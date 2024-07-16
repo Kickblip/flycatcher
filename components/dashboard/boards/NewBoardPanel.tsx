@@ -3,18 +3,18 @@
 import { useState, useEffect } from "react"
 import { Board } from "@/types/SuggestionBoard"
 import { toast } from "react-toastify"
-import { useUser } from "@clerk/nextjs"
 import "react-toastify/dist/ReactToastify.css"
+import { useUser } from "@/hooks/supabase"
 
 function NewBoardPanel({ boards, setBoards }: { boards: Board[]; setBoards: (boards: Board[]) => void }) {
   const [boardName, setBoardName] = useState("")
   const [loading, setLoading] = useState(false)
   const [isPremium, setIsPremium] = useState(false)
-  const { user } = useUser()
+  const { user, stripeData, error } = useUser()
 
   useEffect(() => {
     if (user) {
-      if (user.publicMetadata.isPremium) {
+      if (stripeData?.is_premium) {
         setIsPremium(true)
       }
     }

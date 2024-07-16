@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
 import { Suggestion, Vote } from "@/types/SuggestionBoard"
-import { auth } from "@clerk/nextjs/server"
+import { createClient } from "@/utils/supabase/server"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
 
@@ -11,12 +11,17 @@ const ratelimit = new Ratelimit({
 })
 
 export async function POST(request: Request) {
-  const { userId } = auth()
+  const supabase = createClient()
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
+
   let tracker = ""
-  if (!userId) {
+  if (!user?.id) {
     tracker = request.headers.get("x-forwarded-for") ?? request.headers.get("remote-addr") ?? ""
   } else {
-    tracker = userId
+    tracker = user.id
   }
   const { success, reset } = await ratelimit.limit(tracker)
 
@@ -41,7 +46,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Board not found" }, { status: 404 })
     }
 
-    if (matchingBoard.settings.disableAnonVoting && !userId) {
+    if (matchingBoard.settings.disableAnonVoting && !user?.id) {
       return NextResponse.json({ message: "Anonymous voting is disabled" }, { status: 403 })
     }
 

@@ -1,22 +1,26 @@
-import { NextResponse } from "next/server"
+import { NextResponse, NextRequest } from "next/server"
 import clientPromise from "@/utils/mongodb"
-import { auth } from "@clerk/nextjs/server"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
+import { createClient } from "@/utils/supabase/server"
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
   limiter: Ratelimit.slidingWindow(3, "5 s"),
 })
 
-export async function GET(request: Request) {
-  const { userId } = auth()
+export async function GET(request: NextRequest) {
+  const supabase = createClient()
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
 
-  if (!userId) {
+  if (!user?.id) {
     return NextResponse.json({ message: "User not authenticated" }, { status: 401 })
   }
 
-  const { success, reset } = await ratelimit.limit(userId)
+  const { success, reset } = await ratelimit.limit(user.id)
 
   if (!success) {
     return NextResponse.json({ message: "Rate limit exceeded" }, { status: 429 })
@@ -26,7 +30,7 @@ export async function GET(request: Request) {
     const client = await clientPromise
     const collection = client.db("Main").collection("boards")
 
-    const userBoards = await collection.find({ author: userId }, { projection: { suggestions: 0 } }).toArray()
+    const userBoards = await collection.find({ author: user.id }, { projection: { suggestions: 0 } }).toArray()
 
     return NextResponse.json(
       {

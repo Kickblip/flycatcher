@@ -1,11 +1,11 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next"
 import { UploadThingError } from "uploadthing/server"
 import { utapi } from "@/utils/server/uploadthing"
-import { auth } from "@clerk/nextjs/server"
 import { z } from "zod"
 import clientPromise from "@/utils/mongodb"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
+import { createClient } from "@/utils/supabase/server"
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
@@ -22,12 +22,16 @@ export const ourFileRouter = {
     // Set permissions and file types for this FileRoute
     .middleware(async ({ req, input }) => {
       // This code runs on your server before upload
-      const { userId } = auth()
+      const supabase = createClient()
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser()
 
       // If you throw, the user will not be able to upload
-      if (!userId) throw new UploadThingError("Unauthorized")
+      if (!user?.id) throw new UploadThingError("Unauthorized")
 
-      const { success, reset } = await ratelimit.limit(userId)
+      const { success, reset } = await ratelimit.limit(user.id)
 
       if (!success) {
         throw new UploadThingError("Rate limit exceeded")
@@ -38,10 +42,10 @@ export const ourFileRouter = {
       const board = await collection.findOne({ urlName: input })
 
       if (!board) throw new UploadThingError("Board not found")
-      if (board.author !== userId) throw new UploadThingError("User not authorized to upload to this board")
+      if (board.author !== user.id) throw new UploadThingError("User not authorized to upload to this board")
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId, boardName: input }
+      return { userId: user.id, boardName: input }
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
@@ -69,11 +73,15 @@ export const ourFileRouter = {
     // FAVICON UPLOAD!!!!
     .input(z.string())
     .middleware(async ({ req, input }) => {
-      const { userId } = auth()
+      const supabase = createClient()
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser()
 
-      if (!userId) throw new UploadThingError("Unauthorized")
+      if (!user?.id) throw new UploadThingError("Unauthorized")
 
-      const { success, reset } = await ratelimit.limit(userId)
+      const { success, reset } = await ratelimit.limit(user.id)
 
       if (!success) {
         throw new UploadThingError("Rate limit exceeded")
@@ -84,9 +92,9 @@ export const ourFileRouter = {
       const board = await collection.findOne({ urlName: input })
 
       if (!board) throw new UploadThingError("Board not found")
-      if (board.author !== userId) throw new UploadThingError("User not authorized to upload to this board")
+      if (board.author !== user.id) throw new UploadThingError("User not authorized to upload to this board")
 
-      return { userId, boardName: input }
+      return { userId: user.id, boardName: input }
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
@@ -114,11 +122,15 @@ export const ourFileRouter = {
     // Public view suggestion image attachments
     .input(z.string())
     .middleware(async ({ req, input }) => {
-      const { userId } = auth()
+      const supabase = createClient()
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser()
 
-      if (!userId) throw new UploadThingError("Unauthorized")
+      if (!user?.id) throw new UploadThingError("Unauthorized")
 
-      const { success, reset } = await ratelimit.limit(userId)
+      const { success, reset } = await ratelimit.limit(user.id)
 
       if (!success) {
         throw new UploadThingError("Rate limit exceeded")
@@ -132,7 +144,7 @@ export const ourFileRouter = {
       if (!board) throw new UploadThingError("Board not found")
       if (!board.authorIsPremium) throw new UploadThingError("Uploads not allowed on this board")
 
-      return { userId }
+      return { userId: user.id }
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload

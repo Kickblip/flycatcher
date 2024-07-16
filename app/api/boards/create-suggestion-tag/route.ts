@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
-import { auth } from "@clerk/nextjs/server"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
+import { createClient } from "@/utils/supabase/server"
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
@@ -10,13 +10,17 @@ const ratelimit = new Ratelimit({
 })
 
 export async function POST(request: Request) {
-  const { userId } = auth()
+  const supabase = createClient()
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
 
-  if (!userId) {
+  if (!user?.id) {
     return NextResponse.json({ message: "User not authenticated" }, { status: 401 })
   }
 
-  const { success, reset } = await ratelimit.limit(userId)
+  const { success, reset } = await ratelimit.limit(user.id)
 
   if (!success) {
     return NextResponse.json({ message: "Rate limit exceeded" }, { status: 429 })
@@ -35,7 +39,7 @@ export async function POST(request: Request) {
     let board = await collection.findOne({ urlName: boardName })
 
     if (board) {
-      if (board.author !== userId) {
+      if (board.author !== user.id) {
         return NextResponse.json({ message: "User not authorized to update this board" }, { status: 403 })
       }
 

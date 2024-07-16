@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
 import { Suggestion, Tag } from "@/types/SuggestionBoard"
 import { v4 as uuidv4 } from "uuid"
-import { clerkClient, currentUser } from "@clerk/nextjs/server"
+import { createClient } from "@/utils/supabase/server"
 import Stripe from "stripe"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
@@ -17,8 +17,13 @@ const ratelimit = new Ratelimit({
 })
 
 export async function POST(request: Request) {
-  const user = await currentUser()
-  if (!user) {
+  const supabase = createClient()
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
+
+  if (!user?.id) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
   }
   const { success, reset } = await ratelimit.limit(user.id)
@@ -71,16 +76,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Board not found" }, { status: 404 })
     }
 
-    const authorData = await clerkClient.users.getUser(matchingBoard.author)
-
-    let isPremium = false
-    if (authorData.publicMetadata.stripeSubscriptionId) {
-      // check their subscription status
-      const subscription = await stripe.subscriptions.retrieve(user.publicMetadata.stripeSubscriptionId as string)
-      isPremium = subscription.status === "active"
-    }
-
-    if (matchingBoard.suggestions.length >= 50 && !isPremium) {
+    if (matchingBoard.suggestions.length >= 50 && !matchingBoard.authorIsPremium) {
       return NextResponse.json({ message: "Reached suggestion limit for board" }, { status: 403 })
     }
 
@@ -93,11 +89,11 @@ export async function POST(request: Request) {
     const newSuggestion: Suggestion = {
       id: uuidv4(),
       author: user.id,
-      authorName: user.username || user.firstName || "Anonymous",
-      authorImg: user.imageUrl || "https://flycatcher.app/board-pages/default-pfp.png",
+      authorName: user.user_metadata.user_name || user.user_metadata.full_name || "Anonymous",
+      authorImg: user.user_metadata.avatar_url || "https://flycatcher.app/board-pages/default-pfp.png",
       title,
       description,
-      imageUrls: isPremium ? (suggestionImageUrl ? [suggestionImageUrl] : [""]) : [""],
+      imageUrls: matchingBoard.authorIsPremium ? (suggestionImageUrl ? [suggestionImageUrl] : [""]) : [""],
       votes: [],
       status: "new",
       priority,

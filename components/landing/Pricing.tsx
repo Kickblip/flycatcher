@@ -2,7 +2,7 @@ import { CheckCircleIcon } from "@heroicons/react/24/outline"
 import Link from "next/link"
 
 function Pricing() {
-  const freeFeatures = ["Unlimited users", "Kanban view", "Custom logos and metadata", "Custom color palettes"]
+  const freeFeatures = ["Unlimited users", "Feedback manager", "Custom logos and metadata", "Custom color palettes"]
   const paidFeatures = [
     "Unlimited posts",
     "Up to 10 feedback boards",

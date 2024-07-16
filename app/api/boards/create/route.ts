@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
-import { currentUser } from "@clerk/nextjs/server"
 import { Board } from "@/types/SuggestionBoard"
 import Stripe from "stripe"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
 import { starterTags } from "./tags"
+import { createClient } from "@/utils/supabase/server"
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
@@ -17,9 +17,13 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 })
 
 export async function POST(request: Request) {
-  const user = await currentUser()
+  const supabase = createClient()
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
 
-  if (!user) {
+  if (!user?.id) {
     return NextResponse.json({ message: "User not authenticated" }, { status: 401 })
   }
 
@@ -56,11 +60,14 @@ export async function POST(request: Request) {
     )
   }
 
+  const { data: userMetadata, error: userMetadataError } = await supabase.from("user").select("*").eq("user_id", user.id).single()
   let isPremium = false
-  if (user.publicMetadata.stripeSubscriptionId) {
-    // check their subscription status
-    const subscription = await stripe.subscriptions.retrieve(user.publicMetadata.stripeSubscriptionId as string)
-    isPremium = subscription.status === "active"
+  if (!userMetadataError) {
+    const stripeSubscriptionId = userMetadata?.stripe_subscription_id
+    if (stripeSubscriptionId) {
+      const subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId as string)
+      isPremium = subscription.status === "active"
+    }
   }
 
   const newBoard: Board = {

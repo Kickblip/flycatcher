@@ -2,9 +2,9 @@ import { NextResponse } from "next/server"
 import clientPromise from "@/utils/mongodb"
 import { Suggestion, Comment } from "@/types/SuggestionBoard"
 import { v4 as uuidv4 } from "uuid"
-import { currentUser } from "@clerk/nextjs/server"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
+import { createClient } from "@/utils/supabase/server"
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
@@ -12,8 +12,13 @@ const ratelimit = new Ratelimit({
 })
 
 export async function POST(request: Request) {
-  const user = await currentUser()
-  if (!user) {
+  const supabase = createClient()
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
+
+  if (!user?.id) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
   }
 
@@ -59,8 +64,8 @@ export async function POST(request: Request) {
     const newComment: Comment = {
       id: uuidv4(),
       author: user.id,
-      authorName: user.username || user.firstName || "Anonymous",
-      authorImg: user.imageUrl || "https://flycatcher.app/board-pages/default-pfp.png",
+      authorName: user.user_metadata.user_name || user.user_metadata.full_name || "Anonymous",
+      authorImg: user.user_metadata.avatar_url || "https://flycatcher.app/board-pages/default-pfp.png",
       isOwnerMessage: board.author === user.id,
       content: comment,
       createdAt: new Date(),
