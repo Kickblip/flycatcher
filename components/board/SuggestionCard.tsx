@@ -653,7 +653,7 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
           },
         }}
       >
-        <SignInForm redirectUrl={`${window.location.origin}/b/${boardData?.urlName}`} />
+        <SignInForm redirectUrl={`${process.env.NEXT_PUBLIC_SITE_URL}/b/${boardData?.urlName}`} />
       </Modal>
     </>
   )

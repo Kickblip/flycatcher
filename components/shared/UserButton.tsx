@@ -6,12 +6,14 @@ import { useState, useEffect, useRef } from "react"
 import { createClient } from "@/utils/supabase/client"
 import { User } from "@supabase/supabase-js"
 import { AdjustmentsVerticalIcon, ArrowLeftStartOnRectangleIcon, WalletIcon } from "@heroicons/react/24/outline"
+import { useRouter } from "next/navigation"
 
 export default function UserButton() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [user, setUserData] = useState<User | null>(null)
   const menuRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -97,10 +99,11 @@ export default function UserButton() {
 
             <div className="border-t border-gray-200 mx-4" />
             <button
-              className="p-4 w-full text-left hover:bg-gray-100 flex items-center transition duration-200"
+              className="p-4 w-full text-left hover:bg-gray-100 flex items-center transition duration-200 rounded-b-lg"
               onClick={async () => {
                 const supabase = createClient()
                 await supabase.auth.signOut()
+                router.push("/")
               }}
             >
               <ArrowLeftStartOnRectangleIcon className="w-5 h-5 mr-3" />

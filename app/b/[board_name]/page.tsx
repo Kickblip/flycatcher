@@ -443,7 +443,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
           },
         }}
       >
-        <SignInForm redirectUrl={`${window.location.origin}/b/${board?.urlName}`} />
+        <SignInForm redirectUrl={`${process.env.NEXT_PUBLIC_SITE_URL}/b/${board?.urlName}`} />
       </Modal>
       {user ? (
         <div className="absolute top-6 right-6">
