@@ -10,12 +10,13 @@ export default function SignInForm({ redirectUrl }: { redirectUrl?: string }) {
 
   const signIn = async (provider: Provider) => {
     const supabase = createClient()
-    const origin = window.location.origin
 
     const { error, data } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${origin}/auth/callback?redirect=${encodeURIComponent(redirectUrl ? redirectUrl : "/")}`,
+        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?redirect=${encodeURIComponent(
+          redirectUrl ? redirectUrl : "/",
+        )}`,
       },
     })
 

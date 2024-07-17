@@ -103,6 +103,7 @@ export default function UserButton() {
               onClick={async () => {
                 const supabase = createClient()
                 await supabase.auth.signOut()
+                await supabase.auth.refreshSession()
                 router.push("/")
               }}
             >
