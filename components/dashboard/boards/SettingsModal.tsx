@@ -234,7 +234,13 @@ const SettingsModal = ({
               console.error(error.message)
               toast.error("Failed to update logo.")
             }}
-            className="ut-label:text-indigo-500 ut-button:bg-indigo-500"
+            appearance={{
+              button: {
+                backgroundColor: "#6366f1",
+                color: "fff",
+                padding: "0.5rem 1rem",
+              },
+            }}
           />
         </div>
 
@@ -256,7 +262,13 @@ const SettingsModal = ({
               console.error(error.message)
               toast.error("Failed to update favicon.")
             }}
-            className="ut-label:text-indigo-500 ut-button:bg-indigo-500"
+            appearance={{
+              button: {
+                backgroundColor: "#6366f1",
+                color: "fff",
+                padding: "0.5rem 1rem",
+              },
+            }}
           />
         </div>
 
