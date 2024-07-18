@@ -370,6 +370,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
                 button: {
                   backgroundColor: board?.accentColor,
                   color: board?.secondaryColor,
+                  padding: "0.5rem 1rem",
                 },
                 allowedContent: {
                   color: board?.textColor,
