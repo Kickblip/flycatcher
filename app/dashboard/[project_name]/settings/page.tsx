@@ -4,21 +4,22 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ArrowTopRightOnSquareIcon, DocumentDuplicateIcon, DocumentCheckIcon, Cog6ToothIcon } from "@heroicons/react/24/outline"
-import LoadingWheel from "@/components/dashboard/LoadingWheel"
-import BoardPreviewPanel from "@/components/dashboard/boards/BoardPreviewPanel"
-import PremadeThemeSquare from "@/components/dashboard/boards/PremadeThemeSquare"
+import LoadingWheel from "@/components/shared/LoadingWheel"
+import BoardPreviewPanel from "@/app/dashboard/[project_name]/settings/BoardPreviewPanel"
+import PremadeThemeSquare from "@/app/dashboard/[project_name]/settings/PremadeThemeSquare"
 import DeletionConfirmationModal from "@/components/dashboard/boards/DeletionConfirmationModal"
-import SettingsModal from "@/components/dashboard/boards/SettingsModal"
-import ColorSelectorModal from "@/components/dashboard/boards/ColorSelectorModal"
+import SettingsModal from "@/app/dashboard/[project_name]/settings/SettingsModal"
+import ColorSelectorModal from "@/app/dashboard/[project_name]/settings/ColorSelectorModal"
 import Navbar from "@/components/dashboard/Navbar"
 import { themes, getTextColor } from "./utils"
 import { Board } from "@/types/SuggestionBoard"
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
+import { Project } from "@/types/Project"
 
-export default function BoardInfo({ params }: { params: { board_name: string } }) {
+export default function BoardInfo({ params }: { params: { project_name: string } }) {
   const [error, setError] = useState<string | null>(null)
-  const [board, setBoard] = useState<any>(null) // TODO: Define types
+  const [project, setProject] = useState<any>(null) // TODO: Define types
   const [currentColor, setCurrentColor] = useState("")
   const [currentColorKey, setCurrentColorKey] = useState("")
   const [copyIcon, setCopyIcon] = useState("copy")
@@ -29,46 +30,46 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
 
   const router = useRouter()
 
-  const fetchBoard = async () => {
+  const fetchProject = async () => {
     setError(null)
 
     try {
-      const response = await fetch(`/api/boards/partial-data/${params.board_name}`, {
+      const response = await fetch(`/api/projects/partial-data/${params.project_name}`, {
         method: "GET",
       })
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.message || "Board does not exist")
+        throw new Error(errorData.message || "Project does not exist")
       }
 
       const data = await response.json()
-      setBoard(data)
+      setProject(data)
     } catch (error) {
-      setError((error as Error).message || "Board does not exist")
+      setError((error as Error).message || "Project does not exist")
     }
   }
 
   useEffect(() => {
-    fetchBoard()
-  }, [params.board_name])
+    fetchProject()
+  }, [params.project_name])
 
   useEffect(() => {
-    if (board) document.title = `Editing ${board.name} | Flycatcher`
-  }, [board])
+    if (project) document.title = `Editing ${project.name} | Flycatcher`
+  }, [project])
 
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
         <div className="text-red-500">{error}</div>
-        <Link href="/dashboard/boards" className="underline">
+        <Link href="/dashboard/home" className="underline">
           Go back
         </Link>
       </div>
     )
   }
 
-  if (!board && !error) {
+  if (!project && !error) {
     return <LoadingWheel />
   }
 
@@ -83,67 +84,69 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
   }
 
   const saveColor = () => {
-    setBoard((prevBoard: any) => ({
-      ...prevBoard,
-      [currentColorKey]: currentColor,
+    setProject((prevProject: Project) => ({
+      ...prevProject,
+      settings: {
+        ...prevProject.settings,
+        [currentColorKey]: currentColor,
+      },
     }))
     setColorSelectorModalIsOpen(false)
   }
 
-  const handleCopyToClipboard = () => {
-    navigator.clipboard.writeText(`https://flycatcher.app/b/${board.urlName}`)
-    setCopyIcon("check")
-    setTimeout(() => setCopyIcon("copy"), 2000)
-  }
-
   const applyPremadeTheme = (theme: (typeof themes)[0]) => {
-    setBoard({
-      ...board,
-      primaryColor: theme.primaryColor,
-      secondaryColor: theme.secondaryColor,
-      accentColor: theme.accentColor,
-      textColor: theme.textColor,
+    setProject({
+      ...project,
+      settings: {
+        ...project.settings,
+        primaryColor: theme.primaryColor,
+        secondaryColor: theme.secondaryColor,
+        accentColor: theme.accentColor,
+        textColor: theme.textColor,
+      },
     })
   }
 
   const saveBoardChanges = async () => {
     try {
-      const response = await fetch("/api/boards/update", {
+      const response = await fetch("/api/projects/update-colors", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(board),
+        body: JSON.stringify(project),
       })
 
       if (!response.ok) {
-        throw new Error("Failed to save board")
+        throw new Error("Failed to save project")
       }
-      toast.success("Board saved.")
+      toast.success("Project saved.")
     } catch (error) {
-      toast.error("Failed to save board.")
+      toast.error("Failed to save project.")
     }
   }
 
-  const handleSettingsSave = (updatedBoard: Board) => {}
+  const handleSettingsSave = (updatedProject: Project) => {
+    // TODO: Implement
+  }
 
-  const deleteBoard = async () => {
+  const deleteProject = async () => {
     try {
-      const response = await fetch("/api/boards/delete", {
+      const response = await fetch("/api/projects/delete", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(board),
+        body: JSON.stringify(project),
       })
 
       if (!response.ok) {
-        throw new Error("Failed to delete board")
+        throw new Error("Failed to delete project")
       }
 
-      router.push("/dashboard/boards")
+      router.push("/dashboard/home")
     } catch (error) {
-      toast.error("Failed to delete board")
+      toast.error("Failed to delete project")
     }
   }
 
@@ -153,7 +156,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
       <div className="w-full max-w-7xl mx-auto p-4 flex flex-col md:flex-row">
         <div className="flex flex-col w-full md:w-1/2 p-4">
           <div className="flex flex-col md:flex-row justify-between w-full mb-8">
-            <h2 className="text-2xl font-bold max-w-[55%] break-words">{board.name}</h2>
+            <h2 className="text-2xl font-bold max-w-[55%] break-words">{project.name}</h2>
             <div className="flex items-center space-x-2 mt-4 md:mt-0">
               <button
                 className="px-4 py-2 border border-gray-400 text-gray-800 hover:text-gray-900 hover:border-gray-500 rounded-lg transition duration-200"
@@ -161,30 +164,11 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
               >
                 <Cog6ToothIcon className="w-5 h-5" strokeWidth={1.5} />
               </button>
-              <Link
-                href={`/dashboard/boards/edit/${params.board_name}/feedback`}
-                className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition duration-200"
-              >
-                Feedback
-              </Link>
               <button
                 className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition duration-200"
                 onClick={saveBoardChanges}
               >
                 Save
-              </button>
-            </div>
-          </div>
-          <div className="flex items-center justify-between bg-gray-50 p-2 rounded-lg mb-8 w-full">
-            <span className="truncate">{`https://flycatcher.app/b/${board.urlName}`}</span>
-            <div className="flex space-x-2 flex-shrink-0">
-              <Link href={`/b/${board.urlName}`} target="_blank">
-                <button className="p-2 rounded-lg hover:bg-gray-200 transition duration-200">
-                  <ArrowTopRightOnSquareIcon className="w-5 h-5" />
-                </button>
-              </Link>
-              <button onClick={handleCopyToClipboard} className="p-2 rounded-lg hover:bg-gray-200 transition duration-200">
-                {copyIcon === "copy" ? <DocumentDuplicateIcon className="w-5 h-5" /> : <DocumentCheckIcon className="w-5 h-5" />}
               </button>
             </div>
           </div>
@@ -207,12 +191,12 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
             <div className="relative group w-full">
               <div
                 className="w-full h-36 rounded-lg cursor-pointer transition-opacity duration-300 flex items-center justify-center"
-                style={{ backgroundColor: board.primaryColor }}
-                onClick={() => openColorSelectorModal("primaryColor", board.primaryColor)}
+                style={{ backgroundColor: project.settings.primaryColor }}
+                onClick={() => openColorSelectorModal("primaryColor", project.settings.primaryColor)}
               >
                 <h3
                   className={`absolute text-lg font-semibold text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${getTextColor(
-                    board.primaryColor,
+                    project.settings.primaryColor,
                   )}`}
                 >
                   Primary Color
@@ -222,12 +206,12 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
             <div className="relative group w-full">
               <div
                 className="w-full h-36 rounded-lg cursor-pointer transition-opacity duration-300 flex items-center justify-center"
-                style={{ backgroundColor: board.secondaryColor }}
-                onClick={() => openColorSelectorModal("secondaryColor", board.secondaryColor)}
+                style={{ backgroundColor: project.settings.secondaryColor }}
+                onClick={() => openColorSelectorModal("secondaryColor", project.settings.secondaryColor)}
               >
                 <h3
                   className={`absolute text-lg font-semibold text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${getTextColor(
-                    board.secondaryColor,
+                    project.settings.secondaryColor,
                   )}`}
                 >
                   Secondary Color
@@ -237,12 +221,12 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
             <div className="relative group w-full">
               <div
                 className="w-full h-36 rounded-lg cursor-pointer transition-opacity duration-300 flex items-center justify-center"
-                style={{ backgroundColor: board.accentColor }}
-                onClick={() => openColorSelectorModal("accentColor", board.accentColor)}
+                style={{ backgroundColor: project.settings.accentColor }}
+                onClick={() => openColorSelectorModal("accentColor", project.settings.accentColor)}
               >
                 <h3
                   className={`absolute text-lg font-semibold text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${getTextColor(
-                    board.accentColor,
+                    project.settings.accentColor,
                   )}`}
                 >
                   Accent Color
@@ -252,12 +236,12 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
             <div className="relative group w-full">
               <div
                 className="w-full h-36 rounded-lg cursor-pointer transition-opacity duration-300 flex items-center justify-center"
-                style={{ backgroundColor: board.textColor }}
-                onClick={() => openColorSelectorModal("textColor", board.textColor)}
+                style={{ backgroundColor: project.settings.textColor }}
+                onClick={() => openColorSelectorModal("textColor", project.settings.textColor)}
               >
                 <h3
                   className={`absolute text-lg font-semibold text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${getTextColor(
-                    board.textColor,
+                    project.settings.textColor,
                   )}`}
                 >
                   Text Color
@@ -267,7 +251,7 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
           </div>
         </div>
         <div className="w-full md:w-1/2 shadow-xl rounded-lg">
-          <BoardPreviewPanel {...board} />
+          <BoardPreviewPanel {...project.settings} />
         </div>
       </div>
       <ColorSelectorModal
@@ -279,8 +263,8 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
       />
       <SettingsModal
         isOpen={settingsModalIsOpen}
-        currentBoard={board}
-        setBoard={setBoard}
+        currentProject={project}
+        setProject={setProject}
         onRequestClose={() => setSettingsModalIsOpen(false)}
         onSettingsSave={handleSettingsSave}
         setDeletionConfirmationModalIsOpen={setDeletionConfirmationModalIsOpen}
@@ -288,8 +272,8 @@ export default function BoardInfo({ params }: { params: { board_name: string } }
       <DeletionConfirmationModal
         isOpen={deletionConfirmationModalIsOpen}
         onRequestClose={() => setDeletionConfirmationModalIsOpen(false)}
-        onConfirmDelete={deleteBoard}
-        contentMessage="Are you sure you want to delete this board? This action cannot be undone."
+        onConfirmDelete={deleteProject}
+        contentMessage="Are you sure you want to delete this project? This action cannot be undone."
       />
     </main>
   )

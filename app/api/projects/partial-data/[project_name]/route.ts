@@ -9,8 +9,8 @@ const ratelimit = new Ratelimit({
   limiter: Ratelimit.slidingWindow(3, "5 s"),
 })
 
-export async function GET(request: Request, { params }: { params: { board_name: string } }) {
-  const urlName = params.board_name
+export async function GET(request: Request, { params }: { params: { project_name: string } }) {
+  const urlName = params.project_name
   const supabase = createClient()
   const {
     data: { user },
@@ -29,35 +29,35 @@ export async function GET(request: Request, { params }: { params: { board_name: 
 
   try {
     const client = await clientPromise
-    const collection = client.db("Main").collection("boards")
+    const collection = client.db("Main").collection("projects")
 
-    const board = await collection.findOne({ urlName }, { projection: { suggestions: 0 } })
+    const project = await collection.findOne({ urlName })
 
-    if (!board) {
+    if (!project) {
       return NextResponse.json(
         {
-          message: "Board not found",
+          message: "Project not found",
         },
         { status: 404 },
       )
     }
 
-    if (board.author !== user.id) {
+    if (project.author !== user.id) {
       return NextResponse.json(
         {
-          message: "User not authorized to view this board",
+          message: "User not authorized to view this project",
         },
         { status: 403 },
       )
     }
 
-    return NextResponse.json(board, { status: 200 })
+    return NextResponse.json(project, { status: 200 })
   } catch (error) {
     let errorMessage = "An unknown error occurred"
     if (error instanceof Error) {
       errorMessage = error.message
     }
-    console.error("Error retrieving board:", errorMessage)
+    console.error("Error retrieving project:", errorMessage)
     return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }

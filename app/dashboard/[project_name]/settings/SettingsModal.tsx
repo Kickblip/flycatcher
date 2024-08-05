@@ -1,7 +1,7 @@
 "use client"
 
 import Modal from "react-modal"
-import { Board } from "@/types/SuggestionBoard"
+import { Project } from "@/types/Project"
 import { TrashIcon, ArrowPathIcon } from "@heroicons/react/24/outline"
 import { useEffect, useState } from "react"
 import { Switch } from "@headlessui/react"
@@ -13,33 +13,29 @@ import { useUser } from "@/hooks/supabase"
 
 type SettingsModalProps = {
   isOpen: boolean
-  currentBoard: Board
+  currentProject: Project
   onRequestClose: () => void
-  onSettingsSave: (updatedBoard: Board) => void
+  onSettingsSave: (updatedProject: Project) => void
   setDeletionConfirmationModalIsOpen: (isOpen: boolean) => void
-  setBoard: (board: Board) => void
+  setProject: (project: Project) => void
 }
 
 const SettingsModal = ({
   isOpen,
-  currentBoard,
+  currentProject,
   onRequestClose,
   onSettingsSave,
   setDeletionConfirmationModalIsOpen,
-  setBoard,
+  setProject,
 }: SettingsModalProps) => {
-  const [forceSignIn, setForceSignIn] = useState(false)
   const [disableBranding, setDisableBranding] = useState(false)
-  const [disableAnonVoting, setDisableAnonVoting] = useState(false)
   const [loading, setLoading] = useState(false)
   const [logo, setLogo] = useState("")
   const [favicon, setFavicon] = useState("")
-  const [metadataTabTitle, setMetadataTabTitle] = useState("")
-  const [boardName, setBoardName] = useState("")
-  const [prevForceSignIn, setPrevForceSignIn] = useState(false)
+  const [feedbackMetadataTabTitle, setFeedbackMetadataTabTitle] = useState("")
+  const [projectName, setProjectName] = useState("")
   const [prevDisableBranding, setPrevDisableBranding] = useState(false)
   const [prevMetadataTabTitle, setPrevMetadataTabTitle] = useState("")
-  const [prevDisableAnonVoting, setPrevDisableAnonVoting] = useState(false)
   const [screenWidth, setScreenWidth] = useState(window.innerWidth)
   const { user, stripeData, error } = useUser()
 
@@ -66,18 +62,14 @@ const SettingsModal = ({
   }
 
   useEffect(() => {
-    setForceSignIn(currentBoard.settings.forceSignIn)
-    setPrevForceSignIn(currentBoard.settings.forceSignIn)
-    setDisableBranding(currentBoard.settings.disableBranding)
-    setPrevDisableBranding(currentBoard.settings.disableBranding)
-    setDisableAnonVoting(currentBoard.settings.disableAnonVoting)
-    setLogo(currentBoard.logo)
-    setFavicon(currentBoard.favicon)
-    setMetadataTabTitle(currentBoard.metadataTabTitle)
-    setPrevMetadataTabTitle(currentBoard.metadataTabTitle)
-    setPrevDisableAnonVoting(currentBoard.settings.disableAnonVoting)
-    setBoardName(currentBoard.name)
-  }, [currentBoard])
+    setDisableBranding(currentProject.settings.disableBranding)
+    setPrevDisableBranding(currentProject.settings.disableBranding)
+    setLogo(currentProject.settings.logo)
+    setFavicon(currentProject.settings.favicon)
+    setFeedbackMetadataTabTitle(currentProject.settings.feedbackMetadataTabTitle)
+    setPrevMetadataTabTitle(currentProject.settings.feedbackMetadataTabTitle)
+    setProjectName(currentProject.name)
+  }, [currentProject])
 
   useEffect(() => {
     setScreenWidth(window.innerWidth)
@@ -88,34 +80,27 @@ const SettingsModal = ({
   }, [])
 
   const saveSettings = async () => {
-    if (metadataTabTitle.length > 60) {
+    if (feedbackMetadataTabTitle.length > 60) {
       toast.error("Metadata tab title must be less than 60 characters.")
       return
     }
-    if (
-      forceSignIn === prevForceSignIn &&
-      disableBranding === prevDisableBranding &&
-      metadataTabTitle === prevMetadataTabTitle &&
-      disableAnonVoting === prevDisableAnonVoting
-    ) {
+    if (disableBranding === prevDisableBranding && feedbackMetadataTabTitle === prevMetadataTabTitle) {
       return
     }
     setLoading(true)
     try {
-      const response = await fetch(`/api/boards/update-settings`, {
+      const response = await fetch(`/api/projects/update-settings`, {
         method: "POST",
         body: JSON.stringify({
-          metadataTabTitle,
-          forceSignIn,
-          disableAnonVoting,
+          feedbackMetadataTabTitle,
           disableBranding,
-          boardUrlName: currentBoard.urlName,
+          urlName: currentProject.urlName,
         }),
       })
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.message || "Board does not exist")
+        throw new Error(errorData.message || "Project does not exist")
       }
 
       toast.success("Settings saved.")
@@ -130,7 +115,7 @@ const SettingsModal = ({
     <Modal isOpen={isOpen} onRequestClose={onRequestClose} style={customStyles} contentLabel="Settings Modal">
       <div className="p-2 md:p-4">
         <div className="flex items-center justify-between mb-6 w-full">
-          <h1 className="text-xl font-semibold">Board Settings</h1>
+          <h1 className="text-xl font-semibold">Project Settings</h1>
           <button
             className="py-2 px-4 bg-indigo-500 hover:bg-indigo-600 transition duration-200 text-white rounded-lg"
             onClick={saveSettings}
@@ -143,7 +128,9 @@ const SettingsModal = ({
           <div className="flex items-center">
             <div className="w-full md:w-[85%] lg:w-[55%]">
               <h2 className="font-semibold text-gray-900">Disable Flycatcher branding</h2>
-              <p className="text-gray-600 text-sm">Remove the Flycatcher "powered by" badge from your board's public view.</p>
+              <p className="text-gray-600 text-sm">
+                Remove the Flycatcher "powered by" badge from your feedback board and waitlist page public views.
+              </p>
             </div>
             <Switch
               checked={disableBranding}
@@ -167,33 +154,10 @@ const SettingsModal = ({
             </Switch>
           </div>
         </div>
-        <div className="mb-8">
-          <div className="flex items-center">
-            <div className="w-full md:w-[85%] lg:w-[55%]">
-              <h2 className="font-semibold text-gray-900">Force voting sign in</h2>
-              <p className="text-gray-600 text-sm">Force users to sign in before voting on board feedback.</p>
-            </div>
-            <Switch
-              checked={disableAnonVoting}
-              onChange={() => {
-                setDisableAnonVoting(!disableAnonVoting)
-              }}
-              className={`${
-                disableAnonVoting ? "bg-indigo-500" : "bg-gray-200"
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out ml-4`}
-            >
-              <span
-                className={`${
-                  disableAnonVoting ? "translate-x-5 md:translate-x-6" : "translate-x-1"
-                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out`}
-              />
-            </Switch>
-          </div>
-        </div>
         <div className="mb-4">
           <div className="flex items-center">
             <div className="w-full md:w-[85%] lg:w-[55%]">
-              <h2 className="font-semibold text-gray-900">Metadata tab title</h2>
+              <h2 className="font-semibold text-gray-900">Feedback board tab title</h2>
               <p className="text-gray-600 text-sm">
                 Edit the title of the browser tab that users see on your board's public view.
               </p>
@@ -201,12 +165,12 @@ const SettingsModal = ({
                 <input
                   type="text"
                   className="w-full px-2 py-1 border border-gray-300 rounded-s-lg focus:border-indigo-500 focus:border-2 focus:outline-none"
-                  value={metadataTabTitle}
-                  onChange={(e) => setMetadataTabTitle(e.target.value)}
+                  value={feedbackMetadataTabTitle}
+                  onChange={(e) => setFeedbackMetadataTabTitle(e.target.value)}
                 />
                 <button
                   className="p-2 bg-indigo-500 hover:bg-indigo-600 transition duration-200 text-white rounded-e-lg"
-                  onClick={() => setMetadataTabTitle(`Feedback | ${boardName}`)}
+                  onClick={() => setFeedbackMetadataTabTitle(`Feedback | ${projectName}`)}
                   title="Reset to default"
                 >
                   <ArrowPathIcon className="w-5 h-5" strokeWidth={2} />
@@ -217,18 +181,24 @@ const SettingsModal = ({
         </div>
 
         {/* LOGO UPLOAD */}
-        <h2 className="font-semibold text-gray-900">Custom Board Logo</h2>
+        <h2 className="font-semibold text-gray-900">Custom Logo</h2>
         <div className="flex space-x-8 my-2 w-full">
           <div className="w-[45%]" hidden={!logo}>
-            <Image src={logo} alt="Board Logo" width={300} height={300} />
+            <Image src={logo} alt="Logo" width={300} height={300} />
           </div>
           <UploadButton
-            endpoint="boardLogo"
-            input={currentBoard.urlName}
+            endpoint="projectLogo"
+            input={currentProject.urlName}
             onClientUploadComplete={(res) => {
               toast.success("Logo updated successfully.")
               setLogo(res[0].url)
-              setBoard({ ...currentBoard, logo: res[0].url })
+              setProject({
+                ...currentProject,
+                settings: {
+                  ...currentProject.settings,
+                  logo: res[0].url,
+                },
+              })
             }}
             onUploadError={(error: Error) => {
               console.error(error.message)
@@ -245,18 +215,24 @@ const SettingsModal = ({
         </div>
 
         {/* FAVICON UPLOAD */}
-        <h2 className="font-semibold text-gray-900">Custom Board Favicon</h2>
+        <h2 className="font-semibold text-gray-900">Custom Favicon</h2>
         <div className="flex space-x-8 my-2 w-full">
           <div className="w-[45%]" hidden={!favicon}>
-            <Image src={favicon} alt="Board Favicon" width={50} height={50} />
+            <Image src={favicon} alt="Favicon" width={50} height={50} />
           </div>
           <UploadButton
-            endpoint="boardFavicon"
-            input={currentBoard.urlName}
+            endpoint="projectFavicon"
+            input={currentProject.urlName}
             onClientUploadComplete={(res) => {
               toast.success("Favicon updated successfully.")
               setFavicon(res[0].url)
-              setBoard({ ...currentBoard, favicon: res[0].url })
+              setProject({
+                ...currentProject,
+                settings: {
+                  ...currentProject.settings,
+                  favicon: res[0].url,
+                },
+              })
             }}
             onUploadError={(error: Error) => {
               console.error(error.message)
@@ -276,7 +252,7 @@ const SettingsModal = ({
           className="flex items-center px-4 py-2 border border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition duration-200"
           onClick={() => setDeletionConfirmationModalIsOpen(true)}
         >
-          <span className="text-sm font-light">Delete board</span>
+          <span className="text-sm font-light">Delete project</span>
           <TrashIcon className="w-5 h-5 ml-2" strokeWidth={1.5} />
         </button>
       </div>

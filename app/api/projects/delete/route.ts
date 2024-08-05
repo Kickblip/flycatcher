@@ -11,6 +11,12 @@ const ratelimit = new Ratelimit({
   limiter: Ratelimit.slidingWindow(5, "10 s"),
 })
 
+const extractFileKey = (url: string) => {
+  const parts = url.split("/")
+  const filename = parts[parts.length - 1]
+  return filename
+}
+
 export async function POST(request: Request) {
   const supabase = createClient()
   const {
@@ -38,7 +44,7 @@ export async function POST(request: Request) {
   if (!urlName) {
     return NextResponse.json(
       {
-        message: "Board name is required",
+        message: "Project name is required",
       },
       { status: 400 },
     )
@@ -46,45 +52,47 @@ export async function POST(request: Request) {
 
   try {
     const client = await clientPromise
-    const collection = client.db("Main").collection("boards")
-    const board = await collection.findOne({ urlName })
+    const db = client.db("Main")
+    const boardsCollection = db.collection("boards")
+    const waitlistCollection = db.collection("waitlists")
+    const projectsCollection = db.collection("projects")
 
-    if (board) {
-      if (board.author !== user.id)
-        return NextResponse.json({ message: "User not authorized to delete this board" }, { status: 403 })
+    const board = await boardsCollection.findOne({ urlName })
+    const project = await projectsCollection.findOne({ urlName })
+    const waitlist = await waitlistCollection.findOne({ urlName })
 
-      const extractFileKey = (url: string) => {
-        const parts = url.split("/")
-        const filename = parts[parts.length - 1]
-        return filename
-      }
+    if (board && project && waitlist) {
+      if (board.author !== user.id || project.author !== user.id || waitlist.author !== user.id)
+        return NextResponse.json({ message: "User not authorized to delete" }, { status: 403 })
 
+      // delete images from suggestions on feedback board
       board.suggestions.forEach(async (suggestion: Suggestion) => {
         if (suggestion.imageUrls[0]) {
           await utapi.deleteFiles(extractFileKey(suggestion.imageUrls[0]), { keyType: "fileKey" })
         }
       })
 
-      await utapi.deleteFiles(board.logoKey, { keyType: "fileKey" })
-      await utapi.deleteFiles(board.faviconKey, { keyType: "fileKey" })
+      // delete logo and favicon images from project
+      await utapi.deleteFiles(project.settings.logoKey, { keyType: "fileKey" })
+      await utapi.deleteFiles(project.settings.faviconKey, { keyType: "fileKey" })
 
-      const result = await collection.deleteOne({ urlName })
-
-      return NextResponse.json(
-        {
-          message: "Board deleted successfully",
-        },
-        { status: 200 },
-      )
-    } else {
-      return NextResponse.json({ error: "Board does not exist" }, { status: 500 })
+      const boardResult = await boardsCollection.deleteOne({ urlName })
+      const projectResult = await projectsCollection.deleteOne({ urlName })
+      const waitlistResult = await waitlistCollection.deleteOne({ urlName })
     }
+
+    return NextResponse.json(
+      {
+        message: "Project deleted successfully",
+      },
+      { status: 200 },
+    )
   } catch (error) {
     let errorMessage = "An unknown error occurred"
     if (error instanceof Error) {
       errorMessage = error.message
     }
-    console.error("Error deleting board:", errorMessage)
+    console.error("Error deleting project:", errorMessage)
     return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }

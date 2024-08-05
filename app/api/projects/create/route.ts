@@ -4,8 +4,10 @@ import { Board } from "@/types/SuggestionBoard"
 import Stripe from "stripe"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
-import { starterTags } from "./tags"
+import { starterTags } from "../../projects/create/tags"
 import { createClient } from "@/utils/supabase/server"
+import { Project } from "@/types/Project"
+import { WaitlistPage } from "@/types/WaitlistPage"
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
@@ -37,7 +39,7 @@ export async function POST(request: Request) {
   let { name } = body
 
   if (!name) {
-    return NextResponse.json({ message: "Board name is required" }, { status: 400 })
+    return NextResponse.json({ message: "Project name is required" }, { status: 400 })
   }
 
   name = name.trim()
@@ -54,7 +56,7 @@ export async function POST(request: Request) {
   if (name.length > 60) {
     return NextResponse.json(
       {
-        message: "Board name must be less than 60 characters",
+        message: "Project name must be less than 60 characters",
       },
       { status: 400 },
     )
@@ -70,74 +72,106 @@ export async function POST(request: Request) {
     }
   }
 
+  const urlName = name.toLowerCase().replace(/\s+/g, "-")
+
   const newBoard: Board = {
     name,
-    urlName: name.toLowerCase().replace(/\s+/g, "-"),
-    logo: "",
-    logoKey: "",
-    favicon: "",
-    faviconKey: "",
-    metadataTabTitle: `Feedback | ${name}`,
-    primaryColor: "#ffffff",
-    secondaryColor: "#f3f4f6", // gray-100
-    accentColor: "#6366f1", // indigo-500
-    textColor: "#000000",
+    urlName,
     author: user.id,
     authorIsPremium: isPremium,
     activeTags: starterTags,
     allTags: starterTags,
     suggestions: [],
-    settings: {
-      forceSignIn: false,
-      disableBranding: false,
-      disableAnonVoting: false,
-    },
+    settings: {},
+    createdAt: new Date(),
+  }
+
+  const newWaitlist: WaitlistPage = {
+    name,
+    urlName,
+    author: user.id,
     createdAt: new Date(),
   }
 
   try {
     const client = await clientPromise
-    const collection = client.db("Main").collection("boards")
+    const db = client.db("Main")
+    const boardsCollection = db.collection("boards")
+    const waitlistCollection = db.collection("waitlists")
+    const projectsCollection = db.collection("projects")
 
-    // get the total amount of boards the user currently has
-    const boards = await collection.find({ author: user.id }).toArray()
+    // get the total amount of projects the user currently has
+    const projects = await projectsCollection.find({ author: user.id }).toArray()
 
-    if (!isPremium && boards.length >= 1) {
+    if (!isPremium && projects.length >= 1) {
       // 1 is the limit for free users
       return NextResponse.json(
         {
-          message: "Exceeded board limit",
+          message: "Exceeded project limit",
         },
         { status: 403 },
       )
     }
 
-    if (isPremium && boards.length >= 10) {
+    if (isPremium && projects.length >= 10) {
       // 10 is the limit for premium users
       return NextResponse.json(
         {
-          message: "Exceeded board limit",
+          message: "Exceeded project limit",
         },
         { status: 403 },
       )
     }
 
-    // check if a board with the same name already exists (case-insensitive)
-    const existingBoard = await collection.findOne({ urlName: new RegExp(`^${name.toLowerCase().replace(/\s+/g, "-")}$`, "i") })
-    if (existingBoard) {
+    // check if a project with the same name already exists (case-insensitive)
+    const existingProject = await projectsCollection.findOne({
+      urlName: new RegExp(`^${name.toLowerCase().replace(/\s+/g, "-")}$`, "i"),
+    })
+    if (existingProject) {
       return NextResponse.json(
         {
-          message: "Board name already exists",
+          message: "Project name already exists",
         },
         { status: 409 },
       )
     }
 
-    const result = await collection.insertOne(newBoard)
+    // insert the new board
+    const boardResult = await boardsCollection.insertOne(newBoard)
+    const newBoardId = boardResult.insertedId
+
+    // insert the new waitlist page
+    const waitlistResult = await waitlistCollection.insertOne(newWaitlist)
+    const newWaitlistPageId = waitlistResult.insertedId
+
+    const newProject: Project = {
+      author: user.id,
+      name,
+      urlName,
+      settings: {
+        feedbackMetadataTabTitle: `Feedback | ${name}`,
+        disableBranding: false,
+        disableAnonVoting: false,
+        logo: "",
+        logoKey: "",
+        favicon: "",
+        faviconKey: "",
+        primaryColor: "#ffffff",
+        secondaryColor: "#f3f4f6", // gray-100
+        accentColor: "#6366f1", // indigo-500
+        textColor: "#000000",
+      },
+      feedbackBoardId: newBoardId,
+      waitlistPageId: newWaitlistPageId,
+      createdAt: new Date(),
+    }
+
+    const projectResult = await projectsCollection.insertOne(newProject)
+
     return NextResponse.json(
       {
-        message: "Board created successfully",
-        board: newBoard,
+        message: "Project created successfully",
+        project: newProject,
       },
       { status: 200 },
     )
@@ -146,7 +180,7 @@ export async function POST(request: Request) {
     if (error instanceof Error) {
       errorMessage = error.message
     }
-    console.error("Error creating board:", errorMessage)
+    console.error("Error creating project:", errorMessage)
     return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }

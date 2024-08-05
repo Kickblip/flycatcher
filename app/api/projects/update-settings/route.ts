@@ -26,23 +26,16 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json()
-  const { boardUrlName } = body
-  let { disableBranding, metadataTabTitle, disableAnonVoting } = body
-  const forceSignIn = false // temp until this maybe becomes a feature
+  const { urlName } = body
+  let { disableBranding, feedbackMetadataTabTitle } = body
 
-  if (
-    !metadataTabTitle ||
-    typeof forceSignIn !== "boolean" ||
-    typeof disableBranding !== "boolean" ||
-    typeof disableAnonVoting !== "boolean" ||
-    !boardUrlName
-  ) {
+  if (!feedbackMetadataTabTitle || typeof disableBranding !== "boolean" || !urlName) {
     return NextResponse.json({ message: "Missing required fields" }, { status: 400 })
   }
 
-  metadataTabTitle = metadataTabTitle.trim()
+  feedbackMetadataTabTitle = feedbackMetadataTabTitle.trim()
 
-  if (metadataTabTitle.length > 60) {
+  if (feedbackMetadataTabTitle.length > 60) {
     return NextResponse.json({ message: "Metadata tab title too long" }, { status: 400 })
   }
 
@@ -58,40 +51,38 @@ export async function POST(request: Request) {
 
   try {
     const client = await clientPromise
-    const collection = client.db("Main").collection("boards")
-    let oldBoard = await collection.findOne({ urlName: boardUrlName })
+    const collection = client.db("Main").collection("projects")
+    let oldProject = await collection.findOne({ urlName })
 
-    if (oldBoard) {
-      if (oldBoard.author !== user.id)
-        return NextResponse.json({ message: "User not authorized to update this board" }, { status: 403 })
+    if (oldProject) {
+      if (oldProject.author !== user.id)
+        return NextResponse.json({ message: "User not authorized to update this project" }, { status: 403 })
 
       await collection.updateOne(
-        { urlName: boardUrlName },
+        { urlName },
         {
           $set: {
-            "settings.forceSignIn": forceSignIn,
             "settings.disableBranding": disableBranding,
-            "settings.disableAnonVoting": disableAnonVoting,
-            metadataTabTitle,
+            "settings.feedbackMetadataTabTitle": feedbackMetadataTabTitle,
           },
         },
       )
 
       return NextResponse.json(
         {
-          message: "Board updated successfully",
+          message: "Project updated successfully",
         },
         { status: 200 },
       )
     } else {
-      return NextResponse.json({ error: "Board does not exist" }, { status: 500 })
+      return NextResponse.json({ error: "Project does not exist" }, { status: 500 })
     }
   } catch (error) {
     let errorMessage = "An unknown error occurred"
     if (error instanceof Error) {
       errorMessage = error.message
     }
-    console.error("Error updating board:", errorMessage)
+    console.error("Error updating project:", errorMessage)
     return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }

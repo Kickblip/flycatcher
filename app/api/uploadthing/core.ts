@@ -17,7 +17,7 @@ const f = createUploadthing()
 // FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
   // Define as many FileRoutes as you like, each with a unique routeSlug
-  boardLogo: f({ image: { maxFileSize: "1MB", maxFileCount: 1 } })
+  projectLogo: f({ image: { maxFileSize: "1MB", maxFileCount: 1 } })
     .input(z.string())
     // Set permissions and file types for this FileRoute
     .middleware(async ({ req, input }) => {
@@ -38,38 +38,46 @@ export const ourFileRouter = {
       }
 
       const client = await clientPromise
-      const collection = client.db("Main").collection("boards")
+      const collection = client.db("Main").collection("projects")
       const board = await collection.findOne({ urlName: input })
 
       if (!board) throw new UploadThingError("Board not found")
       if (board.author !== user.id) throw new UploadThingError("User not authorized to upload to this board")
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId: user.id, boardName: input }
+      return { userId: user.id, projectName: input }
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
 
       const client = await clientPromise
-      const collection = client.db("Main").collection("boards")
-      let board = await collection.findOne({ urlName: metadata.boardName })
+      const collection = client.db("Main").collection("projects")
+      let project = await collection.findOne({ urlName: metadata.projectName })
 
-      if (!board) throw new UploadThingError("Board not found after upload")
+      if (!project) throw new UploadThingError("Project not found after upload")
 
       const key = file.key
 
-      const oldLogoKey = board.logoKey // check if it exists first
+      const oldLogoKey = project.settings.logoKey // check if it exists first
       if (oldLogoKey) {
         // delete old logo from UploadThing
         await utapi.deleteFiles(oldLogoKey, { keyType: "fileKey" })
       }
 
-      await collection.updateOne({ urlName: metadata.boardName }, { $set: { logo: file.url, logoKey: key } })
+      await collection.updateOne(
+        { urlName: metadata.projectName },
+        {
+          $set: {
+            "settings.logo": file.url,
+            "settings.logoKey": key,
+          },
+        },
+      )
 
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
-      return { boardName: metadata.boardName, logo: file.url }
+      return { projectName: metadata.projectName, logo: file.url }
     }),
-  boardFavicon: f({ image: { maxFileSize: "64KB", maxFileCount: 1 } })
+  projectFavicon: f({ image: { maxFileSize: "64KB", maxFileCount: 1 } })
     // FAVICON UPLOAD!!!!
     .input(z.string())
     .middleware(async ({ req, input }) => {
@@ -88,35 +96,43 @@ export const ourFileRouter = {
       }
 
       const client = await clientPromise
-      const collection = client.db("Main").collection("boards")
-      const board = await collection.findOne({ urlName: input })
+      const collection = client.db("Main").collection("projects")
+      const project = await collection.findOne({ urlName: input })
 
-      if (!board) throw new UploadThingError("Board not found")
-      if (board.author !== user.id) throw new UploadThingError("User not authorized to upload to this board")
+      if (!project) throw new UploadThingError("Project not found")
+      if (project.author !== user.id) throw new UploadThingError("User not authorized to upload to this project")
 
-      return { userId: user.id, boardName: input }
+      return { userId: user.id, projectName: input }
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
 
       const client = await clientPromise
-      const collection = client.db("Main").collection("boards")
-      let board = await collection.findOne({ urlName: metadata.boardName })
+      const collection = client.db("Main").collection("projects")
+      let project = await collection.findOne({ urlName: metadata.projectName })
 
-      if (!board) throw new UploadThingError("Board not found after upload")
+      if (!project) throw new UploadThingError("Board not found after upload")
 
       const key = file.key
 
-      const oldFaviconKey = board.faviconKey // check if it exists first
+      const oldFaviconKey = project.settings.faviconKey // check if it exists first
       if (oldFaviconKey) {
         // delete old logo from UploadThing
         await utapi.deleteFiles(oldFaviconKey, { keyType: "fileKey" })
       }
 
-      await collection.updateOne({ urlName: metadata.boardName }, { $set: { favicon: file.url, faviconKey: key } })
+      await collection.updateOne(
+        { urlName: metadata.projectName },
+        {
+          $set: {
+            "settings.favicon": file.url,
+            "settings.faviconKey": key,
+          },
+        },
+      )
 
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
-      return { boardName: metadata.boardName, favicon: file.url }
+      return { projectName: metadata.projectName, favicon: file.url }
     }),
   suggestionImage: f({ image: { maxFileSize: "1MB", maxFileCount: 1 } })
     // Public view suggestion image attachments

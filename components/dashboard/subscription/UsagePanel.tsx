@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import LoadingWheel from "../LoadingWheel"
+import LoadingWheel from "../../shared/LoadingWheel"
 
 export default function UsagePanel({ isPremium }: { isPremium: boolean }) {
   const [boardCount, setBoardCount] = useState(0)

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import LoadingWheel from "@/components/dashboard/LoadingWheel"
+import LoadingWheel from "@/components/shared/LoadingWheel"
 import Navbar from "@/components/dashboard/Navbar"
 import { Suggestion, Board } from "@/types/SuggestionBoard"
 import { toast } from "react-toastify"
@@ -12,7 +12,7 @@ import { DataTable } from "./data-table"
 import SlideOutMenu from "./SlideOutMenu"
 import { ArrowLeftIcon } from "@heroicons/react/24/outline"
 
-export default function BoardFeedback({ params }: { params: { board_name: string } }) {
+export default function BoardFeedback({ params }: { params: { project_name: string } }) {
   const [error, setError] = useState<string | null>(null)
   const [board, setBoard] = useState<Board | null>(null)
   const [slideOutMenuOpen, setSlideOutMenuOpen] = useState(false)
@@ -22,7 +22,7 @@ export default function BoardFeedback({ params }: { params: { board_name: string
     setError(null)
 
     try {
-      const response = await fetch(`/api/boards/full-data/${params.board_name}`, {
+      const response = await fetch(`/api/boards/full-data/${params.project_name}`, {
         method: "GET",
       })
 
@@ -40,7 +40,7 @@ export default function BoardFeedback({ params }: { params: { board_name: string
 
   useEffect(() => {
     fetchBoard()
-  }, [params.board_name])
+  }, [params.project_name])
 
   useEffect(() => {
     if (board) document.title = `${board.name} | Flycatcher`
@@ -64,10 +64,10 @@ export default function BoardFeedback({ params }: { params: { board_name: string
   return (
     <main className="flex flex-col items-center w-full">
       <Navbar />
-      <Link href={`/dashboard/boards/edit/${board?.urlName}`} className="max-w-7xl w-full px-8 py-4">
+      <Link href={`/dashboard/home`} className="max-w-7xl w-full px-8 py-4">
         <div className="flex items-center">
           <ArrowLeftIcon className="h-4 w-4 text-indigo-500 mr-1" strokeWidth={2.5} />
-          <span className="text-indigo-500 text-sm font-medium">Back to Customization</span>
+          <span className="text-indigo-500 text-sm font-medium">Back to Projects</span>
         </div>
       </Link>
       <div className="container max-w-7xl mx-auto">

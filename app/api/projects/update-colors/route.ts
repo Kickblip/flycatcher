@@ -27,45 +27,47 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json()
-  const { urlName, primaryColor, secondaryColor, accentColor, textColor } = body
+  const { urlName } = body
+  const { primaryColor, secondaryColor, accentColor, textColor } = body.settings
 
   if (!urlName) {
-    return NextResponse.json({ message: "Board name is required" }, { status: 400 })
+    return NextResponse.json({ message: "Project name is required" }, { status: 400 })
   }
 
   try {
     const client = await clientPromise
-    const collection = client.db("Main").collection("boards")
-    let oldBoard = await collection.findOne({ urlName })
+    const collection = client.db("Main").collection("projects")
+    let oldProject = await collection.findOne({ urlName })
 
-    if (oldBoard) {
-      if (oldBoard.author !== user.id)
-        return NextResponse.json({ message: "User not authorized to update this board" }, { status: 403 })
+    if (oldProject) {
+      if (oldProject.author !== user.id)
+        return NextResponse.json({ message: "User not authorized to update this project" }, { status: 403 })
 
-      const updatedBoard = {
+      const updatedSettings = {
+        ...oldProject.settings,
         ...(primaryColor && { primaryColor }),
         ...(secondaryColor && { secondaryColor }),
         ...(accentColor && { accentColor }),
         ...(textColor && { textColor }),
       }
 
-      await collection.updateOne({ urlName }, { $set: updatedBoard })
+      await collection.updateOne({ urlName }, { $set: { settings: updatedSettings } })
 
       return NextResponse.json(
         {
-          message: "Board updated successfully",
+          message: "Project updated successfully",
         },
         { status: 200 },
       )
     } else {
-      return NextResponse.json({ error: "Board does not exist" }, { status: 500 })
+      return NextResponse.json({ error: "Project does not exist" }, { status: 500 })
     }
   } catch (error) {
     let errorMessage = "An unknown error occurred"
     if (error instanceof Error) {
       errorMessage = error.message
     }
-    console.error("Error updating board:", errorMessage)
+    console.error("Error updating project:", errorMessage)
     return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }

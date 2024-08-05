@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Suggestion, Board, LocalStorageUser } from "@/types/SuggestionBoard"
+import { Project } from "@/types/Project"
 import { HandThumbUpIcon, ChatBubbleBottomCenterTextIcon, PencilSquareIcon, CheckCircleIcon } from "@heroicons/react/24/outline"
 import { ArrowsRightLeftIcon, PaperAirplaneIcon } from "@heroicons/react/16/solid"
 import tinycolor from "tinycolor2"
@@ -12,8 +13,16 @@ import "react-toastify/dist/ReactToastify.css"
 import { useUser } from "@/hooks/supabase"
 import SignInForm from "@/components/shared/SignInForm"
 
-function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boardData: Board }) {
-  const { primaryColor, secondaryColor, accentColor, textColor } = boardData
+function SuggestionCard({
+  suggestion,
+  boardData,
+  projectData,
+}: {
+  suggestion: Suggestion
+  boardData: Board
+  projectData: Project
+}) {
+  const { primaryColor, secondaryColor, accentColor, textColor } = projectData.settings
   const lighterSecondaryColor = secondaryColor ? tinycolor(secondaryColor).lighten(20).toString() : "#f9fafb" // #f9fafb is tailwind gray-50
   const lighterTextColor = textColor ? tinycolor(textColor).lighten(20).toString() : "#f9fafb" // #f9fafb is tailwind gray-50
   const [modalIsOpen, setModalIsOpen] = useState(false)
@@ -30,18 +39,6 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
   const [previousSuggestionDescription, setPreviousSuggestionDescription] = useState("")
   const { user, stripeData, error } = useUser()
   const [signInModalIsOpen, setSignInModalIsOpen] = useState(false)
-
-  useEffect(() => {
-    const checkIfLiked = () => {
-      const localStorageData: LocalStorageUser = JSON.parse(localStorage.getItem("user") || "{}")
-      if (localStorageData.likedSuggestions && suggestion) {
-        return localStorageData.likedSuggestions.includes(suggestion.id)
-      }
-      return false
-    }
-
-    setIsLiked(checkIfLiked())
-  }, [suggestion])
 
   useEffect(() => {
     setScreenWidth(window.innerWidth)
@@ -77,10 +74,6 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
     overlay: {
       backgroundColor: "rgba(0, 0, 0, 0.75)",
     },
-  }
-
-  const handleCommentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewComment(e.target.value)
   }
 
   const handleAddComment = async () => {
@@ -197,7 +190,7 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
   const handleVoteClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
 
-    if (user?.id && boardData.settings.disableAnonVoting === true) {
+    if (user?.id && projectData.settings.disableAnonVoting === true) {
       setSignInModalIsOpen(true)
       return
     }
@@ -505,7 +498,9 @@ function SuggestionCard({ suggestion, boardData }: { suggestion: Suggestion; boa
                 className="flex-grow px-2 py-1 border-b-2 bg-transparent outline-none"
                 placeholder="Add a comment..."
                 value={newComment}
-                onChange={handleCommentChange}
+                onChange={(e) => {
+                  setNewComment(e.target.value)
+                }}
                 style={{ borderColor: lighterTextColor, color: textColor }}
               />
               <button

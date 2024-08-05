@@ -21,15 +21,6 @@ export interface Board {
   _id?: ObjectId
   name: string
   urlName: string
-  logo: string
-  logoKey: string
-  favicon: string
-  faviconKey: string
-  metadataTabTitle: string
-  primaryColor: string
-  secondaryColor: string
-  accentColor: string
-  textColor: string
   author: string
   allTags: Tag[]
   activeTags: Tag[]
@@ -45,11 +36,7 @@ export interface Tag {
   secondaryColor: string
 }
 
-export interface BoardSettings {
-  forceSignIn: boolean
-  disableBranding: boolean
-  disableAnonVoting: boolean
-}
+export interface BoardSettings {}
 
 export interface Comment {
   id: string
