@@ -10,7 +10,7 @@ import "react-toastify/dist/ReactToastify.css"
 import { createColumns } from "./columns"
 import { DataTable } from "./data-table"
 import SlideOutMenu from "./SlideOutMenu"
-import { ArrowLeftIcon } from "@heroicons/react/24/outline"
+import Header from "./Header"
 
 export default function BoardFeedback({ params }: { params: { project_name: string } }) {
   const [error, setError] = useState<string | null>(null)
@@ -64,12 +64,7 @@ export default function BoardFeedback({ params }: { params: { project_name: stri
   return (
     <main className="flex flex-col items-center w-full">
       <Navbar />
-      <Link href={`/dashboard/home`} className="max-w-7xl w-full px-8 py-4">
-        <div className="flex items-center">
-          <ArrowLeftIcon className="h-4 w-4 text-indigo-500 mr-1" strokeWidth={2.5} />
-          <span className="text-indigo-500 text-sm font-medium">Back to Projects</span>
-        </div>
-      </Link>
+      <Header boardName={board!.urlName} />
       <div className="container max-w-7xl mx-auto">
         <DataTable
           columns={createColumns(

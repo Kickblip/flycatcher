@@ -36,7 +36,7 @@ function Hero() {
             </div>
 
             <button className="px-4 py-2 bg-gradient-to-r from-fuchsia-600 to-pink-600 hover:from-fuchsia-700 hover:to-pink-700 font-bold flex items-center justify-center rounded-xl h-14 md:w-64 w-full">
-              <Link href="/dashboard/boards" className="flex items-center justify-center w-full text-white text-sm">
+              <Link href="/dashboard/home" className="flex items-center justify-center w-full text-white text-sm">
                 Create your own
                 <ArrowRightIcon className="w-4 h-4 ml-2" strokeWidth={2} />
               </Link>

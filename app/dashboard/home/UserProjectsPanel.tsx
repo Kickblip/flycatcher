@@ -5,7 +5,7 @@ import Link from "next/link"
 import { ArrowPathIcon } from "@heroicons/react/24/outline"
 import LoadingWheel from "@/components/shared/LoadingWheel"
 import { Project } from "@/types/Project"
-import { FaLink, FaArrowUpRightFromSquare, FaGear } from "react-icons/fa6"
+import { FaChevronRight, FaGear } from "react-icons/fa6"
 
 export default function UserProjectsPanel({
   projects,
@@ -81,9 +81,12 @@ export default function UserProjectsPanel({
                 <Link
                   key={index}
                   href={`/dashboard/${project.urlName}/feedback`}
-                  className="border hover:shadow-md transition duration-200 rounded-lg text-sm text-center w-full px-6 py-4"
+                  className="border hover:shadow-md transition duration-200 rounded-lg text-sm w-full px-6 py-4"
                 >
-                  Manage Feedback
+                  <div className="flex items-center justify-center space-x-2">
+                    <p>Manage Feedback</p>
+                    <FaChevronRight className="w-3 h-3" />
+                  </div>
                 </Link>
 
                 <Link
@@ -91,7 +94,10 @@ export default function UserProjectsPanel({
                   href={`/w/${project.urlName}`}
                   className="border hover:shadow-md transition duration-200 rounded-lg text-sm text-center w-full px-6 py-4"
                 >
-                  Waitlist page
+                  <div className="flex items-center justify-center space-x-2">
+                    <p>Manage Waitlist</p>
+                    <FaChevronRight className="w-3 h-3" />
+                  </div>
                 </Link>
               </div>
             </div>
