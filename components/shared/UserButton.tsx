@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useState, useEffect, useRef } from "react"
 import { createClient } from "@/utils/supabase/client"
 import { User } from "@supabase/supabase-js"
-import { AdjustmentsVerticalIcon, ArrowLeftStartOnRectangleIcon, WalletIcon } from "@heroicons/react/24/outline"
+import { FaWallet, FaBoltLightning, FaArrowRightFromBracket } from "react-icons/fa6"
 import { useRouter } from "next/navigation"
 
 export default function UserButton() {
@@ -86,14 +86,14 @@ export default function UserButton() {
               href="/dashboard/subscription"
               className="p-4 w-full text-left hover:bg-gray-100 flex items-center transition duration-200"
             >
-              <AdjustmentsVerticalIcon className="w-5 h-5 mr-3" />
+              <FaBoltLightning className="w-5 h-5 mr-3" />
               <span className="text-sm">Usage</span>
             </Link>
             <Link
               href="/dashboard/subscription"
               className="p-4 w-full text-left hover:bg-gray-100 flex items-center transition duration-200"
             >
-              <WalletIcon className="w-5 h-5 mr-3" strokeWidth={1.7} />
+              <FaWallet className="w-5 h-5 mr-3" strokeWidth={1.7} />
               <span className="text-sm">Billing</span>
             </Link>
 
@@ -107,7 +107,7 @@ export default function UserButton() {
                 router.push("/")
               }}
             >
-              <ArrowLeftStartOnRectangleIcon className="w-5 h-5 mr-3" />
+              <FaArrowRightFromBracket className="w-5 h-5 mr-3" />
               <span className="text-sm">Log Out</span>
             </button>
           </div>

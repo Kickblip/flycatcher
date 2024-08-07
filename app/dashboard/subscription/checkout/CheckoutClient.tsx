@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import Navbar from "@/components/dashboard/Navbar"
+import Navbar from "@/app/dashboard/home/Navbar"
 import { useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import { toast } from "react-toastify"
@@ -34,7 +34,7 @@ export default function Checkout() {
         toast.error("Failed to retrieve checkout session.")
       }
     })
-  }, [sessionId, user?.id])
+  }, [sessionId, user])
 
   const retrieveStripeCheckoutSession = async (sessionId: string) => {
     try {

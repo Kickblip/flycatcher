@@ -1,9 +1,9 @@
 import type { Metadata } from "next"
-import Navbar from "@/components/dashboard/Navbar"
+import Navbar from "@/app/dashboard/home/Navbar"
 import Image from "next/image"
-import SubscriptionCard from "@/components/dashboard/subscription/SubscriptionCard"
-import UsagePanel from "@/components/dashboard/subscription/UsagePanel"
-import BillingManagerPanel from "@/components/dashboard/subscription/BillingManagerPanel"
+import SubscriptionCard from "./SubscriptionCard"
+import UsagePanel from "./UsagePanel"
+import BillingManagerPanel from "./BillingManagerPanel"
 import { createClient } from "@/utils/supabase/server"
 
 export const metadata: Metadata = {
