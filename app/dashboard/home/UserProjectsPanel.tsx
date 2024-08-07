@@ -77,6 +77,7 @@ export default function UserProjectsPanel({
                   <FaGear />
                 </Link>
               </div>
+
               <div className="flex flex-col space-y-4 mt-6">
                 <Link
                   key={index}
@@ -84,7 +85,7 @@ export default function UserProjectsPanel({
                   className="border hover:shadow-md transition duration-200 rounded-lg text-sm w-full px-6 py-4"
                 >
                   <div className="flex items-center justify-center space-x-2">
-                    <p>Manage Feedback</p>
+                    <p>Discussions</p>
                     <FaChevronRight className="w-3 h-3" />
                   </div>
                 </Link>
@@ -95,7 +96,7 @@ export default function UserProjectsPanel({
                   className="border hover:shadow-md transition duration-200 rounded-lg text-sm text-center w-full px-6 py-4"
                 >
                   <div className="flex items-center justify-center space-x-2">
-                    <p>Manage Waitlist</p>
+                    <p>Waitlist</p>
                     <FaChevronRight className="w-3 h-3" />
                   </div>
                 </Link>

@@ -15,7 +15,6 @@ type SettingsModalProps = {
   isOpen: boolean
   currentProject: Project
   onRequestClose: () => void
-  onSettingsSave: (updatedProject: Project) => void
   setDeletionConfirmationModalIsOpen: (isOpen: boolean) => void
   setProject: (project: Project) => void
 }
@@ -24,7 +23,6 @@ const SettingsModal = ({
   isOpen,
   currentProject,
   onRequestClose,
-  onSettingsSave,
   setDeletionConfirmationModalIsOpen,
   setProject,
 }: SettingsModalProps) => {
@@ -124,59 +122,50 @@ const SettingsModal = ({
           </button>
         </div>
 
-        <div className="mb-4">
-          <div className="flex items-center">
-            <div className="w-full md:w-[85%] lg:w-[55%]">
-              <h2 className="font-semibold text-gray-900">Disable Flycatcher branding</h2>
-              <p className="text-gray-600 text-sm">
-                Remove the Flycatcher "powered by" badge from your feedback board and waitlist page public views.
-              </p>
-            </div>
-            <Switch
-              checked={disableBranding}
-              onChange={() => {
-                if (stripeData?.is_premium) {
-                  setDisableBranding(!disableBranding)
-                } else {
-                  toast.error("This feature is only available for paid users.")
-                  setDisableBranding(false)
-                }
-              }}
+        <div className="flex flex-col items-start space-y-1 mb-6">
+          <h2 className="font-semibold text-gray-900">Disable Flycatcher branding</h2>
+          <p className="text-gray-600 text-sm">
+            Remove the Flycatcher "powered by" badge from your feedback board and waitlist page public views.
+          </p>
+          <Switch
+            checked={disableBranding}
+            onChange={() => {
+              if (stripeData?.is_premium) {
+                setDisableBranding(!disableBranding)
+              } else {
+                toast.error("This feature is only available for paid users.")
+                setDisableBranding(false)
+              }
+            }}
+            className={`${
+              disableBranding ? "bg-indigo-500" : "bg-gray-200"
+            } relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out`}
+          >
+            <span
               className={`${
-                disableBranding ? "bg-indigo-500" : "bg-gray-200"
-              } relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out ml-4`}
-            >
-              <span
-                className={`${
-                  disableBranding ? "translate-x-5 md:translate-x-6" : "translate-x-1"
-                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out`}
-              />
-            </Switch>
-          </div>
+                disableBranding ? "translate-x-5 md:translate-x-6" : "translate-x-1"
+              } inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out`}
+            />
+          </Switch>
         </div>
-        <div className="mb-4">
-          <div className="flex items-center">
-            <div className="w-full md:w-[85%] lg:w-[55%]">
-              <h2 className="font-semibold text-gray-900">Feedback board tab title</h2>
-              <p className="text-gray-600 text-sm">
-                Edit the title of the browser tab that users see on your board's public view.
-              </p>
-              <div className="flex items-center mt-2">
-                <input
-                  type="text"
-                  className="w-full px-2 py-1 border border-gray-300 rounded-s-lg focus:border-indigo-500 focus:border-2 focus:outline-none"
-                  value={feedbackMetadataTabTitle}
-                  onChange={(e) => setFeedbackMetadataTabTitle(e.target.value)}
-                />
-                <button
-                  className="p-2 bg-indigo-500 hover:bg-indigo-600 transition duration-200 text-white rounded-e-lg"
-                  onClick={() => setFeedbackMetadataTabTitle(`Feedback | ${projectName}`)}
-                  title="Reset to default"
-                >
-                  <ArrowPathIcon className="w-5 h-5" strokeWidth={2} />
-                </button>
-              </div>
-            </div>
+
+        <div className="flex flex-col items-start space-y-1 mb-6">
+          <h2 className="font-semibold text-gray-900">Feedback board tab title</h2>
+          <p className="text-gray-600 text-sm">Edit the title of the browser tab that users see on your board's public view.</p>
+          <div className="flex items-center mt-2">
+            <input
+              type="text"
+              className="w-full px-2 py-1 border border-gray-300 rounded-s-lg focus:border-indigo-500 focus:border-2 focus:outline-none"
+              value={feedbackMetadataTabTitle}
+              onChange={(e) => setFeedbackMetadataTabTitle(e.target.value)}
+            />
+            <button
+              className="p-2 bg-indigo-500 hover:bg-indigo-600 transition duration-200 text-white rounded-e-lg"
+              onClick={() => setFeedbackMetadataTabTitle(`Feedback | ${projectName}`)}
+              title="Reset to default"
+            >
+              <ArrowPathIcon className="w-5 h-5" strokeWidth={2} />
+            </button>
           </div>
         </div>
 
@@ -249,7 +238,7 @@ const SettingsModal = ({
         </div>
 
         <button
-          className="flex items-center px-4 py-2 border border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition duration-200"
+          className="flex items-center px-4 py-2 border border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition duration-200 mt-8"
           onClick={() => setDeletionConfirmationModalIsOpen(true)}
         >
           <span className="text-sm font-light">Delete project</span>

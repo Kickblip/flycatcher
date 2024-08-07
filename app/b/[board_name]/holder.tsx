@@ -190,11 +190,6 @@ function SuggestionCard({
   const handleVoteClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
 
-    if (user?.id && projectData.settings.disableAnonVoting === true) {
-      setSignInModalIsOpen(true)
-      return
-    }
-
     setSubmitting(true)
 
     // set author id depending on if user is signed in or not

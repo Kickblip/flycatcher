@@ -126,10 +126,6 @@ export default function BoardInfo({ params }: { params: { project_name: string }
     }
   }
 
-  const handleSettingsSave = (updatedProject: Project) => {
-    // TODO: Implement
-  }
-
   const deleteProject = async () => {
     try {
       const response = await fetch("/api/projects/delete", {
@@ -266,7 +262,6 @@ export default function BoardInfo({ params }: { params: { project_name: string }
         currentProject={project}
         setProject={setProject}
         onRequestClose={() => setSettingsModalIsOpen(false)}
-        onSettingsSave={handleSettingsSave}
         setDeletionConfirmationModalIsOpen={setDeletionConfirmationModalIsOpen}
       />
       <DeletionConfirmationModal
