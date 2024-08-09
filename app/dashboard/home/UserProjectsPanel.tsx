@@ -41,7 +41,7 @@ export default function UserProjectsPanel({
 
   useEffect(() => {
     fetchProjects()
-  })
+  }, [])
 
   if (loading) {
     return <LoadingWheel />
@@ -57,26 +57,24 @@ export default function UserProjectsPanel({
         <h2 className="text-xl font-bold opacity-90">Your Projects</h2>
         <button
           onClick={fetchProjects}
-          className="flex items-center text-indigo-500 hover:text-indigo-700 transition duration-200"
+          className="flex items-center text-redorange-500 hover:text-redorange-300 transition duration-200"
         >
-          <FaArrowsRotate className="h-5 w-5 mr-1" />
+          <FaArrowsRotate className="h-4 w-4 mr-2" />
           Refresh
         </button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {projects.length > 0 ? (
           projects.map((project, index) => (
-            <div key={index} className="px-4 py-6 border rounded-lg break-words">
+            <Link
+              href={`/dashboard/${project.urlName}/customize`}
+              key={index}
+              className="px-4 py-6 border rounded-lg break-words hover:shadow transition duration-200"
+            >
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-bold">{project.name}</h3>
-                <Link
-                  href={`/dashboard/${project.urlName}/settings`}
-                  className="text-gray-700 p-2 hover:bg-gray-100 transition duration-200 rounded cursor-pointer"
-                >
-                  <FaGear />
-                </Link>
               </div>
-            </div>
+            </Link>
           ))
         ) : (
           <div className="p-4 text-left text-gray-500">

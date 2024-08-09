@@ -17,7 +17,7 @@ const f = createUploadthing()
 // FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
   // Define as many FileRoutes as you like, each with a unique routeSlug
-  boardLogo: f({ image: { maxFileSize: "1MB", maxFileCount: 1 } })
+  waitlistLogo: f({ image: { maxFileSize: "1MB", maxFileCount: 1 } })
     .input(z.string())
     // Set permissions and file types for this FileRoute
     .middleware(async ({ req, input }) => {
@@ -38,38 +38,38 @@ export const ourFileRouter = {
       }
 
       const client = await clientPromise
-      const collection = client.db("Main").collection("boards")
-      const board = await collection.findOne({ urlName: input })
+      const collection = client.db("Main").collection("waitlists")
+      const waitlist = await collection.findOne({ urlName: input })
 
-      if (!board) throw new UploadThingError("Board not found")
-      if (board.author !== user.id) throw new UploadThingError("User not authorized to upload to this board")
+      if (!waitlist) throw new UploadThingError("Waitlist not found")
+      if (waitlist.author !== user.id) throw new UploadThingError("User not authorized to upload to this waitlist")
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId: user.id, boardName: input }
+      return { userId: user.id, waitlistName: input }
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
 
       const client = await clientPromise
-      const collection = client.db("Main").collection("boards")
-      let board = await collection.findOne({ urlName: metadata.boardName })
+      const collection = client.db("Main").collection("waitlists")
+      let waitlist = await collection.findOne({ urlName: metadata.waitlistName })
 
-      if (!board) throw new UploadThingError("Board not found after upload")
+      if (!waitlist) throw new UploadThingError("Waitlist not found after upload")
 
       const key = file.key
 
-      const oldLogoKey = board.logoKey // check if it exists first
-      if (oldLogoKey) {
+      const oldKey = waitlist.images.logoKey // check if it exists first
+      if (oldKey) {
         // delete old logo from UploadThing
-        await utapi.deleteFiles(oldLogoKey, { keyType: "fileKey" })
+        await utapi.deleteFiles(oldKey, { keyType: "fileKey" })
       }
 
-      await collection.updateOne({ urlName: metadata.boardName }, { $set: { logo: file.url, logoKey: key } })
+      await collection.updateOne({ urlName: metadata.waitlistName }, { $set: { "images.logo": file.url, "images.logoKey": key } })
 
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
-      return { boardName: metadata.boardName, logo: file.url }
+      return { waitlistName: metadata.waitlistName, logo: file.url }
     }),
-  boardFavicon: f({ image: { maxFileSize: "64KB", maxFileCount: 1 } })
+  waitlistFavicon: f({ image: { maxFileSize: "64KB", maxFileCount: 1 } })
     // FAVICON UPLOAD!!!!
     .input(z.string())
     .middleware(async ({ req, input }) => {
@@ -88,37 +88,40 @@ export const ourFileRouter = {
       }
 
       const client = await clientPromise
-      const collection = client.db("Main").collection("boards")
-      const board = await collection.findOne({ urlName: input })
+      const collection = client.db("Main").collection("waitlists")
+      const waitlist = await collection.findOne({ urlName: input })
 
-      if (!board) throw new UploadThingError("Board not found")
-      if (board.author !== user.id) throw new UploadThingError("User not authorized to upload to this board")
+      if (!waitlist) throw new UploadThingError("Waitlist not found")
+      if (waitlist.author !== user.id) throw new UploadThingError("User not authorized to upload to this waitlist")
 
-      return { userId: user.id, boardName: input }
+      return { userId: user.id, waitlistName: input }
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
 
       const client = await clientPromise
-      const collection = client.db("Main").collection("boards")
-      let board = await collection.findOne({ urlName: metadata.boardName })
+      const collection = client.db("Main").collection("waitlists")
+      let waitlist = await collection.findOne({ urlName: metadata.waitlistName })
 
-      if (!board) throw new UploadThingError("Board not found after upload")
+      if (!waitlist) throw new UploadThingError("Waitlist not found after upload")
 
       const key = file.key
 
-      const oldFaviconKey = board.faviconKey // check if it exists first
-      if (oldFaviconKey) {
+      const oldKey = waitlist.images.faviconKey // check if it exists first
+      if (oldKey) {
         // delete old logo from UploadThing
-        await utapi.deleteFiles(oldFaviconKey, { keyType: "fileKey" })
+        await utapi.deleteFiles(oldKey, { keyType: "fileKey" })
       }
 
-      await collection.updateOne({ urlName: metadata.boardName }, { $set: { favicon: file.url, faviconKey: key } })
+      await collection.updateOne(
+        { urlName: metadata.waitlistName },
+        { $set: { "images.favicon": file.url, "images.faviconKey": key } },
+      )
 
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
-      return { boardName: metadata.boardName, favicon: file.url }
+      return { waitlistName: metadata.waitlistName, favicon: file.url }
     }),
-  suggestionImage: f({ image: { maxFileSize: "1MB", maxFileCount: 1 } })
+  waitlistPreview: f({ image: { maxFileSize: "1MB", maxFileCount: 1 } })
     // Public view suggestion image attachments
     .input(z.string())
     .middleware(async ({ req, input }) => {
@@ -137,20 +140,38 @@ export const ourFileRouter = {
       }
 
       const client = await clientPromise
-      const collection = client.db("Main").collection("boards")
-      const board = await collection.findOne({ urlName: input })
+      const collection = client.db("Main").collection("waitlists")
+      const waitlist = await collection.findOne({ urlName: input })
 
-      // CHECK IF THE BOARD IS PREMIUM AND ALLOWED TO UPLOAD
-      if (!board) throw new UploadThingError("Board not found")
-      if (!board.authorIsPremium) throw new UploadThingError("Uploads not allowed on this board")
+      if (!waitlist) throw new UploadThingError("Board not found")
+      if (waitlist.author !== user.id) throw new UploadThingError("User not authorized to upload to this waitlist")
 
-      return { userId: user.id }
+      return { userId: user.id, waitlistName: input }
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
 
+      const client = await clientPromise
+      const collection = client.db("Main").collection("waitlists")
+      let waitlist = await collection.findOne({ urlName: metadata.waitlistName })
+
+      if (!waitlist) throw new UploadThingError("Waitlist not found after upload")
+
+      const key = file.key
+
+      const oldKey = waitlist.images.previewKey // check if it exists first
+      if (oldKey) {
+        // delete old logo from UploadThing
+        await utapi.deleteFiles(oldKey, { keyType: "fileKey" })
+      }
+
+      await collection.updateOne(
+        { urlName: metadata.waitlistName },
+        { $set: { "images.preview": file.url, "images.previewKey": key } },
+      )
+
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
-      return { favicon: file.url }
+      return { waitlistName: metadata.waitlistName, logo: file.url }
     }),
 } satisfies FileRouter
 

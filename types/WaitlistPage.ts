@@ -33,6 +33,8 @@ export interface WaitlistSettings {
   accentColor: string
   textColor: string
   metadataTabTitle: string
+  titleText: string
+  subtitleText: string
 }
 
 export interface Field {

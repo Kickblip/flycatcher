@@ -11,7 +11,7 @@ export default function Waitlist({ params }: { params: { waitlist_name: string }
 
   useEffect(() => {
     fetchBoardData()
-  })
+  }, [])
 
   const fetchBoardData = async () => {
     try {
