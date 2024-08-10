@@ -4,6 +4,7 @@ import { useWaitlistStore } from "@/stores/WaitlistStore"
 import { useState } from "react"
 import SettingsPanel from "./SettingsPanel"
 import WaitlistPreview from "./WaitlistPreview"
+import ShareAndSave from "./ShareAndSave"
 
 export default function Customize({ params }: { params: { waitlist_name: string } }) {
   const { waitlist } = useWaitlistStore()
@@ -20,7 +21,10 @@ export default function Customize({ params }: { params: { waitlist_name: string 
       </div>
       <div className="w-1/2 p-4">
         <div className="sticky top-8">
-          <WaitlistPreview pageWaitlist={pageWaitlist!} setPageWaitlist={setPageWaitlist} />
+          <div className="flex flex-col items-center justify-center space-y-6">
+            <ShareAndSave pageWaitlist={pageWaitlist!} setPageWaitlist={setPageWaitlist} />
+            <WaitlistPreview pageWaitlist={pageWaitlist!} setPageWaitlist={setPageWaitlist} />
+          </div>
         </div>
       </div>
     </div>

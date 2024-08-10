@@ -39,5 +39,7 @@ export interface WaitlistSettings {
 
 export interface Field {
   label: string
+  placeholder: string
+  enabled: boolean
   required: boolean
 }

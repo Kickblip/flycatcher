@@ -4,6 +4,7 @@ import ColorSelector from "./ColorSelector"
 import EditTextForm from "./EditTextForm"
 import SmallImageUpload from "./SmallImageUpload"
 import LargeImageUpload from "./LargeImageUpload"
+import FieldSelector from "./FieldSelector"
 
 export default function SettingsPanel({
   pageWaitlist,
@@ -44,7 +45,11 @@ export default function SettingsPanel({
       </SettingWrapper>
 
       <SettingWrapper title="Fields" subtitle="Select the information you want to collect in your waitlist form">
-        <div className="h-32"></div>
+        <div className="grid grid-cols-2 gap-4">
+          {pageWaitlist.fields.map((field, index) => (
+            <FieldSelector key={index} field={field} pageWaitlist={pageWaitlist} setPageWaitlist={setPageWaitlist} />
+          ))}
+        </div>
       </SettingWrapper>
 
       <SettingWrapper title="Copy" subtitle="Edit the header and subheader text that is displayed on the waitlist">

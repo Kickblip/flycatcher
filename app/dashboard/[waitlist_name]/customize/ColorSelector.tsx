@@ -20,18 +20,20 @@ export default function ColorSelector({
           <div className="w-12 h-12 rounded shadow" style={{ backgroundColor: color }}></div>
         </PopoverTrigger>
         <PopoverContent>
-          <HexColorPicker
-            color={color}
-            onChange={(newColor) => {
-              setPageWaitlist({
-                ...pageWaitlist,
-                settings: {
-                  ...pageWaitlist.settings,
-                  [colorKey]: newColor,
-                },
-              })
-            }}
-          />
+          <div className="flex justify-center w-full">
+            <HexColorPicker
+              color={color}
+              onChange={(newColor) => {
+                setPageWaitlist({
+                  ...pageWaitlist,
+                  settings: {
+                    ...pageWaitlist.settings,
+                    [colorKey]: newColor,
+                  },
+                })
+              }}
+            />
+          </div>
         </PopoverContent>
       </Popover>
 

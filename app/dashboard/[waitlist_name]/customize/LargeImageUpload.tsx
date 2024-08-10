@@ -16,16 +16,18 @@ export default function SmallImageUpload({
 }) {
   return (
     <div className="w-full flex flex-col items-center space-y-4">
-      <div hidden={!pageWaitlist.images[imageKey as keyof WaitlistImages]} className="w-full flex justify-center shadow">
-        <AspectRatio ratio={16 / 9}>
-          <Image
-            src={pageWaitlist.images[imageKey as keyof WaitlistImages]}
-            alt="Uploaded image"
-            fill
-            className="rounded-md object-cover"
-          />
-        </AspectRatio>
-      </div>
+      {pageWaitlist.images[imageKey as keyof WaitlistImages] && (
+        <div className="w-full flex justify-center shadow">
+          <AspectRatio ratio={16 / 9}>
+            <Image
+              src={pageWaitlist.images[imageKey as keyof WaitlistImages]}
+              alt="Uploaded image"
+              fill
+              className="rounded-md object-cover"
+            />
+          </AspectRatio>
+        </div>
+      )}
 
       <UploadButton
         endpoint={endpoint}
