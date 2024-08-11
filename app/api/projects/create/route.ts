@@ -85,6 +85,7 @@ export async function POST(request: Request) {
       preview: "",
       previewKey: "",
     },
+    contacts: [],
     fields: [
       { label: "Email", placeholder: "Enter your email", enabled: true, required: true },
       { label: "First name", placeholder: "First name", enabled: false, required: false },

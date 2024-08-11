@@ -10,12 +10,20 @@ export interface WaitlistPage {
   fields: Field[]
   links: Link[]
   settings: WaitlistSettings
+  contacts: Contact[]
   createdAt: Date
 }
 
 export interface Link {
   text: string
   url: string
+}
+
+export interface Contact {
+  fields: {
+    [key: string]: string
+  }
+  createdAt: Date
 }
 
 export interface WaitlistImages {

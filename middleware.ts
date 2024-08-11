@@ -1,7 +1,15 @@
 import { type NextRequest } from "next/server"
 import { updateSession } from "@/utils/supabase/middleware"
+import { analytics } from "@/utils/analytics/analytics"
 
 export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname
+
+  if (pathname.startsWith("/w/")) {
+    const waitlistName = pathname.split("/")[2]
+    await analytics.track("pageview", waitlistName, { country: request.geo?.country })
+  }
+
   return await updateSession(request)
 }
 
@@ -12,8 +20,8 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * Feel free to modify this pattern to include more paths.
+     * etc.
      */
-    "/((?!_next/static|_next/image|favicon.ico|b/|api/pub/|api/clear-unused-images|api/uploadthing|auth/|^/|.*\\.(?:svg|png|jpg|mp4|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|api/pub/|api/clear-unused-images|api/uploadthing|auth/|^/|.*\\.(?:svg|png|jpg|mp4|jpeg|gif|webp)$).*)",
   ],
 }

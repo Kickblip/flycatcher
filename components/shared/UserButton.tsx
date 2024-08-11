@@ -86,14 +86,14 @@ export default function UserButton() {
               href="/dashboard/subscription"
               className="p-4 w-full text-left hover:bg-gray-100 flex items-center transition duration-200"
             >
-              <FaBoltLightning className="w-5 h-5 mr-3" />
+              <FaBoltLightning className="w-4 h-4 mr-3" />
               <span className="text-sm">Usage</span>
             </Link>
             <Link
               href="/dashboard/subscription"
               className="p-4 w-full text-left hover:bg-gray-100 flex items-center transition duration-200"
             >
-              <FaWallet className="w-5 h-5 mr-3" strokeWidth={1.7} />
+              <FaWallet className="w-4 h-4 mr-3" strokeWidth={1.7} />
               <span className="text-sm">Billing</span>
             </Link>
 
@@ -107,7 +107,7 @@ export default function UserButton() {
                 router.push("/")
               }}
             >
-              <FaArrowRightFromBracket className="w-5 h-5 mr-3" />
+              <FaArrowRightFromBracket className="w-4 h-4 mr-3" />
               <span className="text-sm">Log Out</span>
             </button>
           </div>

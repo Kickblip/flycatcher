@@ -45,7 +45,13 @@ export default async function Waitlist({ params }: { params: { waitlist_name: st
             </p>
           </div>
 
-          <SignupForm waitlist={waitlist} />
+          <SignupForm
+            primaryColor={waitlist.settings.primaryColor}
+            secondaryColor={waitlist.settings.secondaryColor}
+            textColor={waitlist.settings.textColor}
+            accentColor={waitlist.settings.accentColor}
+            fields={waitlist.fields}
+          />
         </div>
       </div>
 

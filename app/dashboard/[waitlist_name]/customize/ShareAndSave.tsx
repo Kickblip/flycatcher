@@ -4,6 +4,7 @@ import { FaClipboard, FaArrowUpRightFromSquare } from "react-icons/fa6"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
+import { useWaitlistStore } from "@/stores/WaitlistStore"
 
 export default function ShareAndSave({
   pageWaitlist,
@@ -12,6 +13,30 @@ export default function ShareAndSave({
   pageWaitlist: WaitlistPage
   setPageWaitlist: (pageWaitlist: WaitlistPage) => void
 }) {
+  const { waitlist } = useWaitlistStore()
+
+  const saveSettings = async () => {
+    try {
+      const response = await fetch("/api/waitlists/update", {
+        method: "POST",
+        body: JSON.stringify({ waitlist: pageWaitlist }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to update settings")
+        return
+      }
+
+      const data = await response.json()
+      const { waitlist } = data
+
+      useWaitlistStore.getState().update(waitlist)
+    } catch (error) {
+      console.error(error)
+      toast.error("Failed to update settings")
+    }
+  }
+
   return (
     <div className="w-full flex items-center justify-between space-x-4">
       <div className="w-full flex items-center justify-between border rounded py-1">
@@ -56,7 +81,10 @@ export default function ShareAndSave({
           </TooltipProvider>
         </div>
       </div>
-      <button className="px-12 py-2 bg-redorange-500 text-white rounded hover:bg-redorange-300 transition duration-200">
+      <button
+        className="px-12 py-2 bg-redorange-500 text-white rounded hover:bg-redorange-300 transition duration-200"
+        onClick={saveSettings}
+      >
         Save
       </button>
     </div>
