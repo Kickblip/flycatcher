@@ -31,19 +31,25 @@ export async function POST(request: Request) {
 
   try {
     const pageViews = await analytics.retrieveDays("pageview", urlName, 7)
+    const addedContacts = await analytics.retrieveDays("addcontact", urlName, 7)
 
-    const transformedData = pageViews.map((day: { date: string; events: any[] }) => {
+    const transformedData = pageViews.map((day: { date: string; events: any[] }, index: number) => {
       const pageViewsSum = day.events.reduce((sum, event) => {
-        const eventValue = Object.values(event)[0] // Extract the number from the event object
+        const eventValue = Object.values(event)[0]
         return sum + eventValue
       }, 0)
 
-      const pageSignups = Math.floor(Math.random() * 300) + 100 // Random number between 100 and 400
+      const correspondingContactsDay = addedContacts[index]
+
+      const addedContactsSum = correspondingContactsDay.events.reduce((sum, event) => {
+        const eventValue = Object.values(event)[0]
+        return sum + eventValue
+      }, 0)
 
       return {
         date: day.date,
         pageViews: pageViewsSum,
-        pageSignups,
+        pageSignups: addedContactsSum,
       }
     })
 

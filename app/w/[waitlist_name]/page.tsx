@@ -5,6 +5,8 @@ import Image from "next/image"
 import tinycolor from "tinycolor2"
 import SignupForm from "./SignupForm"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
+import { socialIcons } from "@/utils/socialIcons"
+import Link from "next/link"
 
 export async function generateStaticParams() {
   const response = await getWaitlistSlugs()
@@ -46,12 +48,26 @@ export default async function Waitlist({ params }: { params: { waitlist_name: st
           </div>
 
           <SignupForm
+            urlName={waitlist.urlName}
             primaryColor={waitlist.settings.primaryColor}
             secondaryColor={waitlist.settings.secondaryColor}
             textColor={waitlist.settings.textColor}
             accentColor={waitlist.settings.accentColor}
             fields={waitlist.fields}
           />
+
+          <div className="flex items-center w-full space-x-4">
+            {Object.entries(waitlist.socialLinks)
+              .filter(([key, value]) => value !== "")
+              .map(([name, url], index) => {
+                const SocialIcon = socialIcons[name as keyof typeof socialIcons]
+                return (
+                  <Link key={index} href={url} target="_blank">
+                    <SocialIcon className="w-6 h-6" style={{ color: waitlist.settings.accentColor }} />
+                  </Link>
+                )
+              })}
+          </div>
         </div>
       </div>
 

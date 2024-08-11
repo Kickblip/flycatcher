@@ -8,18 +8,14 @@ export interface WaitlistPage {
   authorIsPremium: boolean
   images: WaitlistImages
   fields: Field[]
-  links: Link[]
   settings: WaitlistSettings
+  socialLinks: SocialLinks
   contacts: Contact[]
   createdAt: Date
 }
 
-export interface Link {
-  text: string
-  url: string
-}
-
 export interface Contact {
+  id: string
   fields: {
     [key: string]: string
   }
@@ -43,6 +39,15 @@ export interface WaitlistSettings {
   metadataTabTitle: string
   titleText: string
   subtitleText: string
+}
+
+export interface SocialLinks {
+  twitter: string
+  youtube: string
+  linkedin: string
+  facebook: string
+  instagram: string
+  tiktok: string
 }
 
 export interface Field {

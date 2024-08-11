@@ -1,10 +1,12 @@
 import { WaitlistPage } from "@/types/WaitlistPage"
+import { FaXTwitter, FaYoutube, FaLinkedin, FaInstagram, FaSquareFacebook, FaTiktok } from "react-icons/fa6"
 import SettingWrapper from "./SettingWrapper"
 import ColorSelector from "./ColorSelector"
 import EditTextForm from "./EditTextForm"
 import SmallImageUpload from "./SmallImageUpload"
 import LargeImageUpload from "./LargeImageUpload"
 import FieldSelector from "./FieldSelector"
+import SocialLinkSelector from "./SocialLinkSelector"
 
 export default function SettingsPanel({
   pageWaitlist,
@@ -103,7 +105,50 @@ export default function SettingsPanel({
       </SettingWrapper>
 
       <SettingWrapper title="Additional Links" subtitle="Add social media links that you would like to be displayed on the page">
-        <div className="h-32"></div>
+        <div className="grid grid-cols-2 gap-4">
+          <SocialLinkSelector
+            socialKey="twitter"
+            SocialIcon={FaXTwitter}
+            pageWaitlist={pageWaitlist}
+            setPageWaitlist={setPageWaitlist}
+            currentLink={pageWaitlist.socialLinks.twitter}
+          />
+          <SocialLinkSelector
+            socialKey="youtube"
+            SocialIcon={FaYoutube}
+            pageWaitlist={pageWaitlist}
+            setPageWaitlist={setPageWaitlist}
+            currentLink={pageWaitlist.socialLinks.youtube}
+          />
+          <SocialLinkSelector
+            socialKey="tiktok"
+            SocialIcon={FaTiktok}
+            pageWaitlist={pageWaitlist}
+            setPageWaitlist={setPageWaitlist}
+            currentLink={pageWaitlist.socialLinks.tiktok}
+          />
+          <SocialLinkSelector
+            socialKey="instagram"
+            SocialIcon={FaInstagram}
+            pageWaitlist={pageWaitlist}
+            setPageWaitlist={setPageWaitlist}
+            currentLink={pageWaitlist.socialLinks.instagram}
+          />
+          <SocialLinkSelector
+            socialKey="facebook"
+            SocialIcon={FaSquareFacebook}
+            pageWaitlist={pageWaitlist}
+            setPageWaitlist={setPageWaitlist}
+            currentLink={pageWaitlist.socialLinks.facebook}
+          />
+          <SocialLinkSelector
+            socialKey="linkedin"
+            SocialIcon={FaLinkedin}
+            pageWaitlist={pageWaitlist}
+            setPageWaitlist={setPageWaitlist}
+            currentLink={pageWaitlist.socialLinks.linkedin}
+          />
+        </div>
       </SettingWrapper>
     </div>
   )
