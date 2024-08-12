@@ -91,7 +91,14 @@ export async function POST(request: Request) {
       { label: "First name", placeholder: "First name", enabled: false, required: false },
       { label: "Last name", placeholder: "Last name", enabled: false, required: false },
     ],
-    links: [],
+    socialLinks: {
+      twitter: "",
+      facebook: "",
+      linkedin: "",
+      instagram: "",
+      youtube: "",
+      tiktok: "",
+    },
     settings: {
       primaryColor: "#ffffff",
       secondaryColor: "#f3f4f6", // gray-100

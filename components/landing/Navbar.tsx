@@ -29,7 +29,7 @@ async function Navbar() {
               </div>
             ) : (
               <Link href="/dashboard/boards">
-                <div className="bg-black text-white px-4 py-2 rounded-lg text-md">Log In</div>
+                <div className="bg-redorange-500 text-white px-4 py-2 rounded-lg">Log In</div>
               </Link>
             )}
           </div>
