@@ -7,6 +7,7 @@ import SignupForm from "./SignupForm"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { socialIcons } from "@/utils/socialIcons"
 import Link from "next/link"
+import type { Metadata, ResolvingMetadata } from "next"
 
 export async function generateStaticParams() {
   const response = await getWaitlistSlugs()
@@ -20,6 +21,38 @@ export async function generateStaticParams() {
   return waitlists.map((waitlist) => ({
     waitlist_name: waitlist.urlName,
   }))
+}
+
+export async function generateMetadata(
+  { params }: { params: { waitlist_name: string } },
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  const response = await getWaitlist(params.waitlist_name)
+  const waitlist = response.data
+
+  if (!response.success || !waitlist) {
+    return {
+      title: "Waitlist not found",
+    }
+  }
+
+  return {
+    title: waitlist.settings.metadataTabTitle || waitlist.settings.titleText,
+    description: waitlist.settings.subtitleText,
+    icons: {
+      icon:
+        waitlist.images.favicon === ""
+          ? `${process.env.NEXT_PUBLIC_SITE_URL}/favicon.ico`
+          : new URL(waitlist.images.favicon, `${process.env.NEXT_PUBLIC_SITE_URL}/favicon.ico`),
+    },
+    openGraph: {
+      images: [
+        waitlist.images.preview === ""
+          ? `${process.env.NEXT_PUBLIC_SITE_URL}/ogimage.png`
+          : new URL(waitlist.images.preview, `${process.env.NEXT_PUBLIC_SITE_URL}/ogimage.png`),
+      ],
+    },
+  }
 }
 
 export default async function Waitlist({ params }: { params: { waitlist_name: string } }) {

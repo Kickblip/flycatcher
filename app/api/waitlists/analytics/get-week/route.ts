@@ -53,8 +53,6 @@ export async function POST(request: Request) {
       }
     })
 
-    console.log(transformedData)
-
     return NextResponse.json({ chartData: transformedData }, { status: 200 })
   } catch (error) {
     let errorMessage = "An unknown error occurred"

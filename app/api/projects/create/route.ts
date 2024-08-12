@@ -106,6 +106,7 @@ export async function POST(request: Request) {
       textColor: "#000000",
       metadataTabTitle: `Waitlist | ${name}`,
       titleText: "Get early access!",
+      submitButtonText: "Join waitlist",
       subtitleText: "Follow our development journey and be one of the first to have access to our product.",
     },
     createdAt: new Date(),

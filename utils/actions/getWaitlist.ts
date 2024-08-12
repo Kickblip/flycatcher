@@ -6,7 +6,10 @@ export async function getWaitlist(urlName: string) {
     const client = await clientPromise
     const collection = client.db("Main").collection("waitlists")
 
-    const waitlist: WaitlistPage = (await collection.findOne({ urlName })) as WaitlistPage
+    const waitlist: WaitlistPage = (await collection.findOne(
+      { urlName },
+      { projection: { contacts: 0, author: 0 } },
+    )) as WaitlistPage
 
     if (!waitlist) {
       return { success: false, error: "No waitlists found" }

@@ -78,7 +78,7 @@ export default function NewProjectPanel({
   }
 
   return (
-    <div className="flex flex-col p-4 space-y-8 shadow border rounded-lg">
+    <div className="flex flex-col p-4 space-y-8 shadow border rounded">
       <h2 className="text-xl font-bold">Create a new project</h2>
       <div className="flex flex-col">
         <input
@@ -87,11 +87,11 @@ export default function NewProjectPanel({
           value={projectName}
           onChange={(e) => setProjectName(e.target.value)}
           placeholder="Project name"
-          className="p-2 border border-gray-300 rounded-lg"
+          className="p-2 border border-gray-300 rounded"
         />
       </div>
       <button
-        className="p-2 bg-redorange-500 text-white rounded-lg hover:bg-redorange-300 transition duration-200"
+        className="p-2 bg-redorange-500 text-white rounded hover:bg-redorange-300 transition duration-200"
         onClick={handleSubmit}
         disabled={loading}
       >

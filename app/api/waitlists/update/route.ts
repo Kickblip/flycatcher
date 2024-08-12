@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/server"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
 import { WaitlistPage } from "@/types/WaitlistPage"
+import { revalidatePath } from "next/cache"
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
@@ -33,7 +34,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Missing required fields" }, { status: 400 })
   }
 
-  // RUN CHECKS HERE
+  if (waitlist.settings.metadataTabTitle.length > 60) {
+    return NextResponse.json({ message: "Metadata tab title must be less than 60 characters" }, { status: 400 })
+  }
+
+  if (waitlist.settings.titleText.length > 700) {
+    return NextResponse.json({ message: "Title text must be less than 700 characters" }, { status: 400 })
+  }
+
+  if (waitlist.settings.subtitleText.length > 1500) {
+    return NextResponse.json({ message: "Subtitle text must be less than 1500 characters" }, { status: 400 })
+  }
 
   //   const { data: userMetadata, error: userMetadataError } = await supabase.from("user").select("*").eq("user_id", user.id).single()
   //   let isPremium = false
@@ -70,9 +81,19 @@ export async function POST(request: Request) {
           "settings.metadataTabTitle": waitlist.settings.metadataTabTitle,
           "settings.titleText": waitlist.settings.titleText,
           "settings.subtitleText": waitlist.settings.subtitleText,
+          "settings.submitButtonText": waitlist.settings.submitButtonText,
+          "socialLinks.twitter": waitlist.socialLinks.twitter,
+          "socialLinks.facebook": waitlist.socialLinks.facebook,
+          "socialLinks.instagram": waitlist.socialLinks.instagram,
+          "socialLinks.linkedin": waitlist.socialLinks.linkedin,
+          "socialLinks.youtube": waitlist.socialLinks.youtube,
+          "socialLinks.tiktok": waitlist.socialLinks.tiktok,
         },
       },
     )
+
+    // await NextResponse.revalidate('/path-to-revalidate')
+    revalidatePath(`/w/${waitlist.urlName}`)
 
     return NextResponse.json(
       {

@@ -39,6 +39,7 @@ export interface WaitlistSettings {
   metadataTabTitle: string
   titleText: string
   subtitleText: string
+  submitButtonText: string
 }
 
 export interface SocialLinks {

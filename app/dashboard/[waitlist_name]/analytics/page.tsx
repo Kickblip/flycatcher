@@ -39,7 +39,6 @@ export default function Analytics() {
       setLoading(false)
     }
     fetchWeekData()
-    console.log(chartData)
   }, [])
 
   if (loading) {

@@ -70,6 +70,13 @@ export default function SettingsPanel({
             pageWaitlist={pageWaitlist}
             setPageWaitlist={setPageWaitlist}
           />
+          <EditTextForm
+            label="Button"
+            textKey="submitButtonText"
+            content={pageWaitlist.settings.submitButtonText}
+            pageWaitlist={pageWaitlist}
+            setPageWaitlist={setPageWaitlist}
+          />
         </div>
       </SettingWrapper>
 

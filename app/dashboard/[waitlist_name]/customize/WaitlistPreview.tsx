@@ -76,7 +76,7 @@ export default function WaitlistPreview({
           style={{ backgroundColor: pageWaitlist.settings.accentColor, color: pageWaitlist.settings.secondaryColor }}
           disabled
         >
-          Join waitlist
+          {pageWaitlist.settings.submitButtonText}
         </button>
         <div className="flex items-center w-full space-x-2">
           {Object.entries(pageWaitlist.socialLinks)

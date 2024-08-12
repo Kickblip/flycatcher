@@ -4,7 +4,10 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import LoadingWheel from "@/components/shared/LoadingWheel"
 import { Project } from "@/types/Project"
-import { FaChevronRight, FaGear, FaArrowsRotate } from "react-icons/fa6"
+import { FaArrowsRotate } from "react-icons/fa6"
+import DeleteButton from "./DeleteButton"
+import { toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 
 export default function UserProjectsPanel({
   projects,
@@ -39,6 +42,30 @@ export default function UserProjectsPanel({
     }
   }
 
+  const deleteProject = async (urlName: string) => {
+    try {
+      const response = await fetch("/api/projects/delete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ urlName }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        toast.error("Failed to delete project")
+        throw new Error(errorData.message || "Failed to delete project")
+      }
+
+      toast.success("Project deleted successfully")
+      const newProjects = projects.filter((project) => project.urlName !== urlName)
+      setProjects(newProjects)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   useEffect(() => {
     fetchProjects()
   }, [])
@@ -52,7 +79,7 @@ export default function UserProjectsPanel({
   }
 
   return (
-    <div className="flex flex-col p-4 space-y-8 h-full rounded-lg">
+    <div className="flex flex-col p-4 space-y-8 h-full rounded">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold opacity-90">Your Projects</h2>
         <button
@@ -66,15 +93,22 @@ export default function UserProjectsPanel({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {projects.length > 0 ? (
           projects.map((project, index) => (
-            <Link
-              href={`/dashboard/${project.urlName}/customize`}
+            <div
               key={index}
-              className="px-4 py-6 border rounded-lg break-words hover:shadow transition duration-200"
+              className="flex item-center w-full justify-between hover:shadow transition duration-200 border rounded"
             >
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold">{project.name}</h3>
+              <Link href={`/dashboard/${project.urlName}/customize`} className="px-4 py-6 w-full">
+                <h3 className="text-lg font-bold truncate">{project.name}</h3>
+              </Link>
+              <div className="flex items-center mr-3">
+                <DeleteButton
+                  target={"project"}
+                  onConfirm={() => {
+                    deleteProject(project.urlName)
+                  }}
+                />
               </div>
-            </Link>
+            </div>
           ))
         ) : (
           <div className="p-4 text-left text-gray-500">
