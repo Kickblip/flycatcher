@@ -41,6 +41,7 @@ export default function SignupForm({
       }
 
       toast.success("Added to waitlist!")
+      setEmail("")
     } catch (error) {
       console.error("Error creating contact:", error)
     }
