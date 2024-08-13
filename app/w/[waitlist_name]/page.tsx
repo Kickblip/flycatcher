@@ -8,6 +8,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { socialIcons } from "@/utils/socialIcons"
 import Link from "next/link"
 import type { Metadata, ResolvingMetadata } from "next"
+import FlycatcherBadge from "./FlycatcherBadge"
 
 export async function generateStaticParams() {
   const response = await getWaitlistSlugs()
@@ -66,7 +67,10 @@ export default async function Waitlist({ params }: { params: { waitlist_name: st
 
   return (
     <div className="flex h-screen">
-      <div className="w-1/2 flex justify-center items-center" style={{ backgroundColor: waitlist.settings.primaryColor }}>
+      <div
+        className="w-1/2 flex justify-center items-center relative"
+        style={{ backgroundColor: waitlist.settings.primaryColor }}
+      >
         <div className="absolute top-0 left-0 p-4">
           <Image src={waitlist.images.logo} hidden={!waitlist.images.logo} alt="Logo" width={300} height={300} className="w-40" />
         </div>
@@ -86,7 +90,6 @@ export default async function Waitlist({ params }: { params: { waitlist_name: st
             secondaryColor={waitlist.settings.secondaryColor}
             textColor={waitlist.settings.textColor}
             accentColor={waitlist.settings.accentColor}
-            fields={waitlist.fields}
           />
 
           <div className="flex items-center w-full space-x-4">
@@ -101,6 +104,9 @@ export default async function Waitlist({ params }: { params: { waitlist_name: st
                 )
               })}
           </div>
+        </div>
+        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2">
+          <FlycatcherBadge textColor={waitlist.settings.textColor} />
         </div>
       </div>
 

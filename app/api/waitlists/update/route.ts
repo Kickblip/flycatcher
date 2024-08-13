@@ -68,8 +68,6 @@ export async function POST(request: Request) {
     if (oldWaitlist.author !== user.id)
       return NextResponse.json({ message: "User not authorized to update this waitlist" }, { status: 403 })
 
-    // fields dont work right now
-
     await collection.updateOne(
       { urlName: waitlist.urlName },
       {
@@ -92,7 +90,6 @@ export async function POST(request: Request) {
       },
     )
 
-    // await NextResponse.revalidate('/path-to-revalidate')
     revalidatePath(`/w/${waitlist.urlName}`)
 
     return NextResponse.json(

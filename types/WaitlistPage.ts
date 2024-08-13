@@ -16,6 +16,7 @@ export interface WaitlistPage {
 
 export interface Contact {
   id: string
+  email: string
   fields: {
     [key: string]: string
   }

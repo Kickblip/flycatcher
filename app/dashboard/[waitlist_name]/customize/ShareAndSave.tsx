@@ -51,10 +51,7 @@ export default function ShareAndSave({
         return
       }
 
-      const data = await response.json()
-      const { waitlist } = data
-
-      useWaitlistStore.getState().update(waitlist)
+      useWaitlistStore.getState().update(pageWaitlist)
     } catch (error) {
       console.error(error)
       toast.error("Failed to update settings")

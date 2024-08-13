@@ -1,9 +1,9 @@
 "use client"
 
-import { Field, SocialLinks } from "@/types/WaitlistPage"
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import tinycolor from "tinycolor2"
+import { useState } from "react"
 
 export default function SignupForm({
   urlName,
@@ -11,34 +11,29 @@ export default function SignupForm({
   secondaryColor,
   textColor,
   accentColor,
-  fields,
 }: {
   urlName: string
   primaryColor: string
   secondaryColor: string
   textColor: string
   accentColor: string
-  fields: Field[]
 }) {
+  const [email, setEmail] = useState("")
+
   const createContact = async () => {
-    const data: { [key: string]: string | null } = {}
+    if (!email) {
+      return
+    }
 
-    fields.forEach((field, index) => {
-      if (field.enabled) {
-        const input = document.getElementById(`input-${index}`) as HTMLInputElement | null
-
-        if (input) {
-          data[field.label] = input.value || null
-        } else {
-          data[field.label] = null
-        }
-      }
-    })
+    if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      toast.error("Please enter a valid email")
+      return
+    }
 
     try {
       const response = await fetch("/api/pub/create-contact", {
         method: "POST",
-        body: JSON.stringify({ fields: data, urlName }),
+        body: JSON.stringify({ email, urlName }),
       })
 
       if (!response.ok) {
@@ -54,33 +49,31 @@ export default function SignupForm({
   return (
     <div>
       <div className="flex flex-col w-full space-y-1">
-        {fields
-          .filter((field) => field.enabled)
-          .map((field, index) => (
-            <div key={index} className="flex flex-col w-full">
-              <label className="text-sm opacity-80 font-semibold mb-1" style={{ color: textColor }} htmlFor={`input-${index}`}>
-                {field.label}
-                <span style={{ color: accentColor }}>{field.required && "*"}</span>
-              </label>
-              <style jsx>{`
-                #input-${index}::placeholder {
-                  color: ${tinycolor(textColor).setAlpha(0.3).toRgbString()};
-                }
-              `}</style>
-              <input
-                id={`input-${index}`}
-                type="text"
-                className="px-2 py-2 text-md p-1 border rounded w-full"
-                style={{
-                  backgroundColor: primaryColor,
-                  borderColor: tinycolor(textColor).setAlpha(0.3).toRgbString(),
-                  color: textColor,
-                }}
-                placeholder={field.placeholder || field.label.toLowerCase()}
-                required={field.required}
-              />
-            </div>
-          ))}
+        <div className="flex flex-col w-full">
+          <label className="text-sm opacity-80 font-semibold mb-1" style={{ color: textColor }}>
+            Email
+            <span style={{ color: accentColor }}>*</span>
+          </label>
+          <style jsx>{`
+            #input-email::placeholder {
+              color: ${tinycolor(textColor).setAlpha(0.3).toRgbString()};
+            }
+          `}</style>
+          <input
+            id={`input-email`}
+            type="email"
+            className="px-2 py-2 text-md p-1 border rounded w-full"
+            style={{
+              backgroundColor: primaryColor,
+              borderColor: tinycolor(textColor).setAlpha(0.3).toRgbString(),
+              color: textColor,
+            }}
+            placeholder="Enter your email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
       </div>
       <button
         className="px-4 py-2 text-md font-medium w-full text-white rounded mt-4"

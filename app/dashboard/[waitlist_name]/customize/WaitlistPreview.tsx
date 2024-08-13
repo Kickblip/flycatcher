@@ -38,38 +38,29 @@ export default function WaitlistPreview({
           </p>
         </div>
         <div className="flex flex-col w-full space-y-1">
-          {pageWaitlist.fields
-            .filter((field) => field.enabled)
-            .map((field, index) => (
-              <div key={index} className="flex flex-col w-full">
-                <label
-                  className="text-[0.4rem] opacity-80 font-semibold mb-0.5"
-                  style={{ color: pageWaitlist.settings.textColor }}
-                  htmlFor={`input-${index}`}
-                >
-                  {field.label}
-                  <span style={{ color: pageWaitlist.settings.accentColor }}>{field.required && "*"}</span>
-                </label>
-                <style jsx>{`
-                  #input-${index}::placeholder {
-                    color: ${tinycolor(pageWaitlist.settings.textColor).setAlpha(0.3).toRgbString()};
-                  }
-                `}</style>
-                <input
-                  id={`input-${index}`}
-                  type="text"
-                  className="px-2 py-1 text-[0.5rem] p-0.5 border rounded-sm w-full"
-                  style={{
-                    backgroundColor: pageWaitlist.settings.primaryColor,
-                    borderColor: tinycolor(pageWaitlist.settings.textColor).setAlpha(0.3).toRgbString(),
-                    color: pageWaitlist.settings.textColor,
-                  }}
-                  placeholder={field.placeholder || field.label.toLowerCase()}
-                  required={field.required}
-                  disabled
-                />
-              </div>
-            ))}
+          <div className="flex flex-col w-full">
+            <label className="text-[0.4rem] opacity-80 font-semibold mb-0.5" style={{ color: pageWaitlist.settings.textColor }}>
+              Email
+              <span style={{ color: pageWaitlist.settings.accentColor }}>*</span>
+            </label>
+            <style jsx>{`
+              #input-email::placeholder {
+                color: ${tinycolor(pageWaitlist.settings.textColor).setAlpha(0.3).toRgbString()};
+              }
+            `}</style>
+            <input
+              id={`input-email`}
+              type="text"
+              className="px-2 py-1 text-[0.5rem] p-0.5 border rounded-sm w-full"
+              style={{
+                backgroundColor: pageWaitlist.settings.primaryColor,
+                borderColor: tinycolor(pageWaitlist.settings.textColor).setAlpha(0.3).toRgbString(),
+                color: pageWaitlist.settings.textColor,
+              }}
+              placeholder="Enter your email"
+              disabled
+            />
+          </div>
         </div>
         <button
           className="px-2 py-1 text-[0.5rem] font-medium w-full text-white rounded-sm"

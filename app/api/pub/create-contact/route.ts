@@ -3,7 +3,7 @@ import clientPromise from "@/utils/mongodb"
 import { v4 as uuidv4 } from "uuid"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
-import { Contact } from "@/types/WaitlistPage"
+import { Contact, WaitlistPage } from "@/types/WaitlistPage"
 import { type NextRequest } from "next/server"
 import { analytics } from "@/utils/analytics/analytics"
 
@@ -22,32 +22,36 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json()
-  const { urlName, fields } = body
+  const { urlName, email } = body
 
-  if (!fields["Email"] || !urlName) {
-    return NextResponse.json(
-      {
-        message: "Missing required fields",
-      },
-      { status: 400 },
-    )
+  if (!urlName || !email) {
+    return NextResponse.json({ message: "Missing required fields" }, { status: 400 })
   }
 
-  // TODO: RUN CHECKS HERE
+  if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+    return NextResponse.json({ message: "Email address invalid format" }, { status: 400 })
+  }
 
   try {
     const client = await clientPromise
     const collection = client.db("Main").collection("waitlists")
 
-    const matchingWaitlist = await collection.findOne({ urlName })
+    const matchingWaitlist = (await collection.findOne({ urlName })) as WaitlistPage
 
     if (!matchingWaitlist) {
       return NextResponse.json({ message: "Waitlist not found" }, { status: 404 })
     }
 
+    const existingContact = matchingWaitlist.contacts?.find((contact) => contact.email === email)
+
+    if (existingContact) {
+      return NextResponse.json({ message: "Contact with this email already exists" }, { status: 409 })
+    }
+
     const newContact: Contact = {
       id: uuidv4(),
-      fields,
+      email,
+      fields: {},
       createdAt: new Date(),
     }
 
