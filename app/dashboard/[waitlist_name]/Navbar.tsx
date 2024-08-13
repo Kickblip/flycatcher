@@ -32,6 +32,12 @@ function Navbar({ waitlist }: { waitlist: WaitlistPage }) {
           >
             analytics
           </Link>
+          <Link
+            href={`/dashboard/${waitlist.urlName}/campaigns`}
+            className="text-black text-md font-medium opacity-70 hover:opacity-100 transition duration-200"
+          >
+            campaigns
+          </Link>
         </div>
         <div className="flex items-center">
           <UserButton />

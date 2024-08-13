@@ -35,7 +35,7 @@ export default function Contacts() {
   }
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto py-10 max-w-7xl">
       <DataTable columns={createColumns(removeContact)} data={waitlist.contacts} />
     </div>
   )
