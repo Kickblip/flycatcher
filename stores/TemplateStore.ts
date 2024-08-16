@@ -6,7 +6,7 @@ const defaultTemplate: EmailTemplate = {
   name: "New campaign",
   subject: "Development update",
   author: "",
-  content: "Hello, welcome to the waitlist!",
+  blocks: [],
   createdAt: new Date(),
 }
 

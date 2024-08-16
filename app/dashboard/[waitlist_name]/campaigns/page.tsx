@@ -4,6 +4,8 @@ import { useWaitlistStore } from "@/stores/WaitlistStore"
 import SettingsPanel from "./SettingsPanel"
 import { useTemplateStore } from "@/stores/TemplateStore"
 import EmailPreview from "./EmailPreview"
+import TemplateToolbar from "./TemplateToolbar"
+import Toolbar from "./Toolbar"
 
 export default function Campaigns() {
   const { waitlist } = useWaitlistStore()
@@ -15,21 +17,14 @@ export default function Campaigns() {
 
   return (
     <div className="max-w-7xl w-full flex mx-auto">
-      <div className="w-1/2 p-4">
+      <div className="w-2/5 p-4 flex flex-col items-center">
+        {/* <TemplateToolbar /> */}
         <SettingsPanel />
       </div>
-      <div className="w-1/2 p-4">
+      <div className="w-3/5 p-4">
         <div className="sticky top-8">
+          <Toolbar />
           <EmailPreview />
-
-          {/* <Email
-            projectName={waitlist.name}
-            primaryColor={waitlist.settings.primaryColor}
-            secondaryColor={waitlist.settings.secondaryColor}
-            accentColor={waitlist.settings.accentColor}
-            textColor={waitlist.settings.textColor}
-            logo={waitlist.images.logo}
-          /> */}
         </div>
       </div>
     </div>

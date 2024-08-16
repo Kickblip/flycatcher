@@ -1,17 +1,24 @@
 import { useTemplateStore } from "@/stores/TemplateStore"
+import { Body, Container, Tailwind } from "@react-email/components"
 
 export default function EmailPreview() {
   const { template } = useTemplateStore()
 
-  const createElementFromString = (componentString: string) => {
-    try {
-      const Component = new Function(`return (${componentString})`)()
-      return <Component />
-    } catch (error) {
-      console.error("Error rendering component from string:", error)
-      return <div>Error rendering preview</div>
-    }
-  }
-
-  return <div className="w-full">{createElementFromString(template.content)}</div>
+  return (
+    <div className="font-sans bg-[#f6f9fc] px-8 py-4 rounded">
+      <Tailwind>
+        <div className="bg-white p-4 flex flex-col items-center">
+          {template.blocks.map((block, index) => {
+            const BlockComponent = block.component
+            return (
+              <div key={index} className="mb-6 w-full">
+                {/* @ts-ignore */}
+                <BlockComponent {...block.fields} />
+              </div>
+            )
+          })}
+        </div>
+      </Tailwind>
+    </div>
+  )
 }
