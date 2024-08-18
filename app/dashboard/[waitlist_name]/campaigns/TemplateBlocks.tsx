@@ -18,21 +18,37 @@ import {
 import { FC } from "react"
 import { format } from "date-fns"
 
-const LogoTextHeaderBlockComp: FC<LogoTextHeaderBlockCompProps> = ({ logoSource, tagline }) => (
-  <Section className="text-textColor">
+const LogoTextHeaderBlockComp: FC<LogoTextHeaderBlockCompProps> = ({
+  logoSource,
+  tagline,
+  primaryColor,
+  secondaryColor,
+  accentColor,
+  textColor,
+}) => (
+  <Section style={{ color: textColor }}>
     <Row>
       <Column>
         <Img src={logoSource} width="170" height="45" alt="Logo" />
       </Column>
       <Column>
-        <Text className="pl-40 text-right text-accentColor font-medium">{tagline}</Text>
+        <Text className="pl-40 text-right font-medium" style={{ color: accentColor }}>
+          {tagline}
+        </Text>
       </Column>
     </Row>
   </Section>
 )
 
-const DatedTextBlockComp: FC<DatedTextBlockCompProps> = ({ title, body }) => (
-  <Section className="text-textColor">
+const DatedTextBlockComp: FC<DatedTextBlockCompProps> = ({
+  title,
+  body,
+  primaryColor,
+  secondaryColor,
+  accentColor,
+  textColor,
+}) => (
+  <Section style={{ color: textColor }}>
     <Row>
       <Text className="opacity-80 mb-1 mt-6">{format(Date.now(), "MMMM dd")}</Text>
     </Row>
@@ -45,28 +61,45 @@ const DatedTextBlockComp: FC<DatedTextBlockCompProps> = ({ title, body }) => (
   </Section>
 )
 
-const HorizontalDividerBlockComp: FC<HorizontalDividerBlockCompProps> = ({}) => (
-  <Section className="text-textColor">
-    <Hr className="my-4 w-full border border-2 border-textColor opacity-50 bg-textColor" />
+const HorizontalDividerBlockComp: FC<HorizontalDividerBlockCompProps> = ({
+  primaryColor,
+  secondaryColor,
+  accentColor,
+  textColor,
+}) => (
+  <Section style={{ color: textColor }}>
+    <Hr className="my-4 w-full border border-2 opacity-50" style={{ backgroundColor: textColor, borderColor: textColor }} />
   </Section>
 )
 
-const LargeImageBlockComp: FC<LargeImageBlockCompProps> = ({ imageSource }) => (
+const LargeImageBlockComp: FC<LargeImageBlockCompProps> = ({
+  imageSource,
+  primaryColor,
+  secondaryColor,
+  accentColor,
+  textColor,
+}) => (
   <Section>
     <Img src={imageSource} width="600" height="338" alt="Header Image" className="rounded-lg" />
   </Section>
 )
 
-const TextBlockComp: FC<TextBlockCompProps> = ({ content }) => <Text>{content}</Text>
+const TextBlockComp: FC<TextBlockCompProps> = ({ content, primaryColor, secondaryColor, accentColor, textColor }) => (
+  <Text>{content}</Text>
+)
 
-const ButtonBlockComp: FC<ButtonBlockCompProps> = ({ text, url }) => (
-  <Button href={url} className="w-full p-3 font-semibold text-center rounded bg-accentColor text-secondaryColor">
+const ButtonBlockComp: FC<ButtonBlockCompProps> = ({ text, url, primaryColor, secondaryColor, accentColor, textColor }) => (
+  <Button
+    href={url}
+    className="w-full p-3 font-semibold text-center rounded"
+    style={{ color: secondaryColor, backgroundColor: accentColor }}
+  >
     {text}
   </Button>
 )
 
-const HeaderBlockComp: FC<HeaderBlockCompProps> = ({ title }) => (
-  <Heading as={"h2"} className="font-semibold text-3xl text-textColor">
+const HeaderBlockComp: FC<HeaderBlockCompProps> = ({ title, primaryColor, secondaryColor, accentColor, textColor }) => (
+  <Heading as={"h2"} className="font-semibold text-3xl" style={{ color: textColor }}>
     {title}
   </Heading>
 )

@@ -60,7 +60,7 @@ export default function BlockSettingWrapper({
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogTitle>Are you sure you want to delete this block?</AlertDialogTitle>
                 <AlertDialogDescription>
                   This action cannot be undone. This will remove this block and its content from your email.
                 </AlertDialogDescription>

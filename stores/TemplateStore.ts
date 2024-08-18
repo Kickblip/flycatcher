@@ -8,6 +8,12 @@ const defaultTemplate: EmailTemplate = {
   previewText: "Check out our latest updates",
   author: "",
   blocks: [],
+  colors: {
+    primaryColor: "#ffffff",
+    secondaryColor: "#ffffff",
+    textColor: "#ffffff",
+    accentColor: "#ffffff",
+  },
   createdAt: new Date(),
 }
 

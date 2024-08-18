@@ -37,21 +37,36 @@ export async function POST(request: Request) {
 
   const body = await request.json()
   const { template }: { template: EmailTemplate } = body
+  const { projectName, primaryColor, secondaryColor, textColor, accentColor } = body
   if (template.blocks.length === 0) {
     return NextResponse.json({ message: "Email cannot be empty" }, { status: 400 })
   }
 
-  try {
-    // SEND EMAIL HERE
+  if (!projectName || !primaryColor || !secondaryColor || !textColor || !accentColor) {
+    return NextResponse.json({ message: "Missing required fields" }, { status: 400 })
+  }
 
-    const html = render(<EmailTemplateFiller blocks={template.blocks} />, {
-      pretty: true,
-    })
+  console.log(primaryColor, secondaryColor, textColor, accentColor)
+
+  try {
+    const html = render(
+      <EmailTemplateFiller
+        blocks={template.blocks}
+        previewText={template.previewText}
+        primaryColor={primaryColor}
+        secondaryColor={secondaryColor}
+        textColor={textColor}
+        accentColor={accentColor}
+      />,
+      {
+        pretty: true,
+      },
+    )
 
     mgClient.messages
-      .create("sandbox584e986d96a84b06a7f820932695f229.mailgun.org", {
-        from: "Excited User <mailgun@sandbox584e986d96a84b06a7f820932695f229.mailgun.org>",
-        to: ["wyatt.zilker@gmail.com"],
+      .create(process.env.MAILGUN_DOMAIN as string, {
+        from: `${projectName}@${process.env.MAILGUN_DOMAIN as string}`,
+        to: [user.email || ""],
         subject: template.subject,
         text: template.previewText,
         html,

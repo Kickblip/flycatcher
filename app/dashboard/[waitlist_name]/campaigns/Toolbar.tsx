@@ -18,9 +18,11 @@ import { useState } from "react"
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import ImageManager from "./ImageManager"
+import { useWaitlistStore } from "@/stores/WaitlistStore"
 
 export default function Toolbar() {
   const { template } = useTemplateStore()
+  const { waitlist } = useWaitlistStore()
   const [tested, setTested] = useState(false)
 
   const sendTestEmail = async () => {
@@ -37,7 +39,14 @@ export default function Toolbar() {
 
       const response = await fetch("/api/waitlists/emails/send-test", {
         method: "POST",
-        body: JSON.stringify({ template: cleanedTemplate }),
+        body: JSON.stringify({
+          template: cleanedTemplate,
+          projectName: waitlist!.name,
+          primaryColor: template.colors.primaryColor,
+          secondaryColor: template.colors.secondaryColor,
+          textColor: template.colors.textColor,
+          accentColor: template.colors.accentColor,
+        }),
       })
 
       if (!response.ok) {

@@ -45,11 +45,11 @@ export default function ImageManager() {
           </div>
         </SheetHeader>
         <h2 className="text-lg font-semibold mt-6">Uploaded images</h2>
-        <div className="flex flex-col mt-4">
+        <div className="flex flex-col mt-4 space-y-4 overflow-y-auto h-[55vh]">
           {waitlist.uploadedContent.map((url, index) => (
             <div
               key={index}
-              className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 rounded"
+              className="flex items-center space-x-2 border cursor-pointer hover:bg-gray-50 rounded"
               onClick={() => {
                 navigator.clipboard.writeText(url)
                 toast.success("Copied URL to clipboard")

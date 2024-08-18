@@ -1,27 +1,29 @@
 import { TemplateBlocks } from "@/app/dashboard/[waitlist_name]/campaigns/TemplateBlocks"
 import { Body, Container, Head, Html, Preview, Tailwind } from "@react-email/components"
 
-export default function EmailTemplateFiller({ blocks }: { blocks: any }) {
+export default function EmailTemplateFiller({
+  blocks,
+  previewText,
+  primaryColor,
+  secondaryColor,
+  textColor,
+  accentColor,
+}: {
+  blocks: any
+  previewText: string
+  primaryColor: string
+  secondaryColor: string
+  textColor: string
+  accentColor: string
+}) {
   return (
     <Html lang="en">
-      <Tailwind
-        config={{
-          theme: {
-            extend: {
-              colors: {
-                primaryColor: "#007291",
-                secondaryColor: "#007291",
-                textColor: "#007291",
-                accentColor: "#007291",
-              },
-            },
-          },
-        }}
-      >
-        <Head />
-        <Preview>Testing email from Flycatcher</Preview>
-        <Body className="font-sans bg-[#f6f9fc]">
-          <Container className="bg-white p-8">
+      <Tailwind>
+        <Head>
+          <Preview>{previewText}</Preview>
+        </Head>
+        <Body className="font-sans" style={{ backgroundColor: secondaryColor }}>
+          <Container className="bg-white p-8" style={{ backgroundColor: primaryColor }}>
             {/* @ts-ignore */}
             {blocks.map((block, index) => {
               /* @ts-ignore */
@@ -29,7 +31,15 @@ export default function EmailTemplateFiller({ blocks }: { blocks: any }) {
               return (
                 <div key={index} className="mb-6 w-full">
                   {/* @ts-ignore */}
-                  <BlockComponent {...block.fields} />
+                  <BlockComponent
+                    {...{
+                      ...block.fields,
+                      primaryColor,
+                      secondaryColor,
+                      textColor,
+                      accentColor,
+                    }}
+                  />
                 </div>
               )
             })}

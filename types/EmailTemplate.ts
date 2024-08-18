@@ -18,6 +18,10 @@ export interface LogoTextHeaderBlock extends Block {
 export interface LogoTextHeaderBlockCompProps {
   logoSource: string
   tagline: string
+  primaryColor: string
+  secondaryColor: string
+  textColor: string
+  accentColor: string
 }
 
 export interface DatedTextBlock extends Block {
@@ -31,6 +35,10 @@ export interface DatedTextBlock extends Block {
 export interface DatedTextBlockCompProps {
   title: string
   body: string
+  primaryColor: string
+  secondaryColor: string
+  textColor: string
+  accentColor: string
 }
 
 export interface HorizontalDividerBlock extends Block {
@@ -38,7 +46,12 @@ export interface HorizontalDividerBlock extends Block {
   component: FC<HorizontalDividerBlockCompProps>
 }
 
-export interface HorizontalDividerBlockCompProps {}
+export interface HorizontalDividerBlockCompProps {
+  primaryColor: string
+  secondaryColor: string
+  textColor: string
+  accentColor: string
+}
 
 export interface LargeImageBlock extends Block {
   fields: {
@@ -49,6 +62,10 @@ export interface LargeImageBlock extends Block {
 
 export interface LargeImageBlockCompProps {
   imageSource: string
+  primaryColor: string
+  secondaryColor: string
+  textColor: string
+  accentColor: string
 }
 
 export interface TextBlock extends Block {
@@ -60,6 +77,10 @@ export interface TextBlock extends Block {
 
 export interface TextBlockCompProps {
   content: string
+  primaryColor: string
+  secondaryColor: string
+  textColor: string
+  accentColor: string
 }
 
 export interface ButtonBlock extends Block {
@@ -73,6 +94,10 @@ export interface ButtonBlock extends Block {
 export interface ButtonBlockCompProps {
   text: string
   url: string
+  primaryColor: string
+  secondaryColor: string
+  textColor: string
+  accentColor: string
 }
 
 export interface HeaderBlock extends Block {
@@ -84,6 +109,10 @@ export interface HeaderBlock extends Block {
 
 export interface HeaderBlockCompProps {
   title: string
+  primaryColor: string
+  secondaryColor: string
+  textColor: string
+  accentColor: string
 }
 
 export type BlockUnion =
@@ -100,6 +129,12 @@ export interface EmailTemplate {
   id: string
   name: string
   subject: string
+  colors: {
+    primaryColor: string
+    secondaryColor: string
+    textColor: string
+    accentColor: string
+  }
   previewText: string
   author: string
   blocks: BlockUnion[]
