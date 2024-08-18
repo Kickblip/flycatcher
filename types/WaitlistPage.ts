@@ -8,6 +8,7 @@ export interface WaitlistPage {
   authorIsPremium: boolean
   images: WaitlistImages
   fields: Field[]
+  uploadedContent: string[]
   settings: WaitlistSettings
   socialLinks: SocialLinks
   contacts: Contact[]

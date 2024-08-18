@@ -4,7 +4,6 @@ import { useWaitlistStore } from "@/stores/WaitlistStore"
 import SettingsPanel from "./SettingsPanel"
 import { useTemplateStore } from "@/stores/TemplateStore"
 import EmailPreview from "./EmailPreview"
-import TemplateToolbar from "./TemplateToolbar"
 import Toolbar from "./Toolbar"
 
 export default function Campaigns() {
@@ -18,7 +17,6 @@ export default function Campaigns() {
   return (
     <div className="max-w-7xl w-full flex mx-auto">
       <div className="w-2/5 p-4 flex flex-col items-center">
-        {/* <TemplateToolbar /> */}
         <SettingsPanel />
       </div>
       <div className="w-3/5 p-4">

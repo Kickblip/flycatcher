@@ -5,6 +5,7 @@ const defaultTemplate: EmailTemplate = {
   id: "1",
   name: "New campaign",
   subject: "Development update",
+  previewText: "Check out our latest updates",
   author: "",
   blocks: [],
   createdAt: new Date(),

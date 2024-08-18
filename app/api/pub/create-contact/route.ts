@@ -42,6 +42,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: "Waitlist not found" }, { status: 404 })
     }
 
+    if (matchingWaitlist.contacts.length >= 200) {
+      return NextResponse.json({ message: "Contact limit reached" }, { status: 200 })
+    }
+
     const existingContact = matchingWaitlist.contacts?.find((contact) => contact.email === email)
 
     if (existingContact) {

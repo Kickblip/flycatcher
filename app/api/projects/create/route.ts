@@ -77,6 +77,7 @@ export async function POST(request: Request) {
     urlName,
     author: user.id,
     authorIsPremium: isPremium,
+    uploadedContent: [],
     images: {
       logo: "",
       logoKey: "",

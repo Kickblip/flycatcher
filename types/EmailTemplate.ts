@@ -51,12 +51,56 @@ export interface LargeImageBlockCompProps {
   imageSource: string
 }
 
-export type BlockUnion = LogoTextHeaderBlock | DatedTextBlock | HorizontalDividerBlock | LargeImageBlock
+export interface TextBlock extends Block {
+  fields: {
+    content: string
+  }
+  component: FC<TextBlockCompProps>
+}
+
+export interface TextBlockCompProps {
+  content: string
+}
+
+export interface ButtonBlock extends Block {
+  fields: {
+    text: string
+    url: string
+  }
+  component: FC<ButtonBlockCompProps>
+}
+
+export interface ButtonBlockCompProps {
+  text: string
+  url: string
+}
+
+export interface HeaderBlock extends Block {
+  fields: {
+    title: string
+  }
+  component: FC<HeaderBlockCompProps>
+}
+
+export interface HeaderBlockCompProps {
+  title: string
+}
+
+export type BlockUnion =
+  | LogoTextHeaderBlock
+  | DatedTextBlock
+  | HorizontalDividerBlock
+  | LargeImageBlock
+  | TextBlock
+  | ButtonBlock
+  | HeaderBlock
+
 export interface EmailTemplate {
   _id?: ObjectId
   id: string
   name: string
   subject: string
+  previewText: string
   author: string
   blocks: BlockUnion[]
   createdAt: Date

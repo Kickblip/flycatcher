@@ -11,14 +11,19 @@ export default function SettingsPanel() {
     <div className="w-full flex flex-col space-y-6">
       <SettingWrapper title="Campaign Editor" subtitle="Create and edit the email that will be sent as your next campaign">
         <div className="flex flex-col space-y-4">
-          <EditTextForm label="Template Name" textKey="name" content={template.name} />
+          {/* <EditTextForm label="Template Name" textKey="name" content={template.name} /> */}
           <EditTextForm label="Email Subject Line" textKey="subject" content={template.subject} />
+          <EditTextForm
+            label="Email Preview Text (preview text shows in recipient inbox)"
+            textKey="previewText"
+            content={template.previewText}
+          />
         </div>
       </SettingWrapper>
 
       <div className="w-full flex items-center">
         <div className="flex-grow border-t border-gray-300"></div>
-        <span className="mx-4 text-gray-500">Edit Blocks</span>
+        <span className="mx-4 text-sm text-gray-500">Edit Blocks</span>
         <div className="flex-grow border-t border-gray-300"></div>
       </div>
 
