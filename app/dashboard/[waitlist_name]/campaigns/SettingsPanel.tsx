@@ -28,7 +28,7 @@ export default function SettingsPanel() {
       </div>
 
       {template.blocks.map((block, index) => (
-        <BlockSettingWrapper key={index} title={block.name}>
+        <BlockSettingWrapper key={index} title={block.name} index={index}>
           <div className="flex flex-col space-y-4">
             {Object.entries(block.fields).map(([key, value]) => (
               <EditFieldForm

@@ -105,9 +105,11 @@ export default async function Waitlist({ params }: { params: { waitlist_name: st
               })}
           </div>
         </div>
-        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2">
-          <FlycatcherBadge textColor={waitlist.settings.textColor} />
-        </div>
+        {!waitlist.settings.disableBranding && (
+          <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2">
+            <FlycatcherBadge textColor={waitlist.settings.textColor} />
+          </div>
+        )}
       </div>
 
       <div className="w-1/2 flex justify-center items-center" style={{ backgroundColor: waitlist.settings.accentColor }}>

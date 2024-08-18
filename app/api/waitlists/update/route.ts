@@ -46,15 +46,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Subtitle text must be less than 1500 characters" }, { status: 400 })
   }
 
-  //   const { data: userMetadata, error: userMetadataError } = await supabase.from("user").select("*").eq("user_id", user.id).single()
-  //   let isPremium = false
-  //   if (!userMetadataError) {
-  //     if (userMetadata?.is_premium) isPremium = true
-  //   }
+  let disableBranding = waitlist.settings.disableBranding
+  const { data: userMetadata, error: userMetadataError } = await supabase.from("user").select("*").eq("user_id", user.id).single()
+  let isPremium = false
+  if (!userMetadataError) {
+    if (userMetadata?.is_premium) isPremium = true
+  }
 
-  //   if (disableBranding === true && !isPremium) {
-  //     disableBranding = false
-  //   }
+  if (disableBranding === true && !isPremium) {
+    disableBranding = false
+  }
 
   try {
     const client = await clientPromise
@@ -80,6 +81,7 @@ export async function POST(request: Request) {
           "settings.titleText": waitlist.settings.titleText,
           "settings.subtitleText": waitlist.settings.subtitleText,
           "settings.submitButtonText": waitlist.settings.submitButtonText,
+          "settings.disableBranding": disableBranding,
           "socialLinks.twitter": waitlist.socialLinks.twitter,
           "socialLinks.facebook": waitlist.socialLinks.facebook,
           "socialLinks.instagram": waitlist.socialLinks.instagram,

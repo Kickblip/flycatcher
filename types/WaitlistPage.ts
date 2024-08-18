@@ -42,6 +42,7 @@ export interface WaitlistSettings {
   titleText: string
   subtitleText: string
   submitButtonText: string
+  disableBranding: boolean
 }
 
 export interface SocialLinks {

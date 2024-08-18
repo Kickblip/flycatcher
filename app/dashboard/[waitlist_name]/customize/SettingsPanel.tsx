@@ -6,6 +6,10 @@ import EditTextForm from "./EditTextForm"
 import SmallImageUpload from "./SmallImageUpload"
 import LargeImageUpload from "./LargeImageUpload"
 import SocialLinkSelector from "./SocialLinkSelector"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
+import { toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 
 export default function SettingsPanel({
   pageWaitlist,
@@ -146,6 +150,37 @@ export default function SettingsPanel({
             setPageWaitlist={setPageWaitlist}
             currentLink={pageWaitlist.socialLinks.linkedin}
           />
+        </div>
+      </SettingWrapper>
+      <SettingWrapper title="Disable Flycatcher Branding" subtitle="Remove the powered by badge from your waitlist public view">
+        <div className="flex items-center space-x-2 mb-4 mt-4">
+          <Switch
+            id="disabled-branding"
+            checked={pageWaitlist.settings.disableBranding}
+            onCheckedChange={() => {
+              if (!pageWaitlist.authorIsPremium) {
+                setPageWaitlist({
+                  ...pageWaitlist,
+                  settings: {
+                    ...pageWaitlist.settings,
+                    disableBranding: false,
+                  },
+                })
+                toast.error("This is a premium feature")
+                return
+              }
+              setPageWaitlist({
+                ...pageWaitlist,
+                settings: {
+                  ...pageWaitlist.settings,
+                  disableBranding: !pageWaitlist.settings.disableBranding,
+                },
+              })
+            }}
+          />
+          <Label htmlFor="disabled-branding">
+            {pageWaitlist.settings.disableBranding ? "Branding disabled" : "Branding enabled"}
+          </Label>
         </div>
       </SettingWrapper>
     </div>

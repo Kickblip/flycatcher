@@ -105,6 +105,7 @@ export async function POST(request: Request) {
       titleText: "Get early access!",
       submitButtonText: "Join waitlist",
       subtitleText: "Follow our development journey and be one of the first to have access to our product.",
+      disableBranding: false,
     },
     createdAt: new Date(),
   }

@@ -10,6 +10,12 @@ const ratelimit = new Ratelimit({
   limiter: Ratelimit.slidingWindow(5, "10 s"),
 })
 
+const extractFileKey = (url: string) => {
+  const parts = url.split("/")
+  const filename = parts[parts.length - 1]
+  return filename
+}
+
 export async function POST(request: Request) {
   const supabase = createClient()
   const {
@@ -66,6 +72,10 @@ export async function POST(request: Request) {
     if (waitlist.images.previewKey) {
       await utapi.deleteFiles(waitlist.images.previewKey, { keyType: "fileKey" })
     }
+
+    waitlist.uploadedContent.forEach(async (url: string) => {
+      await utapi.deleteFiles(extractFileKey(url), { keyType: "fileKey" })
+    })
 
     await waitlistCollection.deleteOne({ urlName })
     await projectCollection.deleteOne({ urlName })
