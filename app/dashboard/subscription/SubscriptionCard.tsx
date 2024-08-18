@@ -1,9 +1,9 @@
 "use client"
 
-import { FaRegCheckCircle } from "react-icons/fa"
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { loadStripe } from "@stripe/stripe-js"
+import { FaCheck } from "react-icons/fa6"
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string)
 
@@ -55,36 +55,29 @@ export default function SubscriptionCard({
   }
 
   return (
-    <div className="w-[26rem] p-4">
-      <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-        <div className="p-4">
-          <h3 className="text-3xl font-semibold mb-2">{title}</h3>
-          <p className="text-sm font-normal text-gray-500 mb-4">{subtitle}</p>
-          <p className="text-5xl font-semibold mb-4">
-            ${price}
-            <span className="text-sm font-normal text-gray-600">/month</span>
-          </p>
-          <button
-            className={`block w-full transition duration-200 font-semibold py-2 px-4 rounded-lg ${
-              title === "Free" ? "border-2 border-indigo-500 text-indigo-500" : "bg-indigo-500 text-white hover:bg-indigo-600"
-            }`}
-            disabled={title === "Free"}
-            onClick={handleCheckout}
-          >
-            {title === "Free" ? "Current" : "Upgrade"}
-          </button>
-          <p className="text-lg font-medium my-4">What you get:</p>
-          <ul className="mb-4 space-y-3">
-            {features.map((feature, index) => (
-              <div key={index} className="flex items-center space-x-2">
-                <FaRegCheckCircle className="h-5 w-5 text-indigo-500" />
-                <li key={index} className="text-sm font-normal text-gray-500">
-                  {feature}
-                </li>
-              </div>
-            ))}
-          </ul>
-        </div>
+    <div className="border w-96 transition-duration-200 rounded">
+      <div className="p-4">
+        <h3 className="text-3xl font-semibold my-2">{title}</h3>
+        <p className="text-sm font-normal text-gray-600">{subtitle}</p>
+        <p className="text-5xl font-semibold my-6">
+          ${price}
+          <span className="text-sm font-normal text-gray-600">/month</span>
+        </p>
+        <button
+          className="block w-full text-center transition duration-200 font-semibold py-2 px-4 rounded border border-redorange-500 hover:border-redorange-300 bg-redorange-500 text-white hover:bg-redorange-300"
+          onClick={handleCheckout}
+        >
+          Upgrade
+        </button>
+        <p className="text-lg font-medium mb-4 mt-6">What you get:</p>
+        <ul className="mb-4 space-y-3">
+          {features.map((feature, index) => (
+            <div key={index} className="flex items-center space-x-2">
+              <FaCheck className="h-4 w-4 text-redorange-500" />
+              <li className="text-sm font-normal text-gray-600">{feature}</li>
+            </div>
+          ))}
+        </ul>
       </div>
     </div>
   )

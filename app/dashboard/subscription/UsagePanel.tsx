@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react"
 import LoadingWheel from "@/components/shared/LoadingWheel"
+import { FaCircleExclamation } from "react-icons/fa6"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 export default function UsagePanel({ isPremium }: { isPremium: boolean }) {
-  const [boardCount, setBoardCount] = useState(0)
-  const [totalSuggestions, setTotalSuggestions] = useState(0)
+  const [totalContacts, setTotalContacts] = useState(0)
+  const [waitlists, setWaitlists] = useState<{ name: string; contacts: number }[]>([])
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -14,43 +16,69 @@ export default function UsagePanel({ isPremium }: { isPremium: boolean }) {
 
   const fetchUsageStats = async () => {
     setLoading(true)
-    const response = await fetch(`/api/usage/get-data`, {
+    const response = await fetch(`/api/usage/get-usage`, {
       method: "GET",
     })
 
-    if (response.ok) {
-      const data = await response.json()
-      setBoardCount(data.boardCount)
-      setTotalSuggestions(data.totalSuggestions)
-      setLoading(false)
-    } else {
+    if (!response.ok) {
       console.error("Error fetching usage data")
     }
+
+    const data = await response.json()
+    setWaitlists(data.waitlistDetails)
+    setTotalContacts(data.totalContacts)
+    setLoading(false)
   }
 
   if (loading) {
     return (
-      <div className="w-full h-32">
-        <LoadingWheel />
+      <div className="w-96 h-[26rem] flex flex-col items-center border rounded p-4">
+        <div className="flex w-full justify-between mb-2">
+          <p className="text-black font-semibold">Usage by waitlist</p>
+        </div>
+        <div className="flex flex-col w-full">
+          <LoadingWheel />
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="w-full h-32 flex flex-col md:flex-row items-center space-y-4 md:space-y-0 mt-4 md:mt-0">
-      <div className="md:w-48 w-full bg-gray-100 p-4 rounded-lg flex flex-col">
-        <p className="text-sm font-semibold text-gray-500 mb-1">Boards</p>
-        <p className="text-4xl font-semibold">
-          {boardCount}
-          <span className="text-sm font-normal text-gray-600 ml-2">{isPremium ? "/ 10" : "/ 1"}</span>
-        </p>
+    <div className="w-96 h-[26rem] flex flex-col items-center border rounded p-4 space-y-6">
+      <div className="flex w-full justify-between">
+        <p className="text-black font-semibold">Usage by waitlist</p>
       </div>
-      <div className="md:w-48 w-full bg-gray-100 p-4 rounded-lg flex flex-col md:ml-8">
-        <p className="text-sm font-semibold text-gray-500 mb-1">Suggestions</p>
-        <p className="text-4xl font-semibold">
-          {totalSuggestions}
-          <span className="text-sm font-normal text-gray-600 ml-2">{isPremium ? "" : "/ 50"}</span>
-        </p>
+
+      <div className="flex flex-col w-full">
+        <div className="flex w-full justify-between">
+          <p className="text-sm font-semibold">Waitlist name</p>
+          <p className="text-sm font-semibold"># contacts</p>
+        </div>
+        {waitlists.map((waitlist, index) => (
+          <div key={index} className="flex w-full justify-between py-2">
+            <p className="font-medium">{waitlist.name}</p>
+            <div className="flex items-center space-x-2">
+              {waitlist.contacts > 50 ? (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <FaCircleExclamation className="w-5 h-5 text-redorange-500" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>This waitlist is approaching the contact limit for free users</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ) : (
+                ""
+              )}
+              <p className="font-medium">
+                {waitlist.contacts}
+                {isPremium ? "" : <span className="text-gray-500">/50</span>}
+              </p>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   )

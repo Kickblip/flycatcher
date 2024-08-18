@@ -3,7 +3,7 @@ import Link from "next/link"
 import PricingCard from "./PricingCard"
 
 export default function Pricing() {
-  const freeFeatures = ["50 contacts (per waitlist)", "Full customization options", "Analytics dashboard"]
+  const freeFeatures = ["50 contacts", "Full customization options", "Analytics dashboard"]
 
   return (
     <section className="w-full flex flex-col my-32">
