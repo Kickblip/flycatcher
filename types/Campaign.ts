@@ -3,10 +3,16 @@ export interface Campaign {
   id: string
   subject: string
   previewText: string
-  project: string
+  projectUrlName: string
   recipients: number
   blocks: Block[]
-  createdAt: string
+  colors: {
+    primaryColor: string
+    secondaryColor: string
+    textColor: string
+    accentColor: string
+  }
+  createdAt: Date
 }
 
 export interface Block {

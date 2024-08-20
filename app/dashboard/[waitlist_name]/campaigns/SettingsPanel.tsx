@@ -1,3 +1,4 @@
+import ColorSelector from "./ColorSelector"
 import SettingWrapper from "../customize/SettingWrapper"
 import BlockSettingWrapper from "./BlockSettingWrapper"
 import EditFieldForm from "./EditFieldForm"
@@ -18,6 +19,15 @@ export default function SettingsPanel() {
             textKey="previewText"
             content={template.previewText}
           />
+        </div>
+      </SettingWrapper>
+
+      <SettingWrapper title="Colors" subtitle="Update the color scheme for your email">
+        <div className="grid grid-cols-2 gap-4">
+          <ColorSelector color={template.colors.primaryColor} colorKey={"primaryColor"} />
+          <ColorSelector color={template.colors.textColor} colorKey={"textColor"} />
+          <ColorSelector color={template.colors.secondaryColor} colorKey={"secondaryColor"} />
+          <ColorSelector color={template.colors.accentColor} colorKey={"accentColor"} />
         </div>
       </SettingWrapper>
 

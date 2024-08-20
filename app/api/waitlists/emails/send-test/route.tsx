@@ -6,7 +6,7 @@ import { EmailTemplate } from "@/types/EmailTemplate"
 import mailgun from "mailgun.js"
 import formData from "form-data"
 import { render } from "@react-email/render"
-import EmailTemplateFiller from "./EmailTemplateFiller"
+import EmailTemplateFiller from "../EmailTemplateFiller"
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
@@ -37,42 +37,44 @@ export async function POST(request: Request) {
 
   const body = await request.json()
   const { template }: { template: EmailTemplate } = body
-  const { projectName, primaryColor, secondaryColor, textColor, accentColor } = body
+  const { projectName, urlName } = body
   if (template.blocks.length === 0) {
     return NextResponse.json({ message: "Email cannot be empty" }, { status: 400 })
   }
 
-  if (!projectName || !primaryColor || !secondaryColor || !textColor || !accentColor) {
+  if (!projectName || !urlName) {
     return NextResponse.json({ message: "Missing required fields" }, { status: 400 })
   }
-
-  console.log(primaryColor, secondaryColor, textColor, accentColor)
 
   try {
     const html = render(
       <EmailTemplateFiller
         blocks={template.blocks}
         previewText={template.previewText}
-        primaryColor={primaryColor}
-        secondaryColor={secondaryColor}
-        textColor={textColor}
-        accentColor={accentColor}
+        primaryColor={template.colors.primaryColor}
+        secondaryColor={template.colors.secondaryColor}
+        textColor={template.colors.textColor}
+        accentColor={template.colors.accentColor}
+        waitlistUrlName={urlName}
+        waitlistName={projectName}
       />,
       {
         pretty: true,
       },
     )
 
-    mgClient.messages
+    await mgClient.messages
       .create(process.env.MAILGUN_DOMAIN as string, {
-        from: `${projectName}@${process.env.MAILGUN_DOMAIN as string}`,
+        from: `${urlName}@${process.env.MAILGUN_DOMAIN as string}`,
         to: [user.email || ""],
         subject: template.subject,
         text: template.previewText,
         html,
       })
-      .then((msg) => console.log(msg))
-      .catch((err) => console.log(err))
+      .catch((err) => {
+        console.log(err)
+        throw new Error("Failed to send test email")
+      })
 
     return NextResponse.json(
       {

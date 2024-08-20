@@ -42,10 +42,7 @@ export default function Toolbar() {
         body: JSON.stringify({
           template: cleanedTemplate,
           projectName: waitlist!.name,
-          primaryColor: template.colors.primaryColor,
-          secondaryColor: template.colors.secondaryColor,
-          textColor: template.colors.textColor,
-          accentColor: template.colors.accentColor,
+          urlName: waitlist!.urlName,
         }),
       })
 
@@ -60,96 +57,135 @@ export default function Toolbar() {
     }
   }
 
-  return (
-    <div className="w-full flex space-x-4 mb-6">
-      <div className="w-full flex items-center justify-center bg-white border border-redorange-500 text-redorange-500 rounded hover:bg-redorange-500 hover:text-white transition duration-200">
-        <ImageManager />
-      </div>
-      <div className="w-full flex items-center justify-center bg-white border border-redorange-500 text-redorange-500 rounded hover:bg-redorange-500 hover:text-white transition duration-200">
-        <Sheet>
-          <SheetTrigger className="w-full py-2">Add block</SheetTrigger>
-          <SheetContent className="w-[50rem]" side="right">
-            <SheetHeader>
-              <SheetTitle>Template blocks</SheetTitle>
-              <SheetDescription>Add a premade block to your email template and edit the content in the editor</SheetDescription>
-            </SheetHeader>
+  const sendCampaign = async () => {
+    if (template.blocks.length === 0) {
+      toast.error("Email cannot be empty")
+      return
+    }
 
-            <div className="my-10 p-6 overflow-y-auto h-[85vh]">
-              <div className="grid grid-cols-2 gap-4">
-                {Object.values(TemplateBlocks).map((block) => (
-                  <div
-                    key={block.id}
-                    className="relative flex border rounded flex-col items-center text-left space-y-3 cursor-pointer group"
-                    onClick={() => useTemplateStore.getState().update({ ...template, blocks: [...template.blocks, block] })}
-                  >
-                    <Image
-                      src={block.thumbnail}
-                      alt={block.name}
-                      width={1000}
-                      height={1000}
-                      className="w-full shadow rounded h-auto transition duration-200"
-                    />
-                    <span className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-center text-white bg-black bg-opacity-75 px-4 py-2 rounded opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                      {block.name}
-                    </span>
-                  </div>
-                ))}
+    try {
+      const cleanedTemplate = {
+        ...template,
+        blocks: template.blocks.map(({ component, ...rest }) => rest),
+      }
+
+      const response = await fetch("/api/waitlists/emails/send-campaign", {
+        method: "POST",
+        body: JSON.stringify({
+          template: cleanedTemplate,
+          projectName: waitlist!.name,
+          urlName: waitlist!.urlName,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to send campaign")
+        return
+      }
+      setTested(true)
+    } catch (error) {
+      console.error(error)
+      toast.error("Failed to send campaign")
+    }
+  }
+
+  return (
+    <div>
+      <div className="w-full flex space-x-4 mb-3">
+        <div className="w-full flex items-center justify-center bg-white border border-redorange-500 text-redorange-500 rounded hover:bg-redorange-500 hover:text-white transition duration-200">
+          <ImageManager />
+        </div>
+        <div className="w-full flex items-center justify-center bg-white border border-redorange-500 text-redorange-500 rounded hover:bg-redorange-500 hover:text-white transition duration-200">
+          <Sheet>
+            <SheetTrigger className="w-full py-2">Add block</SheetTrigger>
+            <SheetContent className="w-[50rem]" side="right">
+              <SheetHeader>
+                <SheetTitle>Template blocks</SheetTitle>
+                <SheetDescription>Add a premade block to your email template and edit the content in the editor</SheetDescription>
+              </SheetHeader>
+
+              <div className="my-10 p-6 overflow-y-auto h-[85vh]">
+                <div className="grid grid-cols-2 gap-4">
+                  {Object.values(TemplateBlocks).map((block) => (
+                    <div
+                      key={block.id}
+                      className="relative flex border rounded flex-col items-center text-left space-y-3 cursor-pointer group"
+                      onClick={() => useTemplateStore.getState().update({ ...template, blocks: [...template.blocks, block] })}
+                    >
+                      <Image
+                        src={block.thumbnail}
+                        alt={block.name}
+                        width={1000}
+                        height={1000}
+                        className="w-full shadow rounded h-auto transition duration-200"
+                      />
+                      <span className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-center text-white bg-black bg-opacity-75 px-4 py-2 rounded opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                        {block.name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          </SheetContent>
-        </Sheet>
+            </SheetContent>
+          </Sheet>
+        </div>
+        <div className="w-full flex items-center justify-center bg-white border border-redorange-500 text-redorange-500 rounded hover:bg-redorange-500 hover:text-white transition duration-200">
+          <AlertDialog>
+            <AlertDialogTrigger>Send Test Email</AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure you want to send a test email?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will send a test email to the address associated with your account for you to preview the campaign.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={sendTestEmail}>Send</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+        <div
+          className={`w-full flex item-center justify-center bg-redorange-500 text-white rounded hover:bg-redorange-300 transition duration-200 ${
+            tested ? "" : "opacity-50 cursor-not-allowed"
+          }`}
+        >
+          <AlertDialog>
+            <TooltipProvider>
+              <Tooltip>
+                <AlertDialogTrigger className="w-full">
+                  <TooltipTrigger className="w-full py-2" disabled={!tested}>
+                    Send Campaign
+                  </TooltipTrigger>
+                </AlertDialogTrigger>
+                <TooltipContent>
+                  <p>
+                    {tested
+                      ? "Send this email to your subscribers"
+                      : "You must send yourself a test email before sending a live campaign"}
+                  </p>
+                </TooltipContent>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure you want to send this campaign?</AlertDialogTitle>
+                    <AlertDialogDescription>This will send the email to all subscribers on your waitlist.</AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={sendCampaign}>Send</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </Tooltip>
+            </TooltipProvider>
+          </AlertDialog>
+        </div>
       </div>
-      <div className="w-full flex items-center justify-center bg-white border border-redorange-500 text-redorange-500 rounded hover:bg-redorange-500 hover:text-white transition duration-200">
-        <AlertDialog>
-          <AlertDialogTrigger>Send Test Email</AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Are you sure you want to send a test email?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This will send a test email to the address associated with your account for you to preview the campaign.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={sendTestEmail}>Send</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
-      <div
-        className={`w-full flex item-center justify-center bg-redorange-500 text-white rounded hover:bg-redorange-300 transition duration-200 ${
-          tested ? "" : "opacity-50 cursor-not-allowed"
-        }`}
-      >
-        <AlertDialog>
-          <TooltipProvider>
-            <Tooltip>
-              <AlertDialogTrigger className="w-full">
-                <TooltipTrigger className="w-full py-2" disabled={!tested}>
-                  Send Campaign
-                </TooltipTrigger>
-              </AlertDialogTrigger>
-              <TooltipContent>
-                <p>
-                  {tested
-                    ? "Send this email to your subscribers"
-                    : "You must send yourself a test email before sending a live campaign"}
-                </p>
-              </TooltipContent>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you sure you want to send this campaign?</AlertDialogTitle>
-                  <AlertDialogDescription>This will send the email to all subscribers on your waitlist.</AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction>Send</AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </Tooltip>
-          </TooltipProvider>
-        </AlertDialog>
-      </div>
+      {!waitlist!.authorIsPremium && (
+        <div className="flex text-left mb-3">
+          <p className="text-redorange-500 text-sm font-medium">You must upgrade to a paid plan to send this campaign to users</p>
+        </div>
+      )}
     </div>
   )
 }
