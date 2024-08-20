@@ -23,13 +23,17 @@ async function Navbar() {
             {user?.id ? (
               <div className="flex items-center space-x-4">
                 <Link href="/dashboard/home">
-                  <div className="text-black px-4 py-2 rounded text-md mr-2 hover:underline">Dashboard</div>
+                  <div className="text-white bg-redorange-500 hover:bg-redorange-300 transition duration-200 px-4 py-2 rounded-md text-md mr-2">
+                    Dashboard
+                  </div>
                 </Link>
                 <UserButton />
               </div>
             ) : (
               <Link href="/dashboard/boards">
-                <div className="bg-redorange-500 text-white px-4 py-2 rounded-lg">Log In</div>
+                <div className="bg-redorange-500 hover:bg-redorange-300 transition duration-200 text-white px-4 py-2 rounded-md">
+                  Log In
+                </div>
               </Link>
             )}
           </div>
