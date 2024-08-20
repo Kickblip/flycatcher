@@ -4,18 +4,17 @@ import Badge from "./Badge"
 
 export default function Hero() {
   return (
-    <div
-      className="relative h-[80vh] w-full bg-cover bg-center bg-no-repeat -m-4"
-      style={{ backgroundImage: "url(/landing/hero-bg.png)" }}
-    >
+    <div className="relative h-[80vh] w-full bg-cover bg-center bg-no-repeat md:-m-4 md:bg-[url('/landing/hero-bg.png')]">
       <div className="absolute inset-0 flex flex-col items-center justify-center z-20 text-center text-black space-y-6 mb-56">
         <Badge />
-        <h1 className="text-6xl font-bold">
+        <h1 className="text-5xl md:text-6xl font-bold">
           All your launch tools.
           <br />
           <span className="text-redorange-500">One app.</span>
         </h1>
-        <p className="text-xl w-[28rem] break-words">Start a waitlist, measure analytics, and send emails all in one place. </p>
+        <p className="text-lg md:text-xl px-4 md:px-0 w-[28rem] break-words">
+          Start a waitlist, measure analytics, and send emails all in one place.{" "}
+        </p>
         <div className="flex items-center flex-col ">
           <Link
             href="/dashboard/home"

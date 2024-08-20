@@ -3,6 +3,7 @@ import clientPromise from "@/utils/mongodb"
 import { createClient } from "@/utils/supabase/server"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
+import { startOfMonth } from "date-fns"
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
@@ -29,19 +30,28 @@ export async function GET(request: Request) {
   try {
     const client = await clientPromise
     const collection = client.db("Main").collection("waitlists")
+    const campaignCollection = client.db("Main").collection("campaigns")
 
     // count the number of waitlists where the user is listed as the author
     const waitlists = await collection.find({ author: user.id }).toArray()
-
-    // total the suggestions for all those boards
-    const totalContacts = waitlists.reduce((acc, waitlist) => acc + (waitlist.contacts.length || 0), 0)
 
     const waitlistDetails = waitlists.map((waitlist) => ({
       name: waitlist.name,
       contacts: waitlist.contacts.length || 0,
     }))
 
-    return NextResponse.json({ waitlistDetails, totalContacts }, { status: 200 })
+    const startOfCurrentMonth = startOfMonth(new Date())
+
+    const currentMonthCampaigns = await campaignCollection
+      .find({
+        author: user.id,
+        createdAt: { $gte: startOfCurrentMonth },
+      })
+      .toArray()
+
+    const monthTotalRecipients = currentMonthCampaigns.reduce((sum, campaign) => sum + campaign.recipients, 0)
+
+    return NextResponse.json({ waitlistDetails, monthTotalRecipients }, { status: 200 })
   } catch (error) {
     let errorMessage = "An unknown error occurred"
     if (error instanceof Error) {

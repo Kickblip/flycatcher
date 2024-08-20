@@ -5,7 +5,7 @@ export default function Features() {
   return (
     <div className="w-full flex flex-col items-center">
       <h2 className="text-5xl font-semibold mb-12">The tools you need</h2>
-      <div className="flex items-center space-x-8">
+      <div className="flex flex-col md:flex-row items-center md:space-x-8 space-y-6 md:space-y-0">
         <FeatureCard
           title="Waitlist Pages"
           content="Get a waitlist that matches your brand. Personalize with your logo, colors, content, and metadata"

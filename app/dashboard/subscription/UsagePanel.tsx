@@ -6,7 +6,7 @@ import { FaCircleExclamation } from "react-icons/fa6"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 export default function UsagePanel({ isPremium }: { isPremium: boolean }) {
-  const [totalContacts, setTotalContacts] = useState(0)
+  const [monthTotalRecipients, setMonthTotalRecipients] = useState(0)
   const [waitlists, setWaitlists] = useState<{ name: string; contacts: number }[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -26,7 +26,7 @@ export default function UsagePanel({ isPremium }: { isPremium: boolean }) {
 
     const data = await response.json()
     setWaitlists(data.waitlistDetails)
-    setTotalContacts(data.totalContacts)
+    setMonthTotalRecipients(data.monthTotalRecipients)
     setLoading(false)
   }
 
@@ -34,7 +34,7 @@ export default function UsagePanel({ isPremium }: { isPremium: boolean }) {
     return (
       <div className="w-96 h-[26rem] flex flex-col items-center border rounded p-4">
         <div className="flex w-full justify-between mb-2">
-          <p className="text-black font-semibold">Usage by waitlist</p>
+          <p className="text-black font-semibold">Your Usage</p>
         </div>
         <div className="flex flex-col w-full">
           <LoadingWheel />
@@ -46,7 +46,7 @@ export default function UsagePanel({ isPremium }: { isPremium: boolean }) {
   return (
     <div className="w-96 h-[26rem] flex flex-col items-center border rounded p-4 space-y-6">
       <div className="flex w-full justify-between">
-        <p className="text-black font-semibold">Usage by waitlist</p>
+        <p className="text-black font-semibold">Your Usage</p>
       </div>
 
       <div className="flex flex-col w-full">
@@ -56,7 +56,7 @@ export default function UsagePanel({ isPremium }: { isPremium: boolean }) {
         </div>
         {waitlists.map((waitlist, index) => (
           <div key={index} className="flex w-full justify-between py-2">
-            <p className="font-medium">{waitlist.name}</p>
+            <p className="font-medium text-sm">{waitlist.name}</p>
             <div className="flex items-center space-x-2">
               {waitlist.contacts > 50 ? (
                 <TooltipProvider>
@@ -72,13 +72,20 @@ export default function UsagePanel({ isPremium }: { isPremium: boolean }) {
               ) : (
                 ""
               )}
-              <p className="font-medium">
+              <p className="font-medium text-sm">
                 {waitlist.contacts}
                 {isPremium ? "" : <span className="text-gray-500">/50</span>}
               </p>
             </div>
           </div>
         ))}
+      </div>
+      <div className="flex w-full justify-between">
+        <p className="text-sm font-semibold">Emails sent this month</p>
+        <p className="text-sm font-semibold">
+          {monthTotalRecipients}
+          {isPremium ? <span className="text-gray-500">/10000</span> : <span className="text-gray-500">/0</span>}
+        </p>
       </div>
     </div>
   )

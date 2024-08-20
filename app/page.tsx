@@ -6,6 +6,7 @@ import DemoVideo from "@/components/landing/DemoVideo"
 import IntroSection from "@/components/landing/IntroSection"
 import Pricing from "@/components/landing/Pricing"
 import Features from "@/components/landing/Features"
+import Setup from "@/components/landing/Setup"
 
 export const metadata: Metadata = {
   title: "Flycatcher",
@@ -22,6 +23,7 @@ export default function Home() {
         <DemoVideo />
         <IntroSection />
         <Features />
+        <Setup />
         <Pricing />
       </div>
       <Footer />
