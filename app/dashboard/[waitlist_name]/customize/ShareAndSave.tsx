@@ -48,10 +48,10 @@ export default function ShareAndSave({
 
       if (!response.ok) {
         throw new Error("Failed to update settings")
-        return
       }
 
       useWaitlistStore.getState().update(pageWaitlist)
+      toast.success("Changes saved. It may take a few seconds to reflect on your waitlist.")
     } catch (error) {
       console.error(error)
       toast.error("Failed to update settings")

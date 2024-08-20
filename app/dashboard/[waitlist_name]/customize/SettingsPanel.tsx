@@ -84,12 +84,15 @@ export default function SettingsPanel({
             pageWaitlist={pageWaitlist}
             setPageWaitlist={setPageWaitlist}
           />
-          <SmallImageUpload
-            pageWaitlist={pageWaitlist}
-            setPageWaitlist={setPageWaitlist}
-            endpoint="waitlistFavicon"
-            imageKey="favicon"
-          />
+          <div className="flex flex-col space-y-2">
+            <h1 className="text-sm font-medium break-words">Favicon upload</h1>
+            <SmallImageUpload
+              pageWaitlist={pageWaitlist}
+              setPageWaitlist={setPageWaitlist}
+              endpoint="waitlistFavicon"
+              imageKey="favicon"
+            />
+          </div>
         </div>
       </SettingWrapper>
 

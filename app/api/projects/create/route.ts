@@ -6,6 +6,7 @@ import { Redis } from "@upstash/redis"
 import { createClient } from "@/utils/supabase/server"
 import { Project } from "@/types/Project"
 import { WaitlistPage } from "@/types/WaitlistPage"
+import { revalidatePath } from "next/cache"
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
@@ -154,6 +155,7 @@ export async function POST(request: Request) {
 
     // insert the new waitlist page
     const waitlistResult = await waitlistCollection.insertOne(newWaitlist)
+    revalidatePath(`/w/${urlName}`)
     const newWaitlistPageId = waitlistResult.insertedId
 
     const newProject: Project = {
