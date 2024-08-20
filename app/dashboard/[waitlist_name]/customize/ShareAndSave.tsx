@@ -59,9 +59,9 @@ export default function ShareAndSave({
   }
 
   return (
-    <div className="w-full flex items-center justify-between space-x-4">
+    <div className="w-full flex flex-col lg:flex-row items-center justify-between space-y-4 lg:space-y-0 lg:space-x-4">
       <div className="w-full flex items-center justify-between border rounded py-1">
-        <span className="text-sm font-medium px-4 truncate">{`${process.env.NEXT_PUBLIC_SITE_URL}/w/${pageWaitlist.urlName}`}</span>
+        <span className="text-sm font-medium pl-4 pr-16 truncate">{`${process.env.NEXT_PUBLIC_SITE_URL}/w/${pageWaitlist.urlName}`}</span>
         <div className="flex items-center space-x-2 px-3">
           <TooltipProvider>
             <Tooltip>
@@ -103,7 +103,7 @@ export default function ShareAndSave({
         </div>
       </div>
       <button
-        className="px-12 py-2 bg-redorange-500 text-white rounded hover:bg-redorange-300 transition duration-200"
+        className="px-10 py-2 w-full bg-redorange-500 text-white rounded hover:bg-redorange-300 transition duration-200"
         onClick={saveSettings}
       >
         Save

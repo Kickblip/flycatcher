@@ -68,13 +68,13 @@ export default async function Waitlist({ params }: { params: { waitlist_name: st
   return (
     <div className="flex h-screen">
       <div
-        className="w-1/2 flex justify-center items-center relative"
+        className="w-full lg:w-1/2 flex justify-center items-center relative"
         style={{ backgroundColor: waitlist.settings.primaryColor }}
       >
         <div className="absolute top-0 left-0 p-4">
           <Image src={waitlist.images.logo} hidden={!waitlist.images.logo} alt="Logo" width={300} height={300} className="w-40" />
         </div>
-        <div className="w-1/2 flex flex-col space-y-6">
+        <div className="w-3/4 lg:w-1/2 flex flex-col space-y-6">
           <div className="flex flex-col w-full space-y-2">
             <h1 className="text-3xl font-bold break-words" style={{ color: waitlist.settings.textColor }}>
               {waitlist.settings.titleText}
@@ -112,7 +112,10 @@ export default async function Waitlist({ params }: { params: { waitlist_name: st
         )}
       </div>
 
-      <div className="w-1/2 flex justify-center items-center" style={{ backgroundColor: waitlist.settings.accentColor }}>
+      <div
+        className="w-1/2 hidden lg:flex justify-center items-center"
+        style={{ backgroundColor: waitlist.settings.accentColor }}
+      >
         <div className="w-[85%] max-w-[50rem]">
           <AspectRatio ratio={16 / 9} hidden={!waitlist.images.preview}>
             <Image src={waitlist.images.preview} alt="Preview image" fill className="rounded-md object-cover" />

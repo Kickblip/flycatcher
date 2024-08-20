@@ -91,14 +91,14 @@ export default function Toolbar() {
 
   return (
     <div>
-      <div className="w-full flex space-x-4 mb-3">
+      <div className="w-full flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 mb-3">
         <div className="w-full flex items-center justify-center bg-white border border-redorange-500 text-redorange-500 rounded hover:bg-redorange-500 hover:text-white transition duration-200">
           <ImageManager />
         </div>
         <div className="w-full flex items-center justify-center bg-white border border-redorange-500 text-redorange-500 rounded hover:bg-redorange-500 hover:text-white transition duration-200">
           <Sheet>
             <SheetTrigger className="w-full py-2">Add block</SheetTrigger>
-            <SheetContent className="w-[50rem]" side="right">
+            <SheetContent className="w-[90%] md:w-[50rem]" side="right">
               <SheetHeader>
                 <SheetTitle>Template blocks</SheetTitle>
                 <SheetDescription>Add a premade block to your email template and edit the content in the editor</SheetDescription>
@@ -131,7 +131,7 @@ export default function Toolbar() {
         </div>
         <div className="w-full flex items-center justify-center bg-white border border-redorange-500 text-redorange-500 rounded hover:bg-redorange-500 hover:text-white transition duration-200">
           <AlertDialog>
-            <AlertDialogTrigger>Send Test Email</AlertDialogTrigger>
+            <AlertDialogTrigger className="py-2">Send Test Email</AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Are you sure you want to send a test email?</AlertDialogTitle>

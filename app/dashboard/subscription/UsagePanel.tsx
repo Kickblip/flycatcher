@@ -32,7 +32,7 @@ export default function UsagePanel({ isPremium }: { isPremium: boolean }) {
 
   if (loading) {
     return (
-      <div className="w-96 h-[26rem] flex flex-col items-center border rounded p-4">
+      <div className="w-80 md:w-96 h-[26rem] flex flex-col items-center border rounded p-4">
         <div className="flex w-full justify-between mb-2">
           <p className="text-black font-semibold">Your Usage</p>
         </div>
@@ -44,7 +44,7 @@ export default function UsagePanel({ isPremium }: { isPremium: boolean }) {
   }
 
   return (
-    <div className="w-96 h-[26rem] flex flex-col items-center border rounded p-4 space-y-6">
+    <div className="w-80 md:w-96 h-[26rem] flex flex-col items-center border rounded p-4 space-y-6">
       <div className="flex w-full justify-between">
         <p className="text-black font-semibold">Your Usage</p>
       </div>

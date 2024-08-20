@@ -13,7 +13,7 @@ export default function ImageManager() {
   return (
     <Sheet>
       <SheetTrigger className="w-full py-2">Image Manager</SheetTrigger>
-      <SheetContent className="w-[50rem]" side="right">
+      <SheetContent className="w-[90%] md:w-[50rem]" side="right">
         <SheetHeader>
           <SheetTitle>Manage uploaded images</SheetTitle>
           <SheetDescription>Click an image to copy the URL then paste into your block</SheetDescription>

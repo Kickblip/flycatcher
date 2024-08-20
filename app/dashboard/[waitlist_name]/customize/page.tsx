@@ -15,11 +15,11 @@ export default function Customize({ params }: { params: { waitlist_name: string 
   }
 
   return (
-    <div className="max-w-7xl w-full flex mx-auto">
-      <div className="w-1/2 p-4">
+    <div className="max-w-7xl w-full flex flex-col md:flex-row mx-auto">
+      <div className="w-full md:w-1/2 p-4">
         <SettingsPanel pageWaitlist={pageWaitlist!} setPageWaitlist={setPageWaitlist} />
       </div>
-      <div className="w-1/2 p-4">
+      <div className="w-full md:w-1/2 p-4">
         <div className="sticky top-8">
           <div className="flex flex-col items-center justify-center space-y-6">
             <ShareAndSave pageWaitlist={pageWaitlist!} setPageWaitlist={setPageWaitlist} />

@@ -11,7 +11,7 @@ export default function BillingManagerPanel({
   email: string
 }) {
   return (
-    <div className="w-96 border rounded flex flex-col items-start p-4">
+    <div className="w-80 md:w-96 border rounded flex flex-col items-start p-4">
       <Image src={avatarUrl} alt="Profile Picture" className="rounded-full object-cover w-16 h-16" width={500} height={500} />
       <div className="mt-2">
         <p className="text-xl font-semibold">{displayName}</p>

@@ -7,40 +7,42 @@ function Navbar({ waitlist }: { waitlist: WaitlistPage }) {
   return (
     <nav className="max-w-7xl mx-auto px-4 py-6">
       <div className="flex items-center justify-between">
-        <div className="flex items-center md:space-x-10 space-x-6">
+        <div className="flex items-center space-x-10">
           <Link href="/dashboard/home">
             <Image src="/landing/logo.png" alt="Logo" width={170} height={170} />
           </Link>
-          <div className="rounded border py-2 px-6">
-            <p className="text-black text-md font-medium">{waitlist.name}</p>
+          <div className="hidden md:flex items-center space-x-10">
+            <div className="rounded border py-2 px-6">
+              <p className="text-black text-md font-medium">{waitlist.name}</p>
+            </div>
+            <Link
+              href={`/dashboard/${waitlist.urlName}/customize`}
+              className="text-black text-md font-medium opacity-70 hover:opacity-100 transition duration-200"
+            >
+              customize
+            </Link>
+            <Link
+              href={`/dashboard/${waitlist.urlName}/contacts`}
+              className="text-black text-md font-medium opacity-70 hover:opacity-100 transition duration-200"
+            >
+              contacts
+            </Link>
+            <Link
+              href={`/dashboard/${waitlist.urlName}/analytics`}
+              className="text-black text-md font-medium opacity-70 hover:opacity-100 transition duration-200"
+            >
+              analytics
+            </Link>
+            <Link
+              href={`/dashboard/${waitlist.urlName}/campaigns`}
+              className="text-black text-md font-medium opacity-70 hover:opacity-100 transition duration-200"
+            >
+              campaigns
+            </Link>
           </div>
-          <Link
-            href={`/dashboard/${waitlist.urlName}/customize`}
-            className="text-black text-md font-medium opacity-70 hover:opacity-100 transition duration-200"
-          >
-            customize
-          </Link>
-          <Link
-            href={`/dashboard/${waitlist.urlName}/contacts`}
-            className="text-black text-md font-medium opacity-70 hover:opacity-100 transition duration-200"
-          >
-            contacts
-          </Link>
-          <Link
-            href={`/dashboard/${waitlist.urlName}/analytics`}
-            className="text-black text-md font-medium opacity-70 hover:opacity-100 transition duration-200"
-          >
-            analytics
-          </Link>
-          <Link
-            href={`/dashboard/${waitlist.urlName}/campaigns`}
-            className="text-black text-md font-medium opacity-70 hover:opacity-100 transition duration-200"
-          >
-            campaigns
-          </Link>
         </div>
         <div className="flex items-center">
-          <UserButton />
+          <UserButton urlName={waitlist.urlName} />
         </div>
       </div>
     </nav>

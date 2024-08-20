@@ -15,11 +15,11 @@ export default function Campaigns() {
   }
 
   return (
-    <div className="max-w-7xl w-full flex mx-auto">
-      <div className="w-2/5 p-4 flex flex-col items-center">
+    <div className="max-w-7xl w-full flex flex-col md:flex-row mx-auto">
+      <div className="w-full md:w-2/5 p-4 flex flex-col items-center">
         <SettingsPanel />
       </div>
-      <div className="w-3/5 p-4">
+      <div className="w-full md:w-3/5 p-4">
         <div className="sticky top-8">
           <Toolbar />
           <EmailPreview />

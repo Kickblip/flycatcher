@@ -21,7 +21,7 @@ export default function SettingsPanel({
   return (
     <div className="w-full flex flex-col space-y-6">
       <SettingWrapper title="Colors" subtitle="Update the color scheme for your waitlist">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <ColorSelector
             color={pageWaitlist.settings.primaryColor}
             setPageWaitlist={setPageWaitlist}
@@ -107,7 +107,7 @@ export default function SettingsPanel({
       </SettingWrapper>
 
       <SettingWrapper title="Additional Links" subtitle="Add social media links that you would like to be displayed on the page">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <SocialLinkSelector
             socialKey="twitter"
             SocialIcon={FaXTwitter}

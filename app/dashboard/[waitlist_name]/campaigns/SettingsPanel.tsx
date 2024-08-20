@@ -23,7 +23,7 @@ export default function SettingsPanel() {
       </SettingWrapper>
 
       <SettingWrapper title="Colors" subtitle="Update the color scheme for your email">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <ColorSelector color={template.colors.primaryColor} colorKey={"primaryColor"} />
           <ColorSelector color={template.colors.textColor} colorKey={"textColor"} />
           <ColorSelector color={template.colors.secondaryColor} colorKey={"secondaryColor"} />

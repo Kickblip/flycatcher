@@ -55,7 +55,7 @@ export default function SubscriptionCard({
   }
 
   return (
-    <div className="border w-96 transition-duration-200 rounded">
+    <div className="border w-80 md:w-96 transition-duration-200 rounded">
       <div className="p-4">
         <h3 className="text-3xl font-semibold my-2">{title}</h3>
         <p className="text-sm font-normal text-gray-600">{subtitle}</p>

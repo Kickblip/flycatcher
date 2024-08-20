@@ -23,7 +23,7 @@ export default function WaitlistPreview({
         className="w-16 absolute top-20 left-4"
       />
       <div
-        className="w-1/2 rounded-l flex flex-col space-y-3 justify-center items-start px-16"
+        className="w-full md:w-1/2 rounded-l flex flex-col space-y-3 justify-center items-start px-16"
         style={{ backgroundColor: pageWaitlist.settings.primaryColor }}
       >
         <div className="flex flex-col w-full">
@@ -82,7 +82,10 @@ export default function WaitlistPreview({
             })}
         </div>
       </div>
-      <div className="w-1/2 flex justify-center items-center" style={{ backgroundColor: pageWaitlist.settings.accentColor }}>
+      <div
+        className="w-1/2 hidden md:flex justify-center items-center"
+        style={{ backgroundColor: pageWaitlist.settings.accentColor }}
+      >
         <div className="w-[85%]">
           <AspectRatio ratio={16 / 9} hidden={!pageWaitlist.images.preview}>
             <Image src={pageWaitlist.images.preview} alt="Preview image" fill className="rounded-md object-cover" />

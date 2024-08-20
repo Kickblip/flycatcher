@@ -26,7 +26,7 @@ export default async function DashboardSubscriptions() {
   return (
     <main className="flex flex-col items-center min-h-screen w-full">
       <Navbar />
-      <div className="w-full max-w-7xl mx-auto p-4 flex justify-center space-x-6">
+      <div className="w-full max-w-7xl mx-auto p-4 flex flex-col md:flex-row justify-center items-center space-y-6 md:space-y-0 md:space-x-6">
         <UsagePanel isPremium={userMetadata.is_premium as boolean} />
         {userMetadata.is_premium ? (
           <BillingManagerPanel
