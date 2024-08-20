@@ -10,11 +10,9 @@ export default function Analytics() {
   const [loading, setLoading] = useState(false)
   const [chartData, setChartData] = useState([])
 
-  if (!waitlist) {
-    return <div className="flex items-center justify-center h-screen">Project not found</div>
-  }
-
   useEffect(() => {
+    if (!waitlist) return
+
     const fetchWeekData = async () => {
       setLoading(true)
       try {
@@ -38,8 +36,13 @@ export default function Analytics() {
       }
       setLoading(false)
     }
+
     fetchWeekData()
-  }, [])
+  }, [waitlist])
+
+  if (!waitlist) {
+    return <div className="flex items-center justify-center h-screen">Project not found</div>
+  }
 
   if (loading) {
     return <LoadingWheel />
