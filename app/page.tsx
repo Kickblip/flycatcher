@@ -1,11 +1,12 @@
 import type { Metadata } from "next"
 import Navbar from "@/components/landing/Navbar"
-import Hero from "@/components/landing/Hero"
-import Demo from "@/components/landing/Demo"
-import GettingStarted from "@/components/landing/GettingStarted"
-import Customization from "@/components/landing/Customization"
-import Pricing from "@/components/landing/Pricing"
 import Footer from "@/components/landing/Footer"
+import Hero from "@/components/landing/Hero"
+import DemoVideo from "@/components/landing/DemoVideo"
+import IntroSection from "@/components/landing/IntroSection"
+import Pricing from "@/components/landing/Pricing"
+import Features from "@/components/landing/Features"
+import Setup from "@/components/landing/Setup"
 
 export const metadata: Metadata = {
   title: "Flycatcher",
@@ -16,11 +17,13 @@ export default function Home() {
   return (
     <main className="flex flex-col items-center min-h-screen w-full">
       <Navbar />
+
       <div className="w-full max-w-7xl mx-auto p-4">
         <Hero />
-        <Demo />
-        <GettingStarted />
-        <Customization />
+        <DemoVideo />
+        <IntroSection />
+        <Features />
+        <Setup />
         <Pricing />
       </div>
       <Footer />

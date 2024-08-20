@@ -1,0 +1,97 @@
+import { WaitlistPage } from "@/types/WaitlistPage"
+import Image from "next/image"
+import tinycolor from "tinycolor2"
+import { AspectRatio } from "@/components/ui/aspect-ratio"
+import Link from "next/link"
+import { socialIcons } from "../../../../utils/socialIcons"
+
+export default function WaitlistPreview({
+  pageWaitlist,
+  setPageWaitlist,
+}: {
+  pageWaitlist: WaitlistPage
+  setPageWaitlist: (pageWaitlist: WaitlistPage) => void
+}) {
+  return (
+    <div className="w-full flex h-96 shadow">
+      <Image
+        src={pageWaitlist.images.logo}
+        hidden={!pageWaitlist.images.logo}
+        alt="Logo"
+        width={300}
+        height={300}
+        className="w-16 absolute top-20 left-4"
+      />
+      <div
+        className="w-full md:w-1/2 rounded-l flex flex-col space-y-3 justify-center items-start px-16"
+        style={{ backgroundColor: pageWaitlist.settings.primaryColor }}
+      >
+        <div className="flex flex-col w-full">
+          <h1 className="text-sm font-medium mb-1 break-words" style={{ color: pageWaitlist.settings.textColor }}>
+            {pageWaitlist.settings.titleText}
+          </h1>
+          <p
+            className="text-[0.5rem] break-words"
+            style={{ color: tinycolor(pageWaitlist.settings.textColor).setAlpha(0.7).toRgbString() }}
+          >
+            {pageWaitlist.settings.subtitleText}
+          </p>
+        </div>
+        <div className="flex flex-col w-full space-y-1">
+          <div className="flex flex-col w-full">
+            <label className="text-[0.4rem] opacity-80 font-semibold mb-0.5" style={{ color: pageWaitlist.settings.textColor }}>
+              Email
+              <span style={{ color: pageWaitlist.settings.accentColor }}>*</span>
+            </label>
+            <style jsx>{`
+              #input-email::placeholder {
+                color: ${tinycolor(pageWaitlist.settings.textColor).setAlpha(0.3).toRgbString()};
+              }
+            `}</style>
+            <input
+              id={`input-email`}
+              type="text"
+              className="px-2 py-1 text-[0.5rem] p-0.5 border rounded-sm w-full"
+              style={{
+                backgroundColor: pageWaitlist.settings.primaryColor,
+                borderColor: tinycolor(pageWaitlist.settings.textColor).setAlpha(0.3).toRgbString(),
+                color: pageWaitlist.settings.textColor,
+              }}
+              placeholder="Enter your email"
+              disabled
+            />
+          </div>
+        </div>
+        <button
+          className="px-2 py-1 text-[0.5rem] font-medium w-full text-white rounded-sm"
+          style={{ backgroundColor: pageWaitlist.settings.accentColor, color: pageWaitlist.settings.secondaryColor }}
+          disabled
+        >
+          {pageWaitlist.settings.submitButtonText}
+        </button>
+        <div className="flex items-center w-full space-x-2">
+          {Object.entries(pageWaitlist.socialLinks)
+            .filter(([key, value]) => value !== "")
+            .map(([name, url], index) => {
+              const SocialIcon = socialIcons[name as keyof typeof socialIcons]
+              return (
+                <Link key={index} href={url} target="_blank">
+                  <SocialIcon className="w-3 h-3" style={{ color: pageWaitlist.settings.accentColor }} />
+                </Link>
+              )
+            })}
+        </div>
+      </div>
+      <div
+        className="w-1/2 hidden md:flex justify-center items-center"
+        style={{ backgroundColor: pageWaitlist.settings.accentColor }}
+      >
+        <div className="w-[85%]">
+          <AspectRatio ratio={16 / 9} hidden={!pageWaitlist.images.preview}>
+            <Image src={pageWaitlist.images.preview} alt="Preview image" fill className="rounded-md object-cover" />
+          </AspectRatio>
+        </div>
+      </div>
+    </div>
+  )
+}

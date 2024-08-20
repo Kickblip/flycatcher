@@ -1,0 +1,60 @@
+import ColorSelector from "./ColorSelector"
+import SettingWrapper from "../customize/SettingWrapper"
+import BlockSettingWrapper from "./BlockSettingWrapper"
+import EditFieldForm from "./EditFieldForm"
+import EditTextForm from "./EditTextForm"
+import { useTemplateStore } from "@/stores/TemplateStore"
+
+export default function SettingsPanel() {
+  const { template } = useTemplateStore()
+
+  return (
+    <div className="w-full flex flex-col space-y-6">
+      <SettingWrapper title="Campaign Editor" subtitle="Create and edit the email that will be sent as your next campaign">
+        <div className="flex flex-col space-y-4">
+          {/* <EditTextForm label="Template Name" textKey="name" content={template.name} /> */}
+          <EditTextForm label="Email Subject Line" textKey="subject" content={template.subject} />
+          <EditTextForm
+            label="Email Preview Text (preview text shows in recipient inbox)"
+            textKey="previewText"
+            content={template.previewText}
+          />
+        </div>
+      </SettingWrapper>
+
+      <SettingWrapper title="Colors" subtitle="Update the color scheme for your email">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <ColorSelector color={template.colors.primaryColor} colorKey={"primaryColor"} />
+          <ColorSelector color={template.colors.textColor} colorKey={"textColor"} />
+          <ColorSelector color={template.colors.secondaryColor} colorKey={"secondaryColor"} />
+          <ColorSelector color={template.colors.accentColor} colorKey={"accentColor"} />
+        </div>
+      </SettingWrapper>
+
+      <div className="w-full flex items-center">
+        <div className="flex-grow border-t border-gray-300"></div>
+        <span className="mx-4 text-sm text-gray-500">Edit Blocks</span>
+        <div className="flex-grow border-t border-gray-300"></div>
+      </div>
+
+      {template.blocks.map((block, index) => (
+        <BlockSettingWrapper key={index} title={block.name} index={index}>
+          <div className="flex flex-col space-y-4">
+            {Object.entries(block.fields).map(([key, value]) => (
+              <EditFieldForm
+                key={key}
+                index={index}
+                label={key
+                  .replace(/([A-Z])/g, " $1")
+                  .trim()
+                  .replace(/^./, (str) => str.toUpperCase())} // convert to spaced words
+                textKey={key}
+                content={value}
+              />
+            ))}
+          </div>
+        </BlockSettingWrapper>
+      ))}
+    </div>
+  )
+}
