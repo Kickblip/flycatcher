@@ -35,8 +35,6 @@ export default function PageViewsChart({ chartData }: { chartData: { date: strin
     [],
   )
 
-  console.log(chartData)
-
   return (
     <Card>
       <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">

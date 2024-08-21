@@ -61,7 +61,15 @@ export async function POST(request: NextRequest) {
 
     await collection.updateOne({ urlName }, { $addToSet: { contacts: newContact } })
 
-    await analytics.track("addcontact", urlName, { country: request.geo?.country })
+    const userAgent = request.headers.get("user-agent") || ""
+    let deviceType: string
+    if (!userAgent) {
+      deviceType = "unknown"
+    } else {
+      const isMobile = /mobile/i.test(userAgent)
+      deviceType = isMobile ? "mobile" : "desktop"
+    }
+    await analytics.track("addcontact", urlName, { country: request.geo?.country, deviceType: deviceType })
     return NextResponse.json({ message: "Contact added successfully" }, { status: 200 })
   } catch (error) {
     let errorMessage = "An unknown error occurred"

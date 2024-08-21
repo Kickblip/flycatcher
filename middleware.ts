@@ -7,7 +7,15 @@ export async function middleware(request: NextRequest) {
 
   if (pathname.startsWith("/w/")) {
     const waitlistName = pathname.split("/")[2]
-    await analytics.track("pageview", waitlistName, { country: request.geo?.country })
+    const userAgent = request.headers.get("user-agent") || ""
+    let deviceType: string
+    if (!userAgent) {
+      deviceType = "unknown"
+    } else {
+      const isMobile = /mobile/i.test(userAgent)
+      deviceType = isMobile ? "mobile" : "desktop"
+    }
+    await analytics.track("pageview", waitlistName, { country: request.geo?.country, deviceType: deviceType })
   }
 
   return await updateSession(request)

@@ -21,6 +21,8 @@ export default function SignupForm({
   const [email, setEmail] = useState("")
 
   const createContact = async () => {
+    setEmail(email.trim())
+
     if (!email) {
       return
     }
