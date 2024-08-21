@@ -7,10 +7,10 @@ export default function Setup() {
     <section className="w-full flex flex-col md:flex-row my-32">
       <div className="w-full md:w-1/2 p-4 text-left flex items-center">
         <div className="flex flex-col space-y-6">
-          <h2 className="text-4xl md:text-5xl font-semibold">Setup in minutes</h2>
+          <h2 className="text-4xl md:text-5xl font-semibold">Ready in minutes</h2>
           <p>
-            Name your waitlist, pick your colors, upload images, and share it. No long setups, no headaches. Build a mailing list
-            of users before your product is ready so you can launch with a bang.
+            Name your waitlist, pick your colors, upload images, and share it. No long setups, no headaches. Build a beautiful
+            waitlist and matching email campaign in minutes.
           </p>
           <Link
             href="/w/flycatcher"
@@ -25,7 +25,7 @@ export default function Setup() {
         </div>
       </div>
       <div className="w-full mt-10 md:mt-0 md:w-1/2 p-4 flex flex-col space-y-4">
-        <Image src="/landing/page-preview.png" width={2400} height={1500} alt="Tool preview image" unoptimized />
+        <Image src="/landing/page-preview.png" width={2400} height={1700} alt="Tool preview image" unoptimized />
       </div>
     </section>
   )

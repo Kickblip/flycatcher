@@ -1,6 +1,6 @@
 export default function Badge() {
   return (
-    <div className="flex items-center border text-sm font-medium rounded-full p-1 mb-16 bg-white">
+    <div className="flex items-center border text-sm font-medium rounded-full p-1 md:mb-16 bg-white">
       <div className="bg-redorange-500 text-white px-4 py-1 rounded-full">New</div>
       <p className="px-3">Send emails with Flycatcher</p>
     </div>

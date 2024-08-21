@@ -9,8 +9,8 @@ export default function IntroSection() {
         <div className="flex flex-col space-y-6">
           <h2 className="text-4xl md:text-5xl font-semibold">Find your users before you launch</h2>
           <p>
-            Name your waitlist, pick your colors, upload images, and share it. No long setups, no headaches. Build a mailing list
-            of users before your product is ready so you can launch with a bang.
+            Build a mailing list of users early so you can launch with a bang. A waitlist helps you find users, validate your
+            product, and ensure a successful launch from day one.
           </p>
           <Link
             href="/w/flycatcher"

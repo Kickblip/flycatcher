@@ -6,9 +6,9 @@ export default function Pricing() {
   const growthFeatures = ["Unlimited contacts", "10,000 emails / month", "Remove Flycatcher branding"]
 
   return (
-    <section className="w-full flex flex-col my-32 p-6 md:p-0">
+    <section className="w-full flex flex-col my-32 p-1 md:p-0">
       <h2 className="text-5xl font-semibold mb-12 text-center">Transparent Pricing</h2>
-      <div className="w-full flex flex-col md:flex-row md:space-x-4 space-y-6 md:space-y-0 items-center justify-center">
+      <div className="w-full flex flex-col md:flex-row md:space-x-8 space-y-6 md:space-y-0 items-center justify-center">
         <div className="w-full sm:w-80 p-4 border h-[26rem] shadow hover:shadow-lg transition duration-200 rounded">
           <h3 className="text-3xl font-semibold my-2">Free</h3>
           <p className="text-sm font-normal text-gray-600">Essential features to get started</p>
