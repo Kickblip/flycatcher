@@ -37,10 +37,10 @@ export default function Pricing() {
 
         <div className="h-[26rem] w-full sm:w-96 p-4 text-white bg-redorange-500 shadow hover:shadow-lg transition duration-200 rounded">
           <h3 className="text-3xl font-semibold my-2">Growth</h3>
-          <p className="text-sm font-normal text-gray-200">Additional features to start marketing</p>
+          <p className="text-sm font-normal text-white">Additional features to start marketing</p>
           <p className="text-5xl font-semibold my-6">
             $20
-            <span className="text-sm font-normal text-gray-200">/month</span>
+            <span className="text-sm font-normal text-white">/month</span>
           </p>
           <Link
             href="/dashboard/subscription"
@@ -53,7 +53,7 @@ export default function Pricing() {
             {growthFeatures.map((feature, index) => (
               <div key={index} className="flex items-center space-x-2">
                 <FaCheck className="h-4 w-4 text-white" />
-                <li key={index} className="text-sm font-normal text-gray-200">
+                <li key={index} className="text-sm font-normal text-white">
                   {feature}
                 </li>
               </div>
