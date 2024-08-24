@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { createServiceRoleClient } from "@/utils/supabase/service"
 import { createClient } from "@/utils/supabase/server"
 import { updateBoardOwnerPremiumStatus } from "@/utils/actions/updateBoardOwnerPremiumStatus"
 import Stripe from "stripe"
@@ -26,19 +27,17 @@ export async function POST(request: Request) {
     }
 
     const { data: userMetadata, error: userMetadataError } = await supabase
-      .from("user_metadata")
+      .from("user")
       .select("*")
       .eq("user_id", user.id)
       .single()
 
-    if (userMetadataError) {
-      return NextResponse.json({ success: false, error: "Failed to retrieve user metadata." }, { status: 500 })
-    }
-
-    const previousCheckoutSessionIds = Array.isArray(userMetadata?.checkout_session_ids) ? userMetadata.checkout_session_ids : []
-
-    if (previousCheckoutSessionIds.includes(sessionId)) {
-      return NextResponse.json({ success: true, error: null }, { status: 200 })
+    let previousCheckoutSessionIds: string[] = []
+    if (!userMetadataError) {
+      previousCheckoutSessionIds = Array.isArray(userMetadata?.checkout_session_ids) ? userMetadata.checkout_session_ids : []
+      if (previousCheckoutSessionIds.includes(sessionId)) {
+        return NextResponse.json({ success: true, error: null }, { status: 200 })
+      }
     }
 
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
@@ -64,7 +63,9 @@ export async function POST(request: Request) {
       stripe_customer_id: session.customer,
     }
 
-    const { data: updateData, error: updateError } = await supabase.from("user_metadata").upsert({
+    const supabaseServiceClient = createServiceRoleClient()
+
+    const { data: updateData, error: updateError } = await supabaseServiceClient.from("user").upsert({
       user_id: user.id,
       ...updatedMetadata,
     })

@@ -5,7 +5,7 @@ import clientPromise from "@/utils/mongodb"
 export async function updateBoardOwnerPremiumStatus(userId: string, isPremium: boolean) {
   try {
     const client = await clientPromise
-    const collection = client.db("Main").collection("boards")
+    const collection = client.db("Main").collection("waitlists")
 
     const result = await collection.updateMany({ author: userId }, { $set: { authorIsPremium: isPremium } })
 
