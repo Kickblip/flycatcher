@@ -8,6 +8,8 @@ export default function DemoVideo() {
           poster="/landing/demo-cover.png"
           loop
           controls
+          autoPlay
+          muted
         >
           <source src="/landing/demo.mp4" type="video/mp4" />
         </video>
