@@ -7,7 +7,7 @@ import { createClient } from "@/utils/supabase/server"
 
 export const metadata: Metadata = {
   title: "Subscriptions | Flycatcher",
-  description: "Manage your Flycatcher subscriptions.",
+  description: "Manage your Flycatcher subscriptions and usage.",
 }
 
 export default async function DashboardSubscriptions() {

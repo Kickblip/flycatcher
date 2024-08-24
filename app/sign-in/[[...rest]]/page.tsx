@@ -5,7 +5,7 @@ import SignInForm from "@/components/shared/SignInForm"
 
 export const metadata: Metadata = {
   title: "Sign in",
-  description: "Sign into Flycatcher",
+  description: "Sign in to Flycatcher",
 }
 
 const SignInPage = () => {

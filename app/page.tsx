@@ -10,7 +10,7 @@ import Setup from "@/components/landing/Setup"
 
 export const metadata: Metadata = {
   title: "Flycatcher",
-  description: "Start collecting feedback from your users in minutes, not hours.",
+  description: "Build a waitlist, measure analytics, and send emails with a single app.",
 }
 
 export default function Home() {

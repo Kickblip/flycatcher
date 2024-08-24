@@ -10,19 +10,19 @@ import { Analytics } from "@vercel/analytics/react"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Flycatcher | Community Feedback Boards",
-  description: "Start collecting community feedback in minutes, not hours.",
+  title: "Flycatcher | Pre-launch campaigns",
+  description: "Build a waitlist, measure analytics, and send emails with a single app.",
   openGraph: {
     url: "https://flycatcher.app/",
-    title: "Community Feedback Boards",
-    description: "Start collecting community feedback in minutes, not hours.",
+    title: "Pre-launch campaigns",
+    description: "Build a waitlist, measure analytics, and send emails with a single app.",
     siteName: "Flycatcher",
     images: [
       {
         url: "https://flycatcher.app/ogimage.png",
         width: 1200,
         height: 628,
-        alt: "Feedback board",
+        alt: "Waitlist Page",
       },
     ],
     locale: "en_US",
@@ -30,9 +30,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Community Feedback Boards",
-    description: "Start collecting community feedback in minutes, not hours.",
-    images: { url: "https://flycatcher.app/ogimage.png", alt: "Feedback board" },
+    title: "Pre-launch campaigns",
+    description: "Build a waitlist, measure analytics, and send emails with a single app.",
+    images: { url: "https://flycatcher.app/ogimage.png", alt: "Waitlist Page" },
   },
   category: "software",
 }

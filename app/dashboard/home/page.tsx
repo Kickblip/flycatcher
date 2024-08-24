@@ -3,8 +3,8 @@ import Navbar from "./Navbar"
 import PageLayout from "./PageLayout"
 
 export const metadata: Metadata = {
-  title: "Suggestion Boards | Flycatcher",
-  description: "Manage and view your suggestion boards",
+  title: "Projects | Flycatcher",
+  description: "Manage and view your projects",
 }
 
 export default function DashboardHome() {
