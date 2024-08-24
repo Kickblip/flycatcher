@@ -10,6 +10,7 @@ export default function DemoVideo() {
           controls
           autoPlay
           muted
+          playsInline
         >
           <source src="/landing/demo.mp4" type="video/mp4" />
         </video>
