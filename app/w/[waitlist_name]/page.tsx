@@ -72,7 +72,14 @@ export default async function Waitlist({ params }: { params: { waitlist_name: st
         style={{ backgroundColor: waitlist.settings.primaryColor }}
       >
         <div className="absolute top-0 left-0 p-4">
-          <Image src={waitlist.images.logo} hidden={!waitlist.images.logo} alt="Logo" width={300} height={300} className="w-40" />
+          <Image
+            src={waitlist.images.logo}
+            hidden={!waitlist.images.logo}
+            alt="Logo"
+            width={600}
+            height={600}
+            className="h-12 w-auto"
+          />
         </div>
         <div className="w-3/4 lg:w-1/2 lg:max-w-lg flex flex-col space-y-6">
           <div className="flex flex-col w-full space-y-2">

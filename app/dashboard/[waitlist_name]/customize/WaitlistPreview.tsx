@@ -20,7 +20,7 @@ export default function WaitlistPreview({
         alt="Logo"
         width={300}
         height={300}
-        className="w-16 absolute top-20 left-4"
+        className="h-5 w-auto absolute top-20 left-4"
       />
       <div
         className="w-full md:w-1/2 rounded-l flex flex-col space-y-3 justify-center items-start px-16"
