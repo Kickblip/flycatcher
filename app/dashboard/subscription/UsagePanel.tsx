@@ -58,14 +58,14 @@ export default function UsagePanel({ isPremium }: { isPremium: boolean }) {
           <div key={index} className="flex w-full justify-between py-2">
             <p className="font-medium text-sm">{waitlist.name}</p>
             <div className="flex items-center space-x-2">
-              {waitlist.contacts > 50 ? (
+              {waitlist.contacts > Number(process.env.NEXT_PUBLIC_CONTACT_SOFT_LIMIT!) ? (
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
                       <FaCircleExclamation className="w-5 h-5 text-redorange-500" />
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>This waitlist is approaching the contact limit for free users</p>
+                      <p>This waitlist is past the contact limit for free users and will be limited soon</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -74,7 +74,7 @@ export default function UsagePanel({ isPremium }: { isPremium: boolean }) {
               )}
               <p className="font-medium text-sm">
                 {waitlist.contacts}
-                {isPremium ? "" : <span className="text-gray-500">/50</span>}
+                {isPremium ? "" : <span className="text-gray-500">{`/${process.env.NEXT_PUBLIC_CONTACT_SOFT_LIMIT}`}</span>}
               </p>
             </div>
           </div>

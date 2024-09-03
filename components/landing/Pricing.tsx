@@ -2,7 +2,11 @@ import { FaCheck } from "react-icons/fa6"
 import Link from "next/link"
 
 export default function Pricing() {
-  const freeFeatures = ["50 contacts", "Full customization options", "Analytics dashboard"]
+  const freeFeatures = [
+    `${process.env.NEXT_PUBLIC_CONTACT_SOFT_LIMIT} contacts`,
+    "Full customization options",
+    "Analytics dashboard",
+  ]
   const growthFeatures = ["Unlimited contacts", "10,000 emails / month", "Remove Flycatcher branding"]
 
   return (

@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: "Waitlist not found" }, { status: 404 })
     }
 
-    if (matchingWaitlist.contacts.length >= 200) {
+    if (matchingWaitlist.contacts.length >= Number(process.env.NEXT_PUBLIC_CONTACT_HARD_LIMIT!)) {
       return NextResponse.json({ message: "Contact limit reached" }, { status: 200 })
     }
 
