@@ -21,7 +21,7 @@ export default function ShareAndSave({
     }
 
     // check if waitlist.settings and pageWaitlist.settings are the same
-    if (JSON.stringify(waitlist.settings) === JSON.stringify(pageWaitlist.settings)) {
+    if (JSON.stringify(waitlist) === JSON.stringify(pageWaitlist)) {
       return
     }
 
