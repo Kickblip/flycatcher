@@ -30,7 +30,7 @@ async function Navbar() {
                 <UserButton />
               </div>
             ) : (
-              <Link href="/dashboard/boards">
+              <Link href="/dashboard/home">
                 <div className="bg-redorange-500 hover:bg-redorange-300 transition duration-200 text-white px-4 py-2 rounded-md">
                   Log In
                 </div>
