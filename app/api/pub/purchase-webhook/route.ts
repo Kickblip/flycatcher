@@ -50,6 +50,7 @@ export async function POST(req: NextRequest) {
         .upsert({
           user_id: authUser.id,
           is_premium: true,
+          email: email,
           stripe_customer_id: session.customer,
         })
         .select()
