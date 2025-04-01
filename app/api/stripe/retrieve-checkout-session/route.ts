@@ -32,9 +32,17 @@ export async function POST(request: Request) {
       .eq("user_id", user.id)
       .single()
 
+    // let previousCheckoutSessionIds: string[] = []
+    // if (!userMetadataError) {
+    //   previousCheckoutSessionIds = Array.isArray(userMetadata?.checkout_session_ids) ? userMetadata.checkout_session_ids : []
+    //   if (previousCheckoutSessionIds.includes(sessionId)) {
+    //     return NextResponse.json({ success: true, error: null }, { status: 200 })
+    //   }
+    // }
+
     let previousCheckoutSessionIds: string[] = []
-    if (!userMetadataError) {
-      previousCheckoutSessionIds = Array.isArray(userMetadata?.checkout_session_ids) ? userMetadata.checkout_session_ids : []
+    if (!userMetadataError && userMetadata?.checkout_session_ids) {
+      previousCheckoutSessionIds = Array.isArray(userMetadata.checkout_session_ids) ? userMetadata.checkout_session_ids : []
       if (previousCheckoutSessionIds.includes(sessionId)) {
         return NextResponse.json({ success: true, error: null }, { status: 200 })
       }

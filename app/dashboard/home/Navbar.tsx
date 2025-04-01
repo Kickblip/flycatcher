@@ -1,6 +1,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import UserButton from "@/components/shared/UserButton"
+import FullLogo from "@/components/shared/FullLogo"
 
 function Navbar() {
   return (
@@ -9,7 +10,7 @@ function Navbar() {
         <div className="flex items-center justify-between">
           <div className="flex items-center md:space-x-10 space-x-6">
             <Link href="/dashboard/home">
-              <Image src="/landing/logo.png" alt="Logo" width={170} height={170} />
+              <FullLogo />
             </Link>
             <Link
               href="/dashboard/subscription"

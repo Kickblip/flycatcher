@@ -3,7 +3,6 @@ import clientPromise from "@/utils/mongodb"
 import { createClient } from "@/utils/supabase/server"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
-import { startOfMonth } from "date-fns"
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
@@ -40,18 +39,7 @@ export async function GET(request: Request) {
       contacts: waitlist.contacts.length || 0,
     }))
 
-    const startOfCurrentMonth = startOfMonth(new Date())
-
-    const currentMonthCampaigns = await campaignCollection
-      .find({
-        author: user.id,
-        createdAt: { $gte: startOfCurrentMonth },
-      })
-      .toArray()
-
-    const monthTotalRecipients = currentMonthCampaigns.reduce((sum, campaign) => sum + campaign.recipients, 0)
-
-    return NextResponse.json({ waitlistDetails, monthTotalRecipients }, { status: 200 })
+    return NextResponse.json({ waitlistDetails }, { status: 200 })
   } catch (error) {
     let errorMessage = "An unknown error occurred"
     if (error instanceof Error) {
