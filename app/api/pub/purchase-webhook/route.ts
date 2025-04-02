@@ -14,8 +14,8 @@ export async function POST(req: NextRequest) {
   try {
     let event = stripe.webhooks.constructEvent(payload, sig!, process.env.STRIPE_WEBHOOK_SECRET!)
 
-    const email = res?.data?.object?.receipt_email
-    const customer = res?.data?.object?.customer
+    const email = res.data.object.customer_details.email
+    const customer = res.data.object.customer
 
     if (event.type === "checkout.session.completed") {
       const supabaseServiceClient = createServiceRoleClient()
@@ -32,8 +32,8 @@ export async function POST(req: NextRequest) {
         .maybeSingle()
 
       if (authUserError || !authUser) {
-        console.error("Could not find user by email in auth table", authUserError)
-        return NextResponse.json({ status: "failed", reason: "User not found" }, { status: 404 })
+        console.error("Could not find user by email", authUserError)
+        return NextResponse.json({ status: "failed", reason: "User not found" }, { status: 500 })
       }
 
       const { data, error } = await supabaseServiceClient
@@ -48,8 +48,8 @@ export async function POST(req: NextRequest) {
         .single()
 
       if (error) {
-        console.error("Error upserting user in Supabase:", error)
-        return NextResponse.json({ status: "failed", error }, { status: 500 })
+        console.error("Error upserting user:", error)
+        return NextResponse.json({ status: "failed", reason: "Failed to upsert" }, { status: 500 })
       }
     }
 
