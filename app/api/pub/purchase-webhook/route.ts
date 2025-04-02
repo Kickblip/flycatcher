@@ -8,21 +8,17 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 
 export async function POST(req: NextRequest) {
   const payload = await req.text()
+  const res = JSON.parse(payload)
   const sig = req.headers.get("Stripe-Signature")
 
   try {
     let event = stripe.webhooks.constructEvent(payload, sig!, process.env.STRIPE_WEBHOOK_SECRET!)
 
-    console.log("Event", event?.type)
-    // charge.succeeded
-    // payment_intent.succeeded
-    // payment_intent.created
+    const email = res?.data?.object?.receipt_email
+    const customer = res?.data?.object?.customer
 
     if (event.type === "checkout.session.completed") {
-      const session = event.data.object as Stripe.Checkout.Session
       const supabaseServiceClient = createServiceRoleClient()
-
-      const email = session.customer_email
 
       if (!email) {
         console.error("No email found in checkout session.")
@@ -46,7 +42,7 @@ export async function POST(req: NextRequest) {
           user_id: authUser.id,
           is_premium: true,
           email: email,
-          stripe_customer_id: session.customer,
+          stripe_customer_id: customer,
         })
         .select()
         .single()
@@ -59,6 +55,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ status: "success", message: "Webhook processed" }, { status: 200 })
   } catch (error) {
-    return NextResponse.json({ status: "Failed", error })
+    return NextResponse.json({ status: "failed", error }, { status: 400 })
   }
 }
