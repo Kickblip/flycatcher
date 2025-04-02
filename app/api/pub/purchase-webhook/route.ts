@@ -8,12 +8,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 
 export async function POST(req: NextRequest) {
   const payload = await req.text()
-  const res = JSON.parse(payload)
-
   const sig = req.headers.get("Stripe-Signature")
-
-  const dateTime = new Date(res?.created * 1000).toLocaleDateString()
-  const timeString = new Date(res?.created * 1000).toLocaleDateString()
 
   try {
     let event = stripe.webhooks.constructEvent(payload, sig!, process.env.STRIPE_WEBHOOK_SECRET!)
@@ -62,7 +57,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ status: "sucess", event: event.type, response: res })
+    return NextResponse.json({ status: "success", message: "Webhook processed" }, { status: 200 })
   } catch (error) {
     return NextResponse.json({ status: "Failed", error })
   }
