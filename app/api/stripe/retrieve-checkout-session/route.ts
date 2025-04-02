@@ -32,43 +32,28 @@ export async function POST(request: Request) {
       .eq("user_id", user.id)
       .single()
 
-    // let previousCheckoutSessionIds: string[] = []
-    // if (!userMetadataError) {
-    //   previousCheckoutSessionIds = Array.isArray(userMetadata?.checkout_session_ids) ? userMetadata.checkout_session_ids : []
-    //   if (previousCheckoutSessionIds.includes(sessionId)) {
-    //     return NextResponse.json({ success: true, error: null }, { status: 200 })
-    //   }
-    // }
-
     let previousCheckoutSessionIds: string[] = []
-    if (!userMetadataError && userMetadata?.checkout_session_ids) {
-      previousCheckoutSessionIds = Array.isArray(userMetadata.checkout_session_ids) ? userMetadata.checkout_session_ids : []
+    if (!userMetadataError) {
+      previousCheckoutSessionIds = Array.isArray(userMetadata?.checkout_session_ids) ? userMetadata.checkout_session_ids : []
       if (previousCheckoutSessionIds.includes(sessionId)) {
         return NextResponse.json({ success: true, error: null }, { status: 200 })
       }
     }
 
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
-      expand: ["subscription"],
+      expand: ["payment_intent"],
     })
 
-    const subscriptionId = typeof session.subscription === "string" ? session.subscription : session.subscription?.id
-
-    let isPremium = false
-    if (subscriptionId) {
-      const subscription = await stripe.subscriptions.retrieve(subscriptionId)
-      isPremium = subscription.status === "active"
-    }
+    const paymentIntentId = typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id
+    const paymentIntentStatus = typeof session.payment_intent === "string" ? null : session.payment_intent?.status
+    const isPremium = paymentIntentStatus === "succeeded"
 
     const updatedMetadata = {
       checkout_session_ids: [...previousCheckoutSessionIds, sessionId],
-      stripe_subscription_id: subscriptionId,
-      stripe_current_period_end: typeof session.subscription === "string" ? undefined : session.subscription?.current_period_end,
+      stripe_payment_intent_id: paymentIntentId,
       is_premium: isPremium,
-      stripe_subscription_status: typeof session.subscription === "string" ? undefined : session.subscription?.status,
-      stripe_subscription_cancel_at_period_end:
-        typeof session.subscription === "string" ? undefined : session.subscription?.cancel_at_period_end,
       stripe_customer_id: session.customer,
+      email: session.customer_email,
     }
 
     const supabaseServiceClient = createServiceRoleClient()

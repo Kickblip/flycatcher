@@ -41,7 +41,7 @@ export default function Pricing() {
           <p className="text-sm font-normal text-white">Additional features to start marketing</p>
           <p className="text-5xl font-semibold my-6">
             ${process.env.NEXT_PUBLIC_GROWTH_PRICE}
-            <span className="text-xs opacity-80 ml-1 font-normal text-white">one time payment</span>
+            <span className="text-xs opacity-90 ml-1 font-normal text-white">one time payment</span>
           </p>
           <Link
             href="/dashboard/subscription"
