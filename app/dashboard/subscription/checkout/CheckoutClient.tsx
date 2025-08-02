@@ -25,7 +25,7 @@ export default function Checkout() {
 
       const { success, error } = result
       if (success) {
-        toast.success("Checkout completed successfully. Thank you for supporting Waitlist Builder.")
+        toast.success("Checkout completed successfully. Thank you for joining Flycatcher.")
         const supabase = createClient()
         supabase.auth.refreshSession()
       }
@@ -57,7 +57,7 @@ export default function Checkout() {
       <Navbar />
       <div className="w-full max-w-7xl p-4 flex flex-col items-center">
         <h1 className="text-lg font-medium text-redorange-500">Payment successful</h1>
-        <p className="my-2 font-semibold text-3xl">Thank you for joining Waitlist Builder</p>
+        <p className="my-2 font-semibold text-3xl">Thank you for joining Flycatcher</p>
         <Link
           href="/dashboard/subscription"
           className="bg-redorange-500 hover:bg-redorange-300 transition duration-200 px-4 py-2 rounded font-semibold text-white mt-6"

@@ -7,16 +7,19 @@ export default function Pricing() {
     "Full customization options",
     "Analytics dashboard",
   ]
-  const growthFeatures = ["Unlimited contacts", "Unlimited projects", "Remove our branding"]
+  const growthFeatures = ["Unlimited contacts", "10,000 emails / month", "Remove Flycatcher branding"]
 
   return (
     <section className="w-full flex flex-col my-32 p-1 md:p-0">
       <h2 className="text-5xl font-semibold mb-12 text-center">Transparent Pricing</h2>
       <div className="w-full flex flex-col md:flex-row md:space-x-8 space-y-6 md:space-y-0 items-center justify-center">
         <div className="w-full sm:w-80 p-4 border h-[26rem] shadow hover:shadow-lg transition duration-200 rounded">
-          <h3 className="text-3xl font-semibold my-2">Basic</h3>
+          <h3 className="text-3xl font-semibold my-2">Free</h3>
           <p className="text-sm font-normal text-gray-600">Essential features to get started</p>
-          <p className="text-5xl font-semibold my-6">Free</p>
+          <p className="text-5xl font-semibold my-6">
+            $0
+            <span className="text-sm font-normal text-gray-600">/month</span>
+          </p>
           <Link
             href="/dashboard/home"
             className="block w-full text-center transition duration-200 font-semibold py-2 px-4 rounded text-white bg-redorange-500 hover:bg-redorange-300"
@@ -40,8 +43,8 @@ export default function Pricing() {
           <h3 className="text-3xl font-semibold my-2">Growth</h3>
           <p className="text-sm font-normal text-white">Additional features to start marketing</p>
           <p className="text-5xl font-semibold my-6">
-            ${process.env.NEXT_PUBLIC_GROWTH_PRICE}
-            <span className="text-xs opacity-90 ml-1 font-normal text-white">one time payment</span>
+            $20
+            <span className="text-sm font-normal text-white">/month</span>
           </p>
           <Link
             href="/dashboard/subscription"

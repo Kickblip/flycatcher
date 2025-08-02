@@ -2,7 +2,6 @@ import Link from "next/link"
 import Image from "next/image"
 import { createClient } from "@/utils/supabase/server"
 import UserButton from "@/components/shared/UserButton"
-import FullLogo from "@/components/shared/FullLogo"
 
 async function Navbar() {
   const supabase = createClient()
@@ -17,8 +16,7 @@ async function Navbar() {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-10">
             <Link href="/">
-              {/* <Image src="/landing/logo.png" alt="Logo" width={170} height={170} /> */}
-              <FullLogo />
+              <Image src="/landing/logo.png" alt="Logo" width={170} height={170} />
             </Link>
           </div>
           <div className="flex items-center space-x-4">

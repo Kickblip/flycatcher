@@ -6,6 +6,7 @@ import { FaCircleExclamation } from "react-icons/fa6"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 export default function UsagePanel({ isPremium }: { isPremium: boolean }) {
+  const [monthTotalRecipients, setMonthTotalRecipients] = useState(0)
   const [waitlists, setWaitlists] = useState<{ name: string; contacts: number }[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -25,6 +26,7 @@ export default function UsagePanel({ isPremium }: { isPremium: boolean }) {
 
     const data = await response.json()
     setWaitlists(data.waitlistDetails)
+    setMonthTotalRecipients(data.monthTotalRecipients)
     setLoading(false)
   }
 
@@ -77,6 +79,13 @@ export default function UsagePanel({ isPremium }: { isPremium: boolean }) {
             </div>
           </div>
         ))}
+      </div>
+      <div className="flex w-full justify-between">
+        <p className="text-sm font-semibold">Emails sent this month</p>
+        <p className="text-sm font-semibold">
+          {monthTotalRecipients}
+          {isPremium ? <span className="text-gray-500">/10000</span> : <span className="text-gray-500">/0</span>}
+        </p>
       </div>
     </div>
   )

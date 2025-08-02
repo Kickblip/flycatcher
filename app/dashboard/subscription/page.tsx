@@ -35,7 +35,12 @@ export default async function DashboardSubscriptions() {
             email={user?.email as string}
           />
         ) : (
-          <SubscriptionCard title="Growth" subtitle="More feedback and additional features" price={20} />
+          <SubscriptionCard
+            title="Growth"
+            subtitle="More feedback and additional features"
+            price={20}
+            features={["Unlimited contacts", "10,000 emails / month", "Remove Flycatcher branding"]}
+          />
         )}
       </div>
     </main>

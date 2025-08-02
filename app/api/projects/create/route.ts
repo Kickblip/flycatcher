@@ -61,27 +61,14 @@ export async function POST(request: Request) {
     )
   }
 
-  // const { data: userMetadata, error: userMetadataError } = await supabase.from("user").select("*").eq("user_id", user.id).single()
-  // let isPremium = false
-  // if (!userMetadataError) {
-  //   const stripePurchaseId = userMetadata?.stripe_purchase_id
-  //   if (stripePurchaseId) {
-  //     const purchase = await stripe.subscriptions.retrieve(stripePurchaseId as string)
-  //     isPremium = purchase.status === "active"
-  //   }
-  // }
-
-  const { data: userMetadata, error: userMetadataError } = await supabase
-    .from("user")
-    .select("stripe_session_id")
-    .eq("user_id", user.id)
-    .single()
-
+  const { data: userMetadata, error: userMetadataError } = await supabase.from("user").select("*").eq("user_id", user.id).single()
   let isPremium = false
-
-  if (!userMetadataError && userMetadata?.stripe_session_id) {
-    const session = await stripe.checkout.sessions.retrieve(userMetadata.stripe_session_id)
-    isPremium = session.payment_status === "paid"
+  if (!userMetadataError) {
+    const stripeSubscriptionId = userMetadata?.stripe_subscription_id
+    if (stripeSubscriptionId) {
+      const subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId as string)
+      isPremium = subscription.status === "active"
+    }
   }
 
   const urlName = name.toLowerCase().replace(/\s+/g, "-")

@@ -1,12 +1,12 @@
+import Image from "next/image"
 import Link from "next/link"
-import FullLogo from "../shared/FullLogo"
 
 function Footer() {
   return (
     <footer className="w-full bg-gray-50 text-white py-12">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between px-4">
         <div className="mb-4 md:mb-0">
-          <FullLogo />
+          <Image src="/board-pages/dark-logo.png" alt="Logo" width={170} height={170} />
         </div>
         <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 text-center">
           <Link

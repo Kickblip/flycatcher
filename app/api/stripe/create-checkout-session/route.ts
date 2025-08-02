@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     const origin = process.env.NEXT_PUBLIC_SITE_URL as string
 
     const session = await stripe.checkout.sessions.create({
-      mode: "payment",
+      mode: "subscription",
       line_items: lineItems,
       success_url: `${origin}/dashboard/subscription/checkout?sessionId={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/dashboard/subscription`,
